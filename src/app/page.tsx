@@ -1,7 +1,7 @@
+import Desktop from "@/components/os/Desktop";
+
 export default function Home() {
   return (
-    <main>
-    ISMAIL FEHAM
-    </main>
+      <Desktop />
   );
 }

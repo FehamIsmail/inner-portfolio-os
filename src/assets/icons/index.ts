@@ -1,11 +1,9 @@
-import React from 'react';
-
 import battery from './battery.png'
 import close from './close.png'
 import maximize from './maximize.png'
 import minimize from './minimize.png'
-import networkTabs from './network-tabs.png'
-import restoreDown from './restore-down.png'
+import networkTabs from './networkTabs.png'
+import restoreDown from './restoreDown.png'
 import speaker from './speaker.png'
 import start from './start.png'
 import wifi from './wifi.png'
