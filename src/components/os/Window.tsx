@@ -12,11 +12,19 @@ interface WindowProps {
     top: number;
     left: number;
     title: string;
-    titleBarColor: string;
+    titleBarColor: 'red' | 'green' | 'blue' | 'yellow';
     titleBarIcon: IconName;
     onWidthChange: (width: number) => void;
     onHeightChange: (height: number) => void;
 }
+
+const titleBarColors = {
+    red: 'bg-retro-red',
+    green: 'bg-retro-green',
+    blue: 'bg-retro-blue',
+    yellow: 'bg-retro-yellow',
+}
+
 function Window(props: WindowProps) {
     const [isFocused, setIsFocused] = React.useState(false);
     const [isMaximized, setIsMaximized] = React.useState(false);
@@ -24,6 +32,8 @@ function Window(props: WindowProps) {
     const windowRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+
+    const titleBarColor = titleBarColors[props.titleBarColor];
 
     const [currentWindowDimensions, setCurrentWindowDimensions] = React.useState({
         x: props.left,
@@ -130,8 +140,8 @@ function Window(props: WindowProps) {
 
     return (
         <div
-            className={`flex flex-col bg-white absolute  divide-y-3 divide-black
-                ${isMaximized ? 'rounded-none' : 'rounded-xl shadow-window border-3  border-black'}`}
+            className={`flex flex-col bg-retro-white absolute  divide-y-3 divide-retro-dark border-3  border-retro-dark
+                ${isMaximized ? 'rounded-xl border-b-0  shadow-window-maximized' : 'rounded-xl shadow-window'}`}
             style={{
                 width: currentWindowDimensions.width,
                 height: currentWindowDimensions.height,
@@ -141,30 +151,29 @@ function Window(props: WindowProps) {
             ref={windowRef}
         >
             <div
-                className="titleBar flex flex-row h-[36px] w-full justify-between rounded-t-[8px] px-4"
-                style={{backgroundColor: props.titleBarColor}}
+                className={`titleBar flex flex-row h-[36px] w-full justify-between px-4 rounded-t-[8px]` + ' ' + titleBarColor}
             >
                 <div
-                    className="left-titleBar text-lg text-black font-bold flex w-full flex-row items-center gap-2"
+                    className="left-titleBar text-lg text-retro-dark font-bold flex w-full flex-row items-center gap-2"
                     onMouseDown={startDrag}
                 >
                     <Icon icon={props.titleBarIcon} size={24}/>
                     <span className={"select-none"}>{props.title}</span>
                 </div>
                 <div className="flex items-center right-titleBar">
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-4 items-center">
                         <button
-                            className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center bg-[#c5e351]"
+                            className="w-4 h-4 border-2 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
                             onClick={props.minimizeWindow}
                         >
                         </button>
                         <button
-                            className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
+                            className="w-4 h-4 border-2 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
                             onClick={maximizeHandler}
                         >
                         </button>
                         <button
-                            className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center bg-[#fd89c2]"
+                            className="w-4 h-4 border-2 border-retro-dark rounded-full flex items-center justify-center bg-[#fd89c2]"
                             onClick={props.closeWindow}
                         >
                         </button>

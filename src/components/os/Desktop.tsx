@@ -12,19 +12,23 @@ const nunito = Nunito({
 
 function Desktop() {
     return (
-        <main className={"min-h-full flex flex-col bg-[#ffe28a] " + nunito.className}>
+        <div className="relative z-0 min-h-full bg-retro-background">
+        <main
+            className={"min-h-full flex flex-col" + nunito.className}
+            // style={{filter: }}
+        >
             <div className="z-30 relative">
                 <Window
                     closeWindow={() => {
                     }}
                     minimizeWindow={() => {
                     }}
-                    width={1200}
-                    height={800}
+                    width={500}
+                    height={300}
                     top={200}
                     left={200}
                     title={"Window Title"}
-                    titleBarColor={"#e19b12"}
+                    titleBarColor={'blue'}
                     titleBarIcon={'start'}
                     onWidthChange={() => {
                     }}
@@ -32,16 +36,16 @@ function Desktop() {
                     }}
                 />
             </div>
-            <div
-                className="z-50 absolute flex bottom-0 w-full h-[58px] px-2 border-black border-t-3 font-extrabold justify-between items-center bg-[#6fcb9f]">
-                <Taskbar
+            <div className={"h-80 w-80 border-retro-dark border-3 bg-white rounded-xl relative top-20 left-20"}>
+
+            </div>
+            <Taskbar
                     toggleMinimize={() => {
                     }}
                     windows={{} as any}
-                />
-            </div>
+            />
         </main>
-
+        </div>
     );
 }
 
