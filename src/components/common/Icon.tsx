@@ -24,6 +24,7 @@ function Icon(props: IconProps) {
                 className={props.className}
                 src={getIcon(props.icon)}
                 alt={props.icon}
+                draggable={false}
             />
         </div>
     );
