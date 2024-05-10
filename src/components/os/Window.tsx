@@ -2,7 +2,6 @@
 import React, {useRef} from 'react';
 import {IconName} from "@/assets/icons";
 import Icon from "@/components/common/Icon";
-import {any} from "prop-types";
 
 interface WindowProps {
     closeWindow: () => void;
@@ -83,10 +82,15 @@ function Window(props: WindowProps) {
         if(!windowRef.current) return
         let { x, y } = getRealCoords(clientX, clientY);
         // Get Window dimensions
-        const { width, height } = windowRef.current.getBoundingClientRect();
+        const { width } = windowRef.current.getBoundingClientRect();
         // Add boundary checks
         if (x < -width + 102) x = -width + 102;
-        if (y < 0) y = 0;
+        if (y < 0) {
+            maximizeWindow('DRAG')
+            window.removeEventListener('mousemove', onDrag, false);
+            window.removeEventListener('mouseup', stopDrag, false);
+            return;
+        }
         if (x > window.innerWidth - 102) x = window.innerWidth - 102;
         if (y > window.innerHeight - 100) y = window.innerHeight - 100;
         const { width: finalWidth, height: finalHeight } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
@@ -105,21 +109,23 @@ function Window(props: WindowProps) {
         }
     }
 
-    const maximizeWindow = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const maximizeHandler = () => {
         if (isMaximized) {
             setCurrentWindowDimensions(prevWindowDimensions);
             setIsMaximized(false);
         } else {
-            setPrevWindowDimensions(currentWindowDimensions);
-            setCurrentWindowDimensions({
-                x: 0,
-                y: 0,
-                width: window.innerWidth,
-                height: window.innerHeight - 58,
-            });
-            setIsMaximized(true);
+            maximizeWindow('BUTTON')
         }
+    }
+    const maximizeWindow = (actionOrigin: 'DRAG' | 'BUTTON') => {
+        if(actionOrigin === 'BUTTON') setPrevWindowDimensions(currentWindowDimensions);
+        setCurrentWindowDimensions({
+            x: 0,
+            y: 0,
+            width: window.innerWidth,
+            height: window.innerHeight - 58,
+        });
+        setIsMaximized(true);
     }
 
     return (
@@ -154,7 +160,7 @@ function Window(props: WindowProps) {
                         </button>
                         <button
                             className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
-                            onClick={maximizeWindow}
+                            onClick={maximizeHandler}
                         >
                         </button>
                         <button
