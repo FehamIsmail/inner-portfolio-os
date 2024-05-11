@@ -8,6 +8,7 @@ interface TaskbarProps {
 }
 
 function Taskbar(props: TaskbarProps) {
+    const [showStartMenu, setShowStartMenu] = React.useState(false);
     const [time, setTime] = React.useState(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
 
     React.useEffect(() => {
@@ -18,26 +19,23 @@ function Taskbar(props: TaskbarProps) {
     }, []);
 
     return (
-        <div className="z-40 rounded-t-xl absolute flex bottom-0 w-full h-[58px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
+        <div className="z-40 text-retro-dark text-md rounded-t-lg rounded-b-lg shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
             <div className="flex flex-row w-full h-full justify-between pl-3">
-                <div className="bg-retro-white hover:cursor-pointer hover:bg-amber-200 border-x-3 border-retro-dark px-6">
+                <div className="bg-retro-white hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6">
                     <div className="flex items-center gap-2 h-full">
-                        <Icon icon={'start'} size={32}/>
-                        <span className="text-retro-dark text-lg">Start</span>
+                        <button>Start</button>
                     </div>
                 </div>
                 <div className="flex gap-3 items-center pr-1">
-                    <div className="h-full hover:cursor-pointer hover:bg-amber-200 flex gap-2 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
-                        <Icon icon={'wifi'} size={20}/>
-                        <Icon icon={'speaker'} size={18}/>
-                        <span className="text-retro-dark text-sm">{' '}</span>
-                        <span className="text-retro-dark text-md cursor-default select-none hover:cursor-pointer">
+                    <div className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
+                        <Icon icon={'wifi'} size={18}/>
+                        <Icon icon={'speaker'} size={16}/>
+                        <span className="text-md cursor-default select-none hover:cursor-pointer">
                             {time}
                         </span>
-                        <span className="text-retro-dark text-sm">{' '}</span>
-                        <Icon icon={'battery'} className={"mb-[1px]"} size={13}/>
+                        <Icon icon={'battery'} className={"mb"} size={12}/>
                     </div>
-                    <button className="bg-amber-200 border-3 border-retro-dark p-[5px] rounded-full w-0 h-0 hover:bg-amber-400"/>
+                    <button className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0 "/>
                 </div>
             </div>
         </div>

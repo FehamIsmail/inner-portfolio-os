@@ -23,21 +23,35 @@ function Desktop() {
                     }}
                     minimizeWindow={() => {
                     }}
-                    width={500}
-                    height={300}
+                    width={520}
+                    height={220}
                     top={200}
                     left={200}
                     title={"Window Title"}
-                    titleBarColor={'blue'}
+                    titleBarColor={'green'}
                     titleBarIcon={'start'}
                     onWidthChange={() => {
                     }}
                     onHeightChange={() => {
                     }}
                 />
-            </div>
-            <div className={"h-80 w-80 border-retro-dark border-3 bg-white rounded-xl relative top-20 left-20"}>
-
+                <Window
+                    closeWindow={() => {
+                    }}
+                    minimizeWindow={() => {
+                    }}
+                    width={520}
+                    height={220}
+                    top={200}
+                    left={200}
+                    title={"Window Title"}
+                    titleBarColor={'red'}
+                    titleBarIcon={'start'}
+                    onWidthChange={() => {
+                    }}
+                    onHeightChange={() => {
+                    }}
+                />
             </div>
             <Taskbar
                     toggleMinimize={() => {

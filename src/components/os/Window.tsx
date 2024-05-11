@@ -25,6 +25,9 @@ const titleBarColors = {
     yellow: 'bg-retro-yellow',
 }
 
+export const MAX_WIDTH = 520;
+export const MAX_HEIGHT = 220;
+
 function Window(props: WindowProps) {
     const [isFocused, setIsFocused] = React.useState(false);
     const [isMaximized, setIsMaximized] = React.useState(false);
@@ -54,6 +57,26 @@ function Window(props: WindowProps) {
         dragStartY: any,
     }>()
 
+    const startResize = (e: React.MouseEvent) => {
+        e.preventDefault()
+        window.addEventListener('mousemove', onResize, false);
+        window.addEventListener('mouseup', stopResize, false);
+    }
+
+    const onResize = ({ clientX, clientY }: MouseEvent) => {
+        const currentWidth = clientX - currentWindowDimensions.x;
+        const currentHeight = clientY - currentWindowDimensions.y;
+        if (currentWidth >= MAX_WIDTH) currentWindowDimensions.width = currentWidth;
+        if (currentHeight >= MAX_HEIGHT) currentWindowDimensions.height = currentHeight;
+        setCurrentWindowDimensions({...currentWindowDimensions});
+    }
+
+    const stopResize = () => {
+        setPrevWindowDimensions(currentWindowDimensions)
+        window.removeEventListener('mousemove', onResize, false);
+        window.removeEventListener('mouseup', stopResize, false);
+    }
+
     const startDrag = (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
@@ -68,7 +91,7 @@ function Window(props: WindowProps) {
 
     const onDrag = (e: MouseEvent) => {
         const { x, y } = getRealCoords(e.clientX, e.clientY);
-        // check for a change in position
+        // Check for a change in position
         if (x === currentWindowDimensions.x && y === currentWindowDimensions.y) return;
         const { width, height } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
         setCurrentWindowDimensions({ x: x + getOffsetX() , y, width, height });
@@ -94,7 +117,7 @@ function Window(props: WindowProps) {
         // Get Window dimensions
         const { width } = windowRef.current.getBoundingClientRect();
         // Add boundary checks
-        if (x < -width + 102) x = -width + 102;
+        if (x + getOffsetX() < -width + 110) x = -width + 110 - getOffsetX();
         if (y < 0) {
             maximizeWindow('DRAG')
             window.removeEventListener('mousemove', onDrag, false);
@@ -112,7 +135,6 @@ function Window(props: WindowProps) {
     const getRealCoords = (clientX: number, clientY: number): {x: number, y: number} => {
         if(!dragCoords.current) return {x: 0, y: 0}
         const { dragStartX, dragStartY } = dragCoords.current;
-
         return {
             x: clientX - dragStartX + currentWindowDimensions.x,
             y: clientY - dragStartY + currentWindowDimensions.y,
@@ -133,15 +155,15 @@ function Window(props: WindowProps) {
             x: 0,
             y: 0,
             width: window.innerWidth,
-            height: window.innerHeight - 58,
+            height: window.innerHeight - 40,
         });
         setIsMaximized(true);
     }
 
     return (
         <div
-            className={`flex flex-col bg-retro-white absolute  divide-y-3 divide-retro-dark border-3  border-retro-dark
-                ${isMaximized ? 'rounded-xl border-b-0  shadow-window-maximized' : 'rounded-xl shadow-window'}`}
+            className={`flex flex-col bg-retro-white absolute  divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
+                ${isMaximized ? 'border-b-0  shadow-window-maximized' : 'shadow-window'}`}
             style={{
                 width: currentWindowDimensions.width,
                 height: currentWindowDimensions.height,
@@ -151,38 +173,48 @@ function Window(props: WindowProps) {
             ref={windowRef}
         >
             <div
-                className={`titleBar flex flex-row h-[36px] w-full justify-between px-4 rounded-t-[8px]` + ' ' + titleBarColor}
+                className={`titleBar flex flex-row max-h-[34px] w-full justify-between px-3 rounded-t-[4px] ` + titleBarColor}
             >
                 <div
-                    className="left-titleBar text-lg text-retro-dark font-bold flex w-full flex-row items-center gap-2"
+                    className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-3"
                     onMouseDown={startDrag}
                 >
-                    <Icon icon={props.titleBarIcon} size={24}/>
+                    <Icon className={""} icon={props.titleBarIcon} size={22}/>
                     <span className={"select-none"}>{props.title}</span>
                 </div>
                 <div className="flex items-center right-titleBar">
                     <div className="flex gap-4 items-center">
                         <button
-                            className="w-4 h-4 border-2 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
+                            className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
                             onClick={props.minimizeWindow}
                         >
                         </button>
                         <button
-                            className="w-4 h-4 border-2 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
+                            className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
                             onClick={maximizeHandler}
                         >
                         </button>
                         <button
-                            className="w-4 h-4 border-2 border-retro-dark rounded-full flex items-center justify-center bg-[#fd89c2]"
+                            className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#fd89c2]"
                             onClick={props.closeWindow}
                         >
                         </button>
                     </div>
                 </div>
             </div>
-            <section>
+            <section className={'h-full'}>
 
             </section>
+            {!isMaximized &&
+                <div className={"h-[19px] select-none flex flex-row-reverse rounded-b-lg p-[2px]"}>
+                    <button
+                        className={"flex flex-row-reverse cursor-se-resize"}
+                        onMouseDown={startResize}
+                    >
+                        <Icon icon={'resize'} size={12}/>
+                    </button>
+                </div>
+            }
         </div>
     );
 }

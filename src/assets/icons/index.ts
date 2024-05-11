@@ -3,6 +3,7 @@ import close from './close.png'
 import maximize from './maximize.png'
 import minimize from './minimize.png'
 import networkTabs from './networkTabs.png'
+import resize from './resize.png'
 import restoreDown from './restoreDown.png'
 import speaker from './speaker.png'
 import start from './start.png'
@@ -14,6 +15,7 @@ const icons = {
     maximize,
     minimize,
     networkTabs,
+    resize,
     restoreDown,
     speaker,
     start,
