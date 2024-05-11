@@ -11,7 +11,9 @@ interface ApplicationWindowProps {
 
 function ApplicationWindow(props: ApplicationWindowProps) {
     return (
-        <div></div>
+        <div>
+
+        </div>
     );
 }
 
