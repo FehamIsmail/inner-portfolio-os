@@ -19,24 +19,22 @@ function Desktop() {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>();
 
-
     const getHighestZIndex = useCallback(() => {
         if(Object.keys(windows).length === 0) return 10;
         return Math.max(...Object.values(windows).map((window) => window.zIndex));
     }, [windows]);
 
     const addWindow = useCallback((key: string, application: ApplicationType) => {
-        console.log(getHighestZIndex())
         setWindows(
-            {
-                ...windows,
+            (prevWindows) => ({
+                ...prevWindows,
                 [key]: {
                     zIndex: getHighestZIndex() + 1,
                     minimized: false,
                     application,
                 }
-            }
-        )
+            })
+        );
     }, [getHighestZIndex]);
 
     const removeWindow = useCallback((key: string) => {
@@ -71,6 +69,19 @@ function Desktop() {
         }));
     }, []);
 
+    useEffect(() => {
+        // Check if My Portfolio is open
+        const portfolio = windows['myPortfolio'];
+        // If it is, toggle the icon and update the shortcuts
+        if(portfolio) {
+            portfolio.application.icon = portfolio.application.icon === 'myPortfolioClosed' ? 'myPortfolioOpened' : 'myPortfolioClosed';
+            setShortcuts([...shortcuts!]);
+        }
+        console.log(portfolio);
+    }, [windows]);
+
+
+
 
     useEffect(() => {
         const newShortcuts = APPLICATIONS.map((application) => {
@@ -96,7 +107,6 @@ function Desktop() {
         >
             {Object.keys(windows).map((key) => {
                 const window = windows[key];
-                console.log(window)
                 return (
                     <div
                         className={`relative ${window.minimized ? 'hidden' : ''}`}
@@ -116,6 +126,20 @@ function Desktop() {
                     </div>
                 );
             })}
+            <div className={"h-screen w-screen"}>
+                <div className={"text-sm flex flex-col w-fit whitespace-nowrap flex-wrap gap-4"}>
+                    {shortcuts?.map((shortcut) => {
+                        return (
+                            <AppShortcut
+                                key={shortcut.name}
+                                icon={shortcut.icon}
+                                name={shortcut.name}
+                                onOpen={shortcut.onOpen}
+                            />
+                        )
+                    })}
+                </div>
+            </div>
 
             <Taskbar
                     toggleMinimize={toggleMinimize}

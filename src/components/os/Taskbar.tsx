@@ -29,8 +29,8 @@ function Taskbar(props: TaskbarProps) {
                             return (
                                 <button
                                     key={key}
-                                    className={`flex flex-row gap-2 cursor-default items-center h-full border-x-3 border-retro-dark px-3
-                                    ${props.windows[key].minimized ? 'bg-retro-white' : 'bg-retro-medium'}`}
+                                    className={`flex flex-row gap-2 cursor-default items-center h-full border-x-3 border-retro-dark px-3 bg-retro-white
+                                    ${props.windows[key].minimized ? '' : 'dotted'}`}
                                     onClick={() => props.toggleMinimize(key)}
                                 >
                                     <Icon icon={props.windows[key].application.icon} size={24}/>

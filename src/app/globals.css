@@ -6,8 +6,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --color-retro-dark: #503916;
-  --color-retro-background: #c09250;
+  --color-retro-dark: #5f3e2c;
+  --color-retro-background: #cfaf9e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,10 +30,17 @@ body {
 
 @layer utilities {
   .text-balance {
-    text-wrap: balance;
+    text-wrap: normal;
   }
 
   .border-thin {
     border: 3px solid rgba(0, 0, 0, 0.27);
+  }
+
+  .dotted {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.16) 25%, transparent 20%),
+    radial-gradient(rgba(0, 0, 0, 0.22) 25%, transparent 20%);
+    background-position: 2px 0, 6px, 0;
+    background-size: 4px 4px;
   }
 }
