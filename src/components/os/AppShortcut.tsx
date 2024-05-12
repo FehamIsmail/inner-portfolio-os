@@ -1,7 +1,7 @@
 import React from 'react';
 import {IconName} from "@/assets/icons";
 
-interface AppShortcutProps {
+export interface AppShortcutProps {
     icon: IconName;
     name: string;
     onOpen: () => void;

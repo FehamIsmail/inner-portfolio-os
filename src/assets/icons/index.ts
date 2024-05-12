@@ -2,6 +2,8 @@ import battery from './battery.png'
 import close from './close.png'
 import maximize from './maximize.png'
 import minimize from './minimize.png'
+import myPortfolioClosed from './myPortfolioClosed.png'
+import myPortfolioOpened from './myPortfolioOpened.png'
 import networkTabs from './networkTabs.png'
 import resize from './resize.png'
 import restoreDown from './restoreDown.png'
@@ -14,6 +16,8 @@ const icons = {
     close,
     maximize,
     minimize,
+    myPortfolioClosed,
+    myPortfolioOpened,
     networkTabs,
     resize,
     restoreDown,

@@ -3,7 +3,7 @@ import React from 'react';
 
 function MyPortfolio() {
     return (
-        <div></div>
+        <div>MY PORTFOLIO</div>
     );
 }
 

@@ -1,20 +1,10 @@
 import {IconName} from "@/assets/icons";
 import React from "react";
 
-declare type ApplicationProps = {
-    onClose: () => void;
-    onMinimize: () => void;
-    onMaximize: () => void;
-}
-
-declare type ExtendedApplicationProps<T> = T & ApplicationProps;
-
 declare type DesktopWindow = {
     zIndex: number;
-    name: string;
     minimized: boolean;
-    icon: IconName;
-    component: React.ReactElement;
+    application: ApplicationType;
 }
 
 declare type DesktopWindows = {key
@@ -24,7 +14,9 @@ declare type DesktopWindows = {key
 declare type ApplicationType = {
     key: string;
     name: string;
-    icon: IconName,
-    component: React.ReactElement,
-
-}
+    icon: IconName;
+    titleBarColor: 'red' | 'green' | 'blue' | 'yellow';
+    component: React.ComponentType<any>;
+    width?: number;
+    height?: number;
+};

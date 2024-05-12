@@ -6,8 +6,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --color-retro-dark: #27283b;
-  --color-retro-background: #58677f;
+  --color-retro-dark: #503916;
+  --color-retro-background: #c09250;
 }
 
 @media (prefers-color-scheme: dark) {
