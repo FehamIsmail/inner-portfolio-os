@@ -1,22 +1,32 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {DesktopWindows} from "@/constants/types";
 import Icon from "@/components/common/Icon";
 
 interface TaskbarProps {
     windows: DesktopWindows;
     toggleMinimize: (key: string) => void;
+    minimizeAll: () => void;
 }
 
 function Taskbar(props: TaskbarProps) {
     const [showStartMenu, setShowStartMenu] = React.useState(false);
     const [time, setTime] = React.useState(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
+    const [windowOnFocus, setWindowOnFocus] = React.useState<string | undefined>(undefined);
 
-    const getFocusedWindowName = () => {
-        // get window.application.name of highest zIndex
-        const highestZIndex = Math.max(...Object.values(props.windows).map(window => window.zIndex));
-        const focusedWindow = Object.values(props.windows).find(window => window.zIndex === highestZIndex);
-        return focusedWindow?.application.name;
-    }
+
+
+    useEffect(() => {
+        console.log(props.windows)
+        if (props.windows && Object.values(props.windows).length > 0) {
+            // Get the window with the highest z-index that is not minimized
+            const windowOnFocus = Object.values(props.windows).filter(window => !window.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
+            setWindowOnFocus(windowOnFocus?.application.key);
+        }
+    }, [props.windows]);
+
+    useEffect(() => {
+        console.log(windowOnFocus)
+    }, [windowOnFocus]);
 
     React.useEffect(() => {
         const timer = setInterval(() => {
@@ -39,7 +49,7 @@ function Taskbar(props: TaskbarProps) {
                             <button
                                 key={key}
                                 className={`max-w-[220px] min-w-0 flex flex-row gap-2 cursor-default items-center h-full w-full border-x-3 border-retro-dark px-3 bg-retro-white
-                                    ${props.windows[key].application.name === getFocusedWindowName() ? 'dotted' : ''}`}
+                                    ${key == windowOnFocus ? 'dotted' : ''}`}
                                 onClick={() => props.toggleMinimize(key)}
                             >
                                 <Icon icon={props.windows[key].application.icon} size={24}/>
@@ -57,7 +67,10 @@ function Taskbar(props: TaskbarProps) {
                         <span className={"whitespace-nowrap"}>{time}</span>
                         <Icon icon={'battery'} className={"mb"} size={12}/>
                     </div>
-                    <button className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0 "/>
+                    <button
+                        className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0"
+                        onClick={props.minimizeAll}
+                    />
                 </div>
             </div>
         </div>

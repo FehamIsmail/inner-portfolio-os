@@ -18,16 +18,9 @@ function Desktop() {
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>();
 
     const getHighestZIndex = (prevWindows: DesktopWindows = windows) => {
-        // get highest zIndex of all windows
-        // if no windows, return 0
         if (Object.keys(prevWindows).length === 0) return -1;
         return Math.max(...Object.values(prevWindows).map(window => window.zIndex));
     }
-
-
-    useEffect(() => {
-        // console.log(windows)
-    }, [windows]);
 
     const addWindow = useCallback((key: string, application: ApplicationType) => {
         setWindows((prevWindows) => {
@@ -58,6 +51,12 @@ function Desktop() {
         if(key === 'myPortfolio') togglePortfolioIcon();
     }, [windows]);
 
+    const minimizeAll = useCallback(() => {
+        Object.keys(windows).forEach((key) => {
+            minimizeWindow(key);
+        });
+    }, [windows]);
+
     const toggleMinimize = useCallback((key: string) => {
         const newWindows = {...windows};
         const highestZIndex = getHighestZIndex();
@@ -69,7 +68,6 @@ function Desktop() {
     }, [windows]);
 
     const onInteract = useCallback((key: string) => {
-        console.log('onInteract', key)
         setWindows( (prevWindows ) => ({
             ...prevWindows,
             [key]: {
@@ -153,6 +151,7 @@ function Desktop() {
             <Taskbar
                 toggleMinimize={toggleMinimize}
                 windows={windows}
+                minimizeAll={minimizeAll}
             />
         </main>
     );
