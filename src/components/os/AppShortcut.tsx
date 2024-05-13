@@ -4,6 +4,7 @@ import Icon from "@/components/common/Icon";
 
 export interface AppShortcutProps {
     icon: IconName;
+    isFocused: boolean;
     name: string;
     onOpen: () => void;
 }

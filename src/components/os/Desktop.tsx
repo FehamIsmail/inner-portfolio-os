@@ -13,29 +13,36 @@ const nunito = Nunito({
     style: 'normal'
 });
 
-
-
 function Desktop() {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>();
 
-    const getHighestZIndex = useCallback(() => {
-        if(Object.keys(windows).length === 0) return 10;
-        return Math.max(...Object.values(windows).map((window) => window.zIndex));
+    const getHighestZIndex = (prevWindows: DesktopWindows = windows) => {
+        // get highest zIndex of all windows
+        // if no windows, return 0
+        if (Object.keys(prevWindows).length === 0) return -1;
+        return Math.max(...Object.values(prevWindows).map(window => window.zIndex));
+    }
+
+
+    useEffect(() => {
+        // console.log(windows)
     }, [windows]);
 
     const addWindow = useCallback((key: string, application: ApplicationType) => {
-        setWindows(
-            (prevWindows) => ({
+        setWindows((prevWindows) => {
+            const newZIndex = getHighestZIndex(prevWindows) + 1;
+            return {
                 ...prevWindows,
                 [key]: {
-                    zIndex: getHighestZIndex() + 1,
+                    zIndex: newZIndex,
                     minimized: false,
                     application,
                 }
-            })
-        );
-    }, [getHighestZIndex]);
+            };
+        });
+        if (application.key === 'myPortfolio') togglePortfolioIcon();
+    }, []);
 
     const removeWindow = useCallback((key: string) => {
         const newWindows = {...windows};
@@ -47,6 +54,8 @@ function Desktop() {
         const newWindows = {...windows};
         newWindows[key].minimized = true;
         setWindows(newWindows);
+        getHighestZIndex();
+        if(key === 'myPortfolio') togglePortfolioIcon();
     }, [windows]);
 
     const toggleMinimize = useCallback((key: string) => {
@@ -57,40 +66,40 @@ function Desktop() {
         }
         newWindows[key].zIndex = getHighestZIndex() + 1;
         setWindows(newWindows);
-    }, [windows, getHighestZIndex]);
+    }, [windows]);
 
     const onInteract = useCallback((key: string) => {
-        setWindows( (prevWindows) => ({
+        console.log('onInteract', key)
+        setWindows( (prevWindows ) => ({
             ...prevWindows,
             [key]: {
                 ...prevWindows[key],
-                zIndex: getHighestZIndex() + 1,
+                zIndex: getHighestZIndex(prevWindows) + 1,
             }
         }));
     }, []);
 
-    useEffect(() => {
-        // Check if My Portfolio is open
-        const portfolio = windows['myPortfolio'];
-        // If it is, toggle the icon and update the shortcuts
-        if(portfolio) {
-            portfolio.application.icon = portfolio.application.icon === 'myPortfolioClosed' ? 'myPortfolioOpened' : 'myPortfolioClosed';
-            setShortcuts([...shortcuts!]);
+    const togglePortfolioIcon = () => {
+        if(!shortcuts) return;
+        const portfolioIcon = shortcuts?.find((shortcut) => shortcut.name === 'My Portfolio');
+        if(portfolioIcon) {
+            const newShortcuts = [...shortcuts];
+            const index = newShortcuts.indexOf(portfolioIcon);
+            newShortcuts[index] = {
+                ...portfolioIcon,
+                icon: portfolioIcon.icon === 'myPortfolioOpened' ? 'myPortfolioClosed' : 'myPortfolioOpened'
+            }
+            setShortcuts(newShortcuts);
         }
-        console.log(portfolio);
-    }, [windows]);
-
-
-
+    }
 
     useEffect(() => {
         const newShortcuts = APPLICATIONS.map((application) => {
             return {
                 icon: application.icon,
                 name: application.name,
-                onOpen: () => {
-                    addWindow(application.key, application);
-                }
+                isFocused: false,
+                onOpen: () => { addWindow(application.key, application); }
             }
         });
 
@@ -115,14 +124,13 @@ function Desktop() {
                     >
                         <Window
                             key={`win-${key}`}
-                            left={10}
-                            top={10}
+                            left={window.zIndex * 50 % 400}
+                            top={window.zIndex * 50 % 400}
                             application={window.application}
                             onInteract={() => onInteract(key)}
-                            minimizeWindow={() => minimizeWindow(key)}
-                            closeWindow={() => removeWindow(key)}
+                            onMinimize={() => minimizeWindow(key)}
+                            onClose={() => removeWindow(key)}
                         />
-
                     </div>
                 );
             })}
@@ -134,6 +142,7 @@ function Desktop() {
                                 key={shortcut.name}
                                 icon={shortcut.icon}
                                 name={shortcut.name}
+                                isFocused={false}
                                 onOpen={shortcut.onOpen}
                             />
                         )
@@ -142,8 +151,8 @@ function Desktop() {
             </div>
 
             <Taskbar
-                    toggleMinimize={toggleMinimize}
-                    windows={windows}
+                toggleMinimize={toggleMinimize}
+                windows={windows}
             />
         </main>
     );

@@ -4,8 +4,8 @@ import Icon from "@/components/common/Icon";
 import {ApplicationType} from "@/constants/types";
 
 interface WindowProps {
-    closeWindow: () => void;
-    minimizeWindow: () => void;
+    onClose: () => void;
+    onMinimize: () => void;
     onInteract: () => void;
     application: ApplicationType;
     top: number;
@@ -40,7 +40,7 @@ interface WindowDimensions {
 }
 
 function Window(props: WindowProps) {
-    const [isFocused, setIsFocused] = React.useState(false);
+    // const [isFocused, setIsFocused] = React.useState(false);
     const [isMaximized, setIsMaximized] = React.useState(false);
 
     const windowRef = useRef<HTMLDivElement>(null);
@@ -90,6 +90,7 @@ function Window(props: WindowProps) {
     const startDrag = (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
+        props.onInteract();
         const {clientX, clientY} = e;
         dragCoords.current = {
             dragStartX: clientX,
@@ -190,6 +191,7 @@ function Window(props: WindowProps) {
                 left: currentWindowDimensions.x,
             }}
             ref={windowRef}
+            onMouseDown={props.onInteract}
         >
             <div
                 className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ` + titleBarColor}
@@ -205,7 +207,7 @@ function Window(props: WindowProps) {
                     <div className="flex gap-4 items-center">
                         <button
                             className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
-                            onClick={props.minimizeWindow}
+                            onClick={props.onMinimize}
                         >
                         </button>
                         <button
@@ -215,7 +217,7 @@ function Window(props: WindowProps) {
                         </button>
                         <button
                             className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#fd89c2]"
-                            onClick={props.closeWindow}
+                            onClick={props.onClose}
                         >
                         </button>
                     </div>
