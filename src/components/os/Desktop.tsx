@@ -15,27 +15,28 @@ const nunito = Nunito({
 
 function Desktop() {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
-    const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>();
+    const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>([]);
+    const [firstLoad, setFirstLoad] = React.useState(true);
 
-    const getHighestZIndex = (prevWindows: DesktopWindows = windows) => {
-        if (Object.keys(prevWindows).length === 0) return -1;
-        return Math.max(...Object.values(prevWindows).map(window => window.zIndex));
-    }
+    const getHighestZIndex = useCallback(() => {
+        if (Object.keys(windows).length === 0) return -1;
+        return Math.max(...Object.values(windows).map(window => window.zIndex));
+    }, [windows])
 
-    const addWindow = useCallback((key: string, application: ApplicationType) => {
-        setWindows((prevWindows) => {
-            const newZIndex = getHighestZIndex(prevWindows) + 1;
+    const addWindow = useCallback((application: ApplicationType) => {
+        setWindows(prevWindows => {
+            const newZIndex = getHighestZIndex() + 1;
             return {
                 ...prevWindows,
-                [key]: {
+                [application.key]: {
                     zIndex: newZIndex,
                     minimized: false,
                     application,
                 }
             };
         });
-        if (application.key === 'myPortfolio') togglePortfolioIcon();
-    }, []);
+    }, [getHighestZIndex]);
+
 
     const removeWindow = useCallback((key: string) => {
         const newWindows = {...windows};
@@ -47,15 +48,13 @@ function Desktop() {
         const newWindows = {...windows};
         newWindows[key].minimized = true;
         setWindows(newWindows);
-        getHighestZIndex();
-        if(key === 'myPortfolio') togglePortfolioIcon();
     }, [windows]);
 
     const minimizeAll = useCallback(() => {
         Object.keys(windows).forEach((key) => {
             minimizeWindow(key);
         });
-    }, [windows]);
+    }, [minimizeWindow, windows]);
 
     const toggleMinimize = useCallback((key: string) => {
         const newWindows = {...windows};
@@ -65,31 +64,44 @@ function Desktop() {
         }
         newWindows[key].zIndex = getHighestZIndex() + 1;
         setWindows(newWindows);
-    }, [windows]);
+    }, [getHighestZIndex, windows]);
 
     const onInteract = useCallback((key: string) => {
         setWindows( (prevWindows ) => ({
             ...prevWindows,
             [key]: {
                 ...prevWindows[key],
-                zIndex: getHighestZIndex(prevWindows) + 1,
+                zIndex: getHighestZIndex() + 1,
             }
         }));
-    }, []);
+    }, [getHighestZIndex]);
 
-    const togglePortfolioIcon = () => {
-        if(!shortcuts) return;
-        const portfolioIcon = shortcuts?.find((shortcut) => shortcut.name === 'My Portfolio');
-        if(portfolioIcon) {
-            const newShortcuts = [...shortcuts];
-            const index = newShortcuts.indexOf(portfolioIcon);
-            newShortcuts[index] = {
-                ...portfolioIcon,
-                icon: portfolioIcon.icon === 'myPortfolioOpened' ? 'myPortfolioClosed' : 'myPortfolioOpened'
+    const onOpen = useCallback((application: ApplicationType) => {
+        addWindow(application);
+    }, [addWindow]);
+
+    useEffect(() => {
+        if (!Object.keys(windows).includes('myPortfolio')) return;
+        const iconName = windows['myPortfolio'].minimized ? 'myPortfolioClosed' : 'myPortfolioOpened';
+        console.log('new icon: ', iconName);
+        // update shortcuts
+        console.log(shortcuts)
+        setShortcuts(prevShortcuts => prevShortcuts.map(shortcut => {
+            if (shortcut.name === 'My Portfolio') {
+                console.log('here')
+                return {
+                    ...shortcut,
+                    icon: iconName,
+                };
             }
-            setShortcuts(newShortcuts);
-        }
-    }
+            return shortcut;
+        }));
+    }, [windows]);
+
+
+    useEffect(() => {
+        console.log('Portfolio icon in shortcuts: ', shortcuts.find(shortcut => shortcut.name === 'My Portfolio')?.icon);
+    }, [shortcuts]);
 
     useEffect(() => {
         const newShortcuts = APPLICATIONS.map((application) => {
@@ -97,15 +109,21 @@ function Desktop() {
                 icon: application.icon,
                 name: application.name,
                 isFocused: false,
-                onOpen: () => { addWindow(application.key, application); }
+                onOpen: () => onOpen(application),
             }
         });
-
-        // Open My Portfolio on load
-        newShortcuts.find((shortcut) => shortcut.name === 'My Portfolio')?.onOpen();
-
         setShortcuts(newShortcuts);
-    }, []);
+    }, [onOpen]);
+
+    useEffect(() => {
+        if (firstLoad) {
+            setFirstLoad(false);
+            const myPortfolio = APPLICATIONS.find(application => application.key === 'myPortfolio');
+            if (myPortfolio) {
+                onOpen(myPortfolio);
+            }
+        }
+    }, [firstLoad, onOpen]);
 
 
     return (
@@ -122,8 +140,8 @@ function Desktop() {
                     >
                         <Window
                             key={`win-${key}`}
-                            left={window.zIndex * 50 % 400}
-                            top={window.zIndex * 50 % 400}
+                            left={window.zIndex * 50 % 200 + 100}
+                            top={window.zIndex * 50 % 200 + 100}
                             application={window.application}
                             onInteract={() => onInteract(key)}
                             onMinimize={() => minimizeWindow(key)}
@@ -133,7 +151,7 @@ function Desktop() {
                 );
             })}
             <div className={"h-screen w-screen"}>
-                <div className={"text-sm flex flex-col w-fit whitespace-nowrap flex-wrap gap-4"}>
+                <div className={"text-sm flex flex-col w-fit whitespace-nowrap p-4 flex-wrap gap-4"}>
                     {shortcuts?.map((shortcut) => {
                         return (
                             <AppShortcut
@@ -145,6 +163,22 @@ function Desktop() {
                             />
                         )
                     })}
+                </div>
+                <div>
+                {Object.keys(windows).map((key) => {
+                    const window = windows[key];
+                    return (
+                        <div
+                            key={key}
+                            className={""}
+                        >
+                            {window.application.name} {window.zIndex}
+                        </div>
+                    );
+                })}
+                    <div className={""}>
+                        {getHighestZIndex()}
+                    </div>
                 </div>
             </div>
 

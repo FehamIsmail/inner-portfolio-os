@@ -8,25 +8,18 @@ interface TaskbarProps {
     minimizeAll: () => void;
 }
 
-function Taskbar(props: TaskbarProps) {
+function Taskbar(   props: TaskbarProps) {
     const [showStartMenu, setShowStartMenu] = React.useState(false);
     const [time, setTime] = React.useState(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
     const [windowOnFocus, setWindowOnFocus] = React.useState<string | undefined>(undefined);
 
-
-
     useEffect(() => {
-        console.log(props.windows)
         if (props.windows && Object.values(props.windows).length > 0) {
             // Get the window with the highest z-index that is not minimized
             const windowOnFocus = Object.values(props.windows).filter(window => !window.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
             setWindowOnFocus(windowOnFocus?.application.key);
         }
     }, [props.windows]);
-
-    useEffect(() => {
-        console.log(windowOnFocus)
-    }, [windowOnFocus]);
 
     React.useEffect(() => {
         const timer = setInterval(() => {
