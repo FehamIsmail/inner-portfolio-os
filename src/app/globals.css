@@ -38,9 +38,10 @@ body {
   }
 
   .dotted {
-    background-image: radial-gradient(rgba(0, 0, 0, 0.40) 25%, transparent 20%),
-    radial-gradient(rgba(0, 0, 0, 0.40) 25%, transparent 20%);
-    background-position: 2px 0, 6px, 0;
-    background-size: 4px 4px;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%),
+    radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%);
+    background-position: 6px 6px, 6px, 0;
+    background-size: 5px 5px;
   }
+
 }

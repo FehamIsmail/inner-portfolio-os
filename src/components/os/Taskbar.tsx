@@ -55,8 +55,8 @@ function Taskbar(   props: TaskbarProps) {
                 <div className="flex gap-3 items-center pr-1">
                     <div
                         className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
-                        <Icon icon={'wifi'} size={18}/>
-                        <Icon icon={'speaker'} size={16}/>
+                        <Icon icon={'wifi'} size={18} colorize={true}/>
+                        <Icon icon={'speaker'} size={18} colorize={true}/>
                         <span className={"whitespace-nowrap"}>{time}</span>
                         <Icon icon={'battery'} className={"mb"} size={12}/>
                     </div>

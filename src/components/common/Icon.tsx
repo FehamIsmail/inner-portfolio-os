@@ -6,28 +6,36 @@ interface IconProps {
     icon: IconName;
     size?: number;
     className?: string;
-
+    colorize?: boolean;
 }
 
 function Icon(props: IconProps) {
 
+    const iconStyle = {
+
+    };
+
+    // it is a svg if getIcon(iconName) returns a StaticImageData type object
+    const IconComponent = getIcon(props.icon); // Retrieve the icon component using the icon name
+
+    const isSvg = typeof IconComponent === 'function'; // Check if it's an SVG component
+
     return (
-        <div className={"flex items-center justify-center"}
-            style={
-            {
-                width: props.size,
-                minWidth: props.size,
-                height: '100%'
-            }}
-        >
-            <Image
-                className={props.className}
-                src={getIcon(props.icon)}
-                alt={props.icon}
-                draggable={false}
-            />
+        <div className={"flex items-center justify-center"} style={iconStyle}>
+            { isSvg ? (
+                <IconComponent width={props.size} height={"100%"}  />
+            ) : (
+                <Image
+                    className={props.className}
+                    src={IconComponent}
+                    alt={props.icon}
+                    width={props.size}
+                    draggable={false}
+                />
+            )}
         </div>
     );
+
 }
 
 export default Icon;

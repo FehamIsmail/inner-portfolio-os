@@ -37,7 +37,6 @@ function Desktop() {
         });
     }, [getHighestZIndex]);
 
-
     const removeWindow = useCallback((key: string) => {
         const newWindows = {...windows};
         delete newWindows[key];
@@ -76,34 +75,18 @@ function Desktop() {
         }));
     }, [getHighestZIndex]);
 
+    const getPortfolioIcon = useCallback(() => {
+        if (!Object.keys(windows).includes('myPortfolio')) return 'myPortfolioClosed';
+        return windows['myPortfolio'].minimized ? 'myPortfolioClosed' : 'myPortfolioOpened';
+    }, [windows]);
+
     const onOpen = useCallback((application: ApplicationType) => {
         addWindow(application);
     }, [addWindow]);
 
     useEffect(() => {
-        if (!Object.keys(windows).includes('myPortfolio')) return;
-        const iconName = windows['myPortfolio'].minimized ? 'myPortfolioClosed' : 'myPortfolioOpened';
-        console.log('new icon: ', iconName);
-        // update shortcuts
-        console.log(shortcuts)
-        setShortcuts(prevShortcuts => prevShortcuts.map(shortcut => {
-            if (shortcut.name === 'My Portfolio') {
-                console.log('here')
-                return {
-                    ...shortcut,
-                    icon: iconName,
-                };
-            }
-            return shortcut;
-        }));
-    }, [windows]);
-
-
-    useEffect(() => {
-        console.log('Portfolio icon in shortcuts: ', shortcuts.find(shortcut => shortcut.name === 'My Portfolio')?.icon);
-    }, [shortcuts]);
-
-    useEffect(() => {
+        // Update APPLICATIONS with new portfolio icon
+        APPLICATIONS.find(application => application.key === 'myPortfolio')!.icon = getPortfolioIcon();
         const newShortcuts = APPLICATIONS.map((application) => {
             return {
                 icon: application.icon,
@@ -113,7 +96,7 @@ function Desktop() {
             }
         });
         setShortcuts(newShortcuts);
-    }, [onOpen]);
+    }, [getPortfolioIcon, onOpen]);
 
     useEffect(() => {
         if (firstLoad) {
@@ -163,22 +146,6 @@ function Desktop() {
                             />
                         )
                     })}
-                </div>
-                <div>
-                {Object.keys(windows).map((key) => {
-                    const window = windows[key];
-                    return (
-                        <div
-                            key={key}
-                            className={""}
-                        >
-                            {window.application.name} {window.zIndex}
-                        </div>
-                    );
-                })}
-                    <div className={""}>
-                        {getHighestZIndex()}
-                    </div>
                 </div>
             </div>
 
