@@ -25,11 +25,10 @@ function Desktop() {
 
     const addWindow = useCallback((application: ApplicationType) => {
         setWindows(prevWindows => {
-            const newZIndex = getHighestZIndex() + 1;
             return {
                 ...prevWindows,
                 [application.key]: {
-                    zIndex: newZIndex,
+                    zIndex: getHighestZIndex() + 1,
                     minimized: false,
                     application,
                 }

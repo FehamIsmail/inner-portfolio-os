@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {DesktopWindows} from "@/constants/types";
 import Icon from "@/components/common/Icon";
+import {IconName} from "@/assets/icons";
 
 interface TaskbarProps {
     windows: DesktopWindows;
@@ -12,6 +13,20 @@ function Taskbar(   props: TaskbarProps) {
     const [showStartMenu, setShowStartMenu] = React.useState(false);
     const [time, setTime] = React.useState(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
     const [windowOnFocus, setWindowOnFocus] = React.useState<string | undefined>(undefined);
+
+    const [wifiBars, setWifiBars] = React.useState<1 | 2 | 3>(3);
+    const wifiBarsStyles = {
+        1: {width: 5, paddingTop: 'pt-[18px]'},
+        2: {width: 12, paddingTop: 'pt-[13px]'},
+        3: {width: 18, paddingTop: 'pt-[9px]'},
+    }
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setWifiBars(Math.floor(Math.random() * 3) + 1 as 1 | 2 | 3);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         if (props.windows && Object.values(props.windows).length > 0) {
@@ -54,11 +69,17 @@ function Taskbar(   props: TaskbarProps) {
 
                 <div className="flex gap-3 items-center pr-1">
                     <div
-                        className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
-                        <Icon icon={'wifi'} size={18} colorize={true}/>
-                        <Icon icon={'speaker'} size={18} colorize={true}/>
+                        className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 "
+                    >
+                        <div className={`min-w-[18px] h-full + ${wifiBarsStyles[wifiBars].paddingTop}`}>
+                            <Icon
+                                icon={`wifi${wifiBars}` as IconName}
+                                size={wifiBarsStyles[wifiBars].width}
+                                colorize={true}/>
+                        </div>
+                        <Icon icon={'speaker'} size={16} colorize={true}/>
                         <span className={"whitespace-nowrap"}>{time}</span>
-                        <Icon icon={'battery'} className={"mb"} size={12}/>
+                        <Icon icon={'battery'} className={"pb-1"} size={13}/>
                     </div>
                     <button
                         className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0"

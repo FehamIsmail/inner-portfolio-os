@@ -1,4 +1,4 @@
-import battery from './battery.png'
+import battery from './battery.svg'
 import close from './close.png'
 import maximize from './maximize.png'
 import minimize from './minimize.png'
@@ -9,7 +9,9 @@ import resize from './resize.png'
 import restoreDown from './restoreDown.png'
 import speaker from './speaker.svg'
 import start from './start.png'
-import wifi from './wifi.png'
+import wifi1 from './wifi1.svg'
+import wifi2 from './wifi2.svg'
+import wifi3 from './wifi3.svg'
 
 const icons = {
     battery,
@@ -23,7 +25,9 @@ const icons = {
     restoreDown,
     speaker,
     start,
-    wifi
+    wifi1,
+    wifi2,
+    wifi3,
 }
 
 export type IconName = keyof typeof icons;
