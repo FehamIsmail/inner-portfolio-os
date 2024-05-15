@@ -2,7 +2,7 @@
 import React, {useCallback, useEffect, useRef} from 'react';
 import Icon from "@/components/common/Icon";
 import {ApplicationType} from "@/constants/types";
-import {motion, useMotionValue, useSpring} from "framer-motion"
+import {motion, useSpring} from "framer-motion"
 
 interface WindowProps {
     onClose: () => void;
@@ -47,6 +47,7 @@ function Window(props: WindowProps) {
     const [isDragging, setIsDragging] = React.useState<boolean>(false);
     const [isResizing, setIsResizing] = React.useState<boolean>(false);
     const [isMinimizing, setIsMinimizing] = React.useState<boolean>(false);
+    const [wasMinimized, setWasMinimized] = React.useState<boolean>(false);
     const [firstLoad, setFirstLoad] = React.useState<boolean>(true);
 
     const windowRef = useRef<HTMLDivElement>(null);
@@ -54,8 +55,8 @@ function Window(props: WindowProps) {
 
     const titleBarColor = titleBarColors[props.application.titleBarColor];
 
-    const springOptions = { damping: 50, stiffness: 1000 }
-    const opacityValue = useMotionValue(0)
+    const springOptions = { damping: 50, stiffness: 2000 }
+
     const motionX = useSpring(0, springOptions)
     const motionY = useSpring(0, springOptions)
     const motionWidth = useSpring(0, springOptions)
@@ -83,8 +84,8 @@ function Window(props: WindowProps) {
     const setMotionValues = useCallback((values: WindowDimensions) => {
         motionX.set(values.x)
         motionY.set(values.y)
-        motionWidth.set(values.width)
-        motionHeight.set(values.height)
+        motionWidth.set(values.width || MIN_WIDTH)
+        motionHeight.set(values.height || MIN_HEIGHT)
     }, [motionX, motionY, motionWidth, motionHeight])
 
     const startResize = (e: React.MouseEvent) => {
@@ -107,6 +108,19 @@ function Window(props: WindowProps) {
         setIsResizing(false)
         window.removeEventListener('mousemove', onResize, false);
         window.removeEventListener('mouseup', stopResize, false);
+    }
+
+    const getOffsetX = () => {
+        let offsetX = 0;
+        if(isMaximized) {
+            const startX = dragCoords.current?.dragStartX;
+            const prevWidth = prevWindowDimensions.width;
+            if(startX >= prevWidth / 2 && startX <= window.innerWidth - prevWidth / 2)
+                offsetX = startX - prevWidth / 2;
+            else if(startX >= window.innerWidth - prevWidth / 2)
+                offsetX = window.innerWidth - prevWidth;
+        }
+        return offsetX;
     }
 
     const startDrag = (e: React.MouseEvent) => {
@@ -138,26 +152,13 @@ function Window(props: WindowProps) {
         setIsMaximized(isGettingMaximized)
     }
 
-    const getOffsetX = () => {
-        let offsetX = 0;
-        if(isMaximized) {
-            const startX = dragCoords.current?.dragStartX;
-            const prevWidth = prevWindowDimensions.width;
-            if(startX >= prevWidth / 2 && startX <= window.innerWidth - prevWidth / 2)
-                offsetX = startX - prevWidth / 2;
-            else if(startX >= window.innerWidth - prevWidth / 2)
-                offsetX = window.innerWidth - prevWidth;
-        }
-        return offsetX;
-    }
-
     const stopDrag = ({ clientX, clientY }: MouseEvent) => {
         if(!windowRef.current) return
         let { x, y } = getRealCoords(clientX, clientY);
         // Get Window dimensions
         const { width } = windowRef.current.getBoundingClientRect();
         // Add boundary checks
-        if (x + getOffsetX() < -width + 110) x = -width + 110 - getOffsetX();
+        if (x + getOffsetX() < -width + 145) x = -width + 145 - getOffsetX();
         if (y < 0) {
             maximizeWindow('DRAG')
             window.removeEventListener('mousemove', onDrag, false);
@@ -169,6 +170,8 @@ function Window(props: WindowProps) {
         if (y > window.innerHeight - 100) y = window.innerHeight - 100;
         const { width: finalWidth, height: finalHeight } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
         setCurrentWindowDimensions({ x: x + getOffsetX(), y, width:finalWidth, height:finalHeight });
+        // change x and y of previous dimensions
+        setPrevWindowDimensions({ ...prevWindowDimensions, x: x + getOffsetX(), y });
         setIsDragging(false);
         window.removeEventListener('mousemove', onDrag, false);
         window.removeEventListener('mouseup', stopDrag, false);
@@ -192,6 +195,7 @@ function Window(props: WindowProps) {
         }
     }
     const maximizeWindow = (actionOrigin: 'DRAG' | 'BUTTON') => {
+        setIsMaximized(true);
         if(actionOrigin === 'BUTTON') setPrevWindowDimensions(currentWindowDimensions);
         setCurrentWindowDimensions({
             x: 0,
@@ -199,37 +203,65 @@ function Window(props: WindowProps) {
             width: window.innerWidth,
             height: window.innerHeight - 40,
         });
-        setIsMaximized(true);
     }
 
     const onMinimize = () => {
-        setIsMinimizing(true);
-        setCurrentWindowDimensions(
-            {
-                x: window.innerWidth / 2 - currentWindowDimensions.width / 2,
-                y: window.innerHeight - 40,
-                width: 100,
-                height: 200,
-            }
-        )
+        animateMinimize();
         setTimeout(() => {
             setIsMinimizing(false);
+            setWasMinimized(true);
             props.onMinimize();
         }, 1000);
     }
 
+    const animateMinimize = () => {
+        setIsMinimizing(true);
+        setCurrentWindowDimensions(
+            {
+                ...currentWindowDimensions,
+                x: 10,
+                y: window.innerHeight - 100,
+                width: 200,
+                height: 100,
+            }
+        )
+    }
+
+    const getScale = () => {
+        const scale = 1.05;
+        if (isMinimizing) return 0.5;
+        if (isDragging && !isMaximized) return scale;
+        if (isResizing) {
+            return 1
+            // if(type === 'x') return 1 + (prevWindowDimensions.width - prevWindowDimensions.width * (scale - 0.1)) / currentWindowDimensions.width
+            // if(type === 'y') return 1 + (prevWindowDimensions.height - prevWindowDimensions.height * (scale - 0.1)) / currentWindowDimensions.height
+        }
+        return 1;
+    }
+
     useEffect(() => {
-        if(!props.isMinimized && !firstLoad) {
+        console.log('Not Minimized', !props.isMinimized)
+        console.log('Was Minimized', wasMinimized)
+        console.log('Not First Load', !firstLoad)
+        console.log('-------------------')
+        if(wasMinimized && !props.isMinimized && !firstLoad) {
             console.log('setting previous dimensions from minimized')
+            if(isMaximized){
+                maximizeWindow('DRAG')
+                return
+            }
             setCurrentWindowDimensions({
                 ...prevWindowDimensions,
             })
+        }
+        if(!wasMinimized && props.isMinimized) {
+            setWasMinimized(false)
+            animateMinimize()
         }
     }, [firstLoad, prevWindowDimensions, props.isMinimized]);
 
     useEffect(() => {
         if(windowRef.current && contentRef.current && !currentWindowDimensions.height && !currentWindowDimensions.width && firstLoad) {
-            console.log('Setting dimensions')
             const { width, height } = windowRef.current.getBoundingClientRect();
             const { maxWidth, maxHeight } = { maxWidth: Math.max(width, MIN_WIDTH), maxHeight: Math.max(height, MIN_HEIGHT) };
             console.log(maxHeight, maxWidth)
@@ -238,18 +270,6 @@ function Window(props: WindowProps) {
             setFirstLoad(false);
         }
     }, [contentRef, windowRef, currentWindowDimensions, firstLoad, props.left, props.top]);
-
-    const getScale = () => {
-        if (isDragging && !isMaximized) return 1.05;
-        if (isResizing) {
-            const widthChange = currentWindowDimensions.width / prevWindowDimensions.width;
-            const heightChange = currentWindowDimensions.height / prevWindowDimensions.height;
-            const maxChange = (widthChange + heightChange) / 2;
-            return 1.05 - maxChange/100;
-        }
-        if (isMinimizing) return 0;
-        return 1;
-    }
 
     useEffect(() => {
         setMotionValues(currentWindowDimensions)

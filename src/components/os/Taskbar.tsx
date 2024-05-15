@@ -58,7 +58,7 @@ function Taskbar(   props: TaskbarProps) {
     }, []);
 
     return (
-        <div className="z-40 text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
+        <div className="z-[1000] text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
             <div className="flex flex-row w-full h-full pl-3 gap-1">
                 <div className="flex items-center flex-row gap-1">
                     <button className={"h-full hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6"}>
