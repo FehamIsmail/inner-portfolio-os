@@ -16,6 +16,7 @@ const nunito = Nunito({
 function Desktop() {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>([]);
+    const [taskbarAppPosX, setTaskbarAppPosX] = React.useState<{[key: string]: number}>({});
     const [firstLoad, setFirstLoad] = React.useState(true);
 
     const getHighestZIndex = useCallback(() => {
@@ -74,6 +75,13 @@ function Desktop() {
         }));
     }, [getHighestZIndex]);
 
+    const updateTaskbarAppPosX = useCallback((key: string, posX: number) => {
+        setTaskbarAppPosX((prev) => ({
+            ...prev,
+            [key]: posX,
+        }));
+    }, []);
+
     const getPortfolioIcon = useCallback(() => {
         if (!Object.keys(windows).includes('myPortfolio')) return 'myPortfolioClosed';
         return windows['myPortfolio'].minimized ? 'myPortfolioClosed' : 'myPortfolioOpened';
@@ -107,7 +115,6 @@ function Desktop() {
         }
     }, [firstLoad, onOpen]);
 
-
     return (
         <main
             className={"min-h-full bg-retro-background flex flex-col" + nunito.className}
@@ -124,7 +131,9 @@ function Desktop() {
                             key={`win-${key}`}
                             left={window.zIndex * 50 % 200 + 100}
                             top={window.zIndex * 50 % 200 + 100}
+                            isMinimized={window.minimized}
                             application={window.application}
+                            taskbarPos={taskbarAppPosX[key]}
                             onInteract={() => onInteract(key)}
                             onMinimize={() => minimizeWindow(key)}
                             onClose={() => removeWindow(key)}
@@ -152,6 +161,7 @@ function Desktop() {
                 toggleMinimize={toggleMinimize}
                 windows={windows}
                 minimizeAll={minimizeAll}
+                updateTaskbarAppPosX={updateTaskbarAppPosX}
             />
         </main>
     );

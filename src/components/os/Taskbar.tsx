@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {DesktopWindows} from "@/constants/types";
 import Icon from "@/components/common/Icon";
 import {IconName} from "@/assets/icons";
@@ -7,12 +7,15 @@ interface TaskbarProps {
     windows: DesktopWindows;
     toggleMinimize: (key: string) => void;
     minimizeAll: () => void;
+    updateTaskbarAppPosX: (key: string, posX: number) => void;
 }
 
 function Taskbar(   props: TaskbarProps) {
     const [showStartMenu, setShowStartMenu] = React.useState(false);
     const [time, setTime] = React.useState(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
     const [windowOnFocus, setWindowOnFocus] = React.useState<string | undefined>(undefined);
+
+    const taskbarButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
     const [wifiBars, setWifiBars] = React.useState<1 | 2 | 3>(3);
     const wifiBarsStyles = {
@@ -36,6 +39,17 @@ function Taskbar(   props: TaskbarProps) {
         }
     }, [props.windows]);
 
+    // useEffect(() => {
+    //     if(!taskbarButtonRefs.current) return;
+    //     Object.keys(taskbarButtonRefs.current).forEach((key) => {
+    //         if (taskbarButtonRefs.current[key]) {
+    //             const rect = taskbarButtonRefs.current[key]?.getBoundingClientRect();
+    //             if(rect && props.updateTaskbarAppPosX)
+    //             props.updateTaskbarAppPosX(key, rect.x + rect.width / 2);
+    //         }
+    //     });
+    // }, [props]);
+
     React.useEffect(() => {
         const timer = setInterval(() => {
             setTime(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
@@ -56,6 +70,9 @@ function Taskbar(   props: TaskbarProps) {
                         return (
                             <button
                                 key={key}
+                                ref={(el) => {
+                                    taskbarButtonRefs.current[key] = el;
+                                }}
                                 className={`max-w-[220px] min-w-0 flex flex-row gap-2 cursor-default items-center h-full w-full border-x-3 border-retro-dark px-3 bg-retro-white
                                     ${key == windowOnFocus ? 'dotted' : ''}`}
                                 onClick={() => props.toggleMinimize(key)}
