@@ -26,15 +26,18 @@ function Taskbar(   props: TaskbarProps) {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setWifiBars(Math.floor(Math.random() * 3) + 1 as 1 | 2 | 3);
-        }, 5000);
+            const random = Math.random();
+            if (random < 0.08) setWifiBars(1);
+            else if (random < 0.3) setWifiBars(2);
+            else setWifiBars(3);
+        }, 1200);
         return () => clearInterval(timer);
     }, []);
 
     useEffect(() => {
         if (props.windows && Object.values(props.windows).length > 0) {
-            // Get the window with the highest z-index that is not minimized
-            const windowOnFocus = Object.values(props.windows).filter(window => !window.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
+            // Instead, get the window with the highest z-index that its animation state is not 'MINIMIZED'
+            const windowOnFocus = Object.values(props.windows).filter(window => window.animationState !== 'MINIMIZED').sort((a, b) => b.zIndex - a.zIndex)[0];
             setWindowOnFocus(windowOnFocus?.application.key);
         }
     }, [props.windows]);
@@ -78,7 +81,7 @@ function Taskbar(   props: TaskbarProps) {
                                 onClick={() => props.toggleMinimize(key)}
                             >
                                 <Icon icon={props.windows[key].application.icon} size={24}/>
-                                <span className={"overflow-hidden whitespace-nowrap text-ellipsis"}>{props.windows[key].application.name}</span>
+                                <span className={"h-fit overflow-hidden whitespace-nowrap text-ellipsis"}>{props.windows[key].application.name}</span>
                             </button>
                         )
                     })}

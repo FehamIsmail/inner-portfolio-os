@@ -2,10 +2,11 @@
 import React, {useCallback, useEffect} from 'react';
 import Taskbar from "@/components/os/Taskbar";
 import {Nunito} from 'next/font/google'
-import Window from "@/components/os/Window";
+import Window, {WINDOW_ANIMATION_DURATION} from "@/components/os/Window";
 import {APPLICATIONS} from "@/constants/data";
-import {ApplicationType, DesktopWindows} from "@/constants/types";
 import AppShortcut, {AppShortcutProps} from "@/components/os/AppShortcut";
+import {ApplicationType, DesktopWindows} from "@/constants/types";
+import {WindowAnimationState} from "@/constants/enums";
 
 const nunito = Nunito({
     weight: ['400', '500', '600', '700', '800'],
@@ -19,35 +20,62 @@ function Desktop() {
     const [taskbarAppPosX, setTaskbarAppPosX] = React.useState<{[key: string]: number}>({});
     const [firstLoad, setFirstLoad] = React.useState(true);
 
+    const updateWindowProperties = useCallback((key: string, properties: Partial<DesktopWindows[string]>) => {
+        setWindows((prevWindows) => ({
+            ...prevWindows,
+            [key]: {
+                ...prevWindows[key],
+                ...properties,
+            }
+        }));
+    }, [setWindows]);
+
+    const setWindowAnimationState = useCallback((key: string, state: WindowAnimationState) => {
+        updateWindowProperties(key, {animationState: state});
+    }, [updateWindowProperties]);
+
+    const performPostAnimationAction =  useCallback((action: () => void) => {
+        setTimeout(() => {
+            action();
+        }, WINDOW_ANIMATION_DURATION);
+    }, [setWindowAnimationState])
+
     const getHighestZIndex = useCallback(() => {
-        if (Object.keys(windows).length === 0) return -1;
+        if (Object.keys(windows).length === 0) return 99;
         return Math.max(...Object.values(windows).map(window => window.zIndex));
     }, [windows])
 
+    const getLowestZIndex = useCallback(() => {
+        if (Object.keys(windows).length === 0) return 0;
+        return Math.min(...Object.values(windows).map(window => window.zIndex));
+    }, [windows])
+
     const addWindow = useCallback((application: ApplicationType) => {
-        setWindows(prevWindows => {
-            return {
-                ...prevWindows,
-                [application.key]: {
-                    zIndex: getHighestZIndex() + 1,
-                    minimized: false,
-                    application,
-                }
-            };
-        });
-    }, [getHighestZIndex]);
+        updateWindowProperties(application.key,
+            {
+                zIndex: getHighestZIndex() + 1,
+                minimized: false,
+                animationState: WindowAnimationState.OPENING,
+                application,
+            });
+    }, [getHighestZIndex, updateWindowProperties]);
 
     const removeWindow = useCallback((key: string) => {
-        const newWindows = {...windows};
-        delete newWindows[key];
-        setWindows(newWindows);
-    }, [windows]);
+        setWindows(prevState => {
+            const newWindows = {...prevState};
+            setWindowAnimationState(key, WindowAnimationState.CLOSING);
+            // delete newWindows[key];
+            return newWindows;
+        });
+    }, [setWindowAnimationState]);
 
     const minimizeWindow = useCallback((key: string) => {
-        const newWindows = {...windows};
-        newWindows[key].minimized = true;
-        setWindows(newWindows);
-    }, [windows]);
+        setWindowAnimationState(key, WindowAnimationState.MINIMIZING);
+        performPostAnimationAction(() => {
+            updateWindowProperties(key, {minimized: true});
+            setWindowAnimationState(key, WindowAnimationState.MINIMIZED);
+        });
+    }, [performPostAnimationAction, setWindowAnimationState, updateWindowProperties]);
 
     const minimizeAll = useCallback(() => {
         Object.keys(windows).forEach((key) => {
@@ -56,24 +84,31 @@ function Desktop() {
     }, [minimizeWindow, windows]);
 
     const toggleMinimize = useCallback((key: string) => {
-        const newWindows = {...windows};
         const highestZIndex = getHighestZIndex();
-        if(newWindows[key].minimized || newWindows[key].zIndex === highestZIndex) {
-            newWindows[key].minimized = !newWindows[key].minimized;
-        }
-        newWindows[key].zIndex = getHighestZIndex() + 1;
-        setWindows(newWindows);
-    }, [getHighestZIndex, windows]);
+        const isFocused = windows[key].zIndex === highestZIndex;
+        const newAnimationState = windows[key].minimized ? WindowAnimationState.RESTORING : isFocused ? WindowAnimationState.MINIMIZING : WindowAnimationState.VISIBLE;
+
+        updateWindowProperties(key, {
+            animationState: newAnimationState,
+            zIndex: isFocused ? getLowestZIndex() - 1 : highestZIndex + 1,
+        });
+
+        performPostAnimationAction(() => {
+            const shouldToggle =  windows[key].minimized || isFocused;
+            const newMinimized =  shouldToggle ? !windows[key].minimized : windows[key].minimized;
+            const finalState = newMinimized ? WindowAnimationState.MINIMIZED : WindowAnimationState.VISIBLE;
+            updateWindowProperties(key, {minimized: newMinimized});
+            setWindowAnimationState(key, finalState);
+        });
+    }, [getHighestZIndex, getLowestZIndex, performPostAnimationAction, setWindowAnimationState, updateWindowProperties, windows]);
 
     const onInteract = useCallback((key: string) => {
-        setWindows( (prevWindows ) => ({
-            ...prevWindows,
-            [key]: {
-                ...prevWindows[key],
-                zIndex: getHighestZIndex() + 1,
-            }
-        }));
-    }, [getHighestZIndex]);
+        updateWindowProperties(key, {zIndex: getHighestZIndex() + 1});
+    }, [getHighestZIndex, updateWindowProperties]);
+
+    const onOpen = useCallback((application: ApplicationType) => {
+        addWindow(application);
+    }, [addWindow]);
 
     const updateTaskbarAppPosX = useCallback((key: string, posX: number) => {
         setTaskbarAppPosX((prev) => ({
@@ -87,9 +122,12 @@ function Desktop() {
         return windows['myPortfolio'].minimized ? 'myPortfolioClosed' : 'myPortfolioOpened';
     }, [windows]);
 
-    const onOpen = useCallback((application: ApplicationType) => {
-        addWindow(application);
-    }, [addWindow]);
+    useEffect(() => {
+        // print minimized of each window with their name
+        console.log(Object.keys(windows).map((key) => {
+            return `${windows[key].application.name}: ${windows[key].minimized}`
+        }));
+    }, [windows]);
 
     useEffect(() => {
         // Update APPLICATIONS with new portfolio icon
@@ -117,7 +155,7 @@ function Desktop() {
 
     return (
         <main
-            className={"min-h-full bg-retro-background flex flex-col" + nunito.className}
+            className={"desktop-background z-[-999] min-h-full bg-retro-background flex flex-col" + nunito.className}
         >
             {Object.keys(windows).map((key) => {
                 const window = windows[key];
@@ -128,15 +166,16 @@ function Desktop() {
                         style={{zIndex: window.zIndex}}
                     >
                         <Window
-                            key={`win-${key}`}
+                            key={`window-${key}`}
                             left={window.zIndex * 50 % 200 + 100}
                             top={window.zIndex * 50 % 200 + 100}
-                            isMinimized={window.minimized}
                             application={window.application}
                             taskbarPos={taskbarAppPosX[key]}
                             onInteract={() => onInteract(key)}
                             onMinimize={() => minimizeWindow(key)}
                             onClose={() => removeWindow(key)}
+                            animationState={window.animationState}
+                            setAnimationState={(state) => setWindowAnimationState(key, state)}
                         />
                     </div>
                 );

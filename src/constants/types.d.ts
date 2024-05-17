@@ -4,6 +4,7 @@ import React from "react";
 declare type DesktopWindow = {
     zIndex: number;
     minimized: boolean;
+    animationState: WindowAnimationState;
     application: ApplicationType;
 }
 
