@@ -38,7 +38,7 @@ function Desktop() {
         setTimeout(() => {
             action();
         }, WINDOW_ANIMATION_DURATION);
-    }, [setWindowAnimationState])
+    }, [])
 
     const getHighestZIndex = useCallback(() => {
         if (Object.keys(windows).length === 0) return 99;
