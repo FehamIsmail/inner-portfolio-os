@@ -7,7 +7,7 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --color-retro-dark: #42220e;
-  --color-retro-background: #cfaf9e;
+  --color-retro-background: #c7a589;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +42,14 @@ body {
     radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%);
     background-position: 6px 6px, 6px, 0;
     background-size: 5px 5px;
+  }
+
+  .shortcut-focused {
+    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.5));
+  }
+
+  .icon-overlay {
+    filter: brightness(0) saturate(100%) sepia(1);
   }
 
 }

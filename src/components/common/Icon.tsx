@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import getIcon, {IconName} from "@/assets/icons";
 import Image from "next/image";
 
@@ -12,7 +12,7 @@ interface IconProps {
 function Icon(props: IconProps) {
 
     const iconStyle = {
-
+        color: props.colorize ? 'var(--color-retro-dark)' : 'inherit',
     };
 
     // it is a svg if getIcon(iconName) returns a StaticImageData type object
@@ -25,13 +25,16 @@ function Icon(props: IconProps) {
             { isSvg ? (
                 <IconComponent width={props.size} height={"100%"}  />
             ) : (
-                <Image
-                    className={props.className}
-                    src={IconComponent}
-                    alt={props.icon}
-                    width={props.size}
-                    draggable={false}
-                />
+                <div className={props.className + " h-fit w-fit"}>
+                    <Image
+                        className={" select-none"}
+                        style={iconStyle}
+                        src={IconComponent}
+                        alt={props.icon}
+                        width={props.size}
+                        draggable={false}
+                    />
+                </div>
             )}
         </div>
     );

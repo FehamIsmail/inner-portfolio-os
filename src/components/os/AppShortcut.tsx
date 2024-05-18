@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {IconName} from "@/assets/icons";
 import Icon from "@/components/common/Icon";
 
@@ -10,13 +10,25 @@ export interface AppShortcutProps {
 }
 
 function AppShortcut(props: AppShortcutProps) {
+    const shortcutRef = useRef<HTMLDivElement>(null);
+    const iconRef = useRef<HTMLDivElement>(null);
+
     return (
         <div
-            className="flex flex-col max-w-[81px] gap-2 items-center justify-center app-shortcut"
+            className={`flex flex-col max-w-[120px] items-center justify-center app-shortcut`}
             onDoubleClick={props.onOpen}
         >
-            <Icon icon={props.icon} size={70}/>
-            <p className={"max-w-full text-center overflow-hidden whitespace-normal text-ellipsis"}>{props.name}</p>
+            <div className={`p-2 rounded-t-md ${!props.isFocused ? 'bg-indigo-700' : ''}`}>
+                <Icon icon={props.icon} size={70}/>
+            </div>
+            <div className={`p-2 rounded-md ${!props.isFocused ? 'bg-indigo-700' : ''}`}>
+                <p
+                    className={"px-[7px] py-[2px] max-w-full text-center select-none overflow-hidden whitespace-normal " +
+                        "text-ellipsis bg-retro-white text-retro-dark font-bold rounded-md border-2 border-retro-dark line-clamp-2"}
+                >
+                    {props.name}
+                </p>
+            </div>
         </div>
     );
 }
