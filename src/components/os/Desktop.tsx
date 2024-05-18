@@ -2,11 +2,12 @@
 import React, {useCallback, useEffect} from 'react';
 import Taskbar from "@/components/os/Taskbar";
 import {Nunito} from 'next/font/google'
-import Window, {WINDOW_ANIMATION_DURATION} from "@/components/os/Window";
+import Window from "@/components/os/Window";
 import {APPLICATIONS} from "@/constants/data";
 import AppShortcut, {AppShortcutProps} from "@/components/os/AppShortcut";
 import {ApplicationType, DesktopWindows} from "@/constants/types";
 import {WindowAnimationState} from "@/constants/enums";
+import {WINDOW_ANIMATION_DURATION} from "@/components/os/AnimationUtils";
 
 const nunito = Nunito({
     weight: ['400', '500', '600', '700', '800'],
@@ -18,7 +19,7 @@ function Desktop() {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>([]);
     const [taskbarAppPosX, setTaskbarAppPosX] = React.useState<{[key: string]: number}>({});
-    const [firstLoad, setFirstLoad] = React.useState(true);
+    const [firstRender, setFirstRender] = React.useState(true);
 
     const updateWindowProperties = useCallback((key: string, properties: Partial<DesktopWindows[string]>) => {
         setWindows((prevWindows) => ({
@@ -41,7 +42,7 @@ function Desktop() {
     }, [])
 
     const getHighestZIndex = useCallback(() => {
-        if (Object.keys(windows).length === 0) return 99;
+        if (Object.keys(windows).length === 0) return 199;
         return Math.max(...Object.values(windows).map(window => window.zIndex));
     }, [windows])
 
@@ -64,8 +65,14 @@ function Desktop() {
         setWindows(prevState => {
             const newWindows = {...prevState};
             setWindowAnimationState(key, WindowAnimationState.CLOSING);
-            // delete newWindows[key];
             return newWindows;
+        });
+        performPostAnimationAction(() => {
+            setWindows(prevState => {
+                const newWindows = {...prevState};
+                delete newWindows[key];
+                return newWindows;
+            });
         });
     }, [setWindowAnimationState]);
 
@@ -91,6 +98,7 @@ function Desktop() {
         updateWindowProperties(key, {
             animationState: newAnimationState,
             zIndex: isFocused ? getLowestZIndex() - 1 : highestZIndex + 1,
+            minimized: newAnimationState === WindowAnimationState.RESTORING ? false : windows[key].minimized,
         });
 
         performPostAnimationAction(() => {
@@ -108,6 +116,9 @@ function Desktop() {
 
     const onOpen = useCallback((application: ApplicationType) => {
         addWindow(application);
+        performPostAnimationAction(() => {
+            setWindowAnimationState(application.key, WindowAnimationState.VISIBLE);
+        })
     }, [addWindow]);
 
     const updateTaskbarAppPosX = useCallback((key: string, posX: number) => {
@@ -123,14 +134,6 @@ function Desktop() {
     }, [windows]);
 
     useEffect(() => {
-        // print minimized of each window with their name
-        console.log(Object.keys(windows).map((key) => {
-            return `${windows[key].application.name}: ${windows[key].minimized}`
-        }));
-    }, [windows]);
-
-    useEffect(() => {
-        // Update APPLICATIONS with new portfolio icon
         APPLICATIONS.find(application => application.key === 'myPortfolio')!.icon = getPortfolioIcon();
         const newShortcuts = APPLICATIONS.map((application) => {
             return {
@@ -144,18 +147,18 @@ function Desktop() {
     }, [getPortfolioIcon, onOpen]);
 
     useEffect(() => {
-        if (firstLoad) {
-            setFirstLoad(false);
+        if (firstRender) {
+            setFirstRender(false);
             const myPortfolio = APPLICATIONS.find(application => application.key === 'myPortfolio');
             if (myPortfolio) {
                 onOpen(myPortfolio);
             }
         }
-    }, [firstLoad, onOpen]);
+    }, [firstRender, onOpen]);
 
     return (
         <main
-            className={"desktop-background z-[-999] min-h-full bg-retro-background flex flex-col" + nunito.className}
+            className={"desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none" + nunito.className}
         >
             {Object.keys(windows).map((key) => {
                 const window = windows[key];
@@ -181,7 +184,7 @@ function Desktop() {
                 );
             })}
             <div className={"h-screen w-screen"}>
-                <div className={"text-sm flex flex-col w-fit whitespace-nowrap p-4 flex-wrap gap-4"}>
+                <div className={"text-sm flex flex-col w-fit whitespace-nowrap p-6 flex-wrap gap-8"}>
                     {shortcuts?.map((shortcut) => {
                         return (
                             <AppShortcut

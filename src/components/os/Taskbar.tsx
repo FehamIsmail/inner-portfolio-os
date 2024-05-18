@@ -42,22 +42,22 @@ function Taskbar(   props: TaskbarProps) {
         }
     }, [props.windows]);
 
-    // useEffect(() => {
-    //     if(!taskbarButtonRefs.current) return;
-    //     Object.keys(taskbarButtonRefs.current).forEach((key) => {
-    //         if (taskbarButtonRefs.current[key]) {
-    //             const rect = taskbarButtonRefs.current[key]?.getBoundingClientRect();
-    //             if(rect && props.updateTaskbarAppPosX)
-    //             props.updateTaskbarAppPosX(key, rect.x + rect.width / 2);
-    //         }
-    //     });
-    // }, [props]);
+    useEffect(() => {
+        if(!taskbarButtonRefs.current) return
+        Object.keys(taskbarButtonRefs.current).forEach((key) => {
+            const buttonRect = taskbarButtonRefs.current[key]?.getBoundingClientRect();
+            if (!buttonRect) return;
+            const taskbarX = buttonRect.x + buttonRect.width / 2;
+            props.updateTaskbarAppPosX(key, taskbarX);
+        });
 
-    React.useEffect(() => {
+    }, [props.windows, taskbarButtonRefs]);
+
+    useEffect(() => {
         const timer = setInterval(() => {
             setTime(new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}));
         }, 60000);
-        return () => clearInterval(timer); // This will clear the interval when the component unmounts
+        return () => clearInterval(timer);
     }, []);
 
     return (
