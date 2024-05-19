@@ -8,6 +8,7 @@ export const APPLICATIONS: ApplicationType[] = [
         key: 'myPortfolio',
         name: 'My Portfolio',
         icon: 'myPortfolioClosed',
+        width: 800,
         titleBarColor: 'blue',
         component: MyPortfolio,
     },

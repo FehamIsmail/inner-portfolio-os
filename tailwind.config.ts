@@ -24,7 +24,7 @@ const config: Config = {
     },
     extend: {
       boxShadow: {
-        'window': '4px 4px 0 0 var(--color-retro-dark)',
+        'window': '4px 4px 0  var(--color-retro-dark)',
         'window-maximized': '0 0 0 7px var(--color-retro-dark)',
         'taskbar': '0 8px 0 0 var(--color-retro-dark)',
       },

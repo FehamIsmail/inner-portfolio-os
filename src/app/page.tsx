@@ -1,9 +1,8 @@
 import Desktop from "@/components/os/Desktop";
+import OS from "@/components/os/OS";
 
 export default function Home() {
   return (
-      <div className="App h-screen w-screen overflow-hidden">
-        <Desktop />
-      </div>
+      <OS />
   );
 }

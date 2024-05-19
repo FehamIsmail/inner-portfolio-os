@@ -1,3 +1,5 @@
+import arrowUp from './arrowUp.svg'
+import arrowDown from './arrowDown.svg'
 import battery from './battery.svg'
 import close from './close.png'
 import maximize from './maximize.png'
@@ -14,6 +16,8 @@ import wifi2 from './wifi2.svg'
 import wifi3 from './wifi3.svg'
 
 const icons = {
+    arrowUp,
+    arrowDown,
     battery,
     close,
     maximize,

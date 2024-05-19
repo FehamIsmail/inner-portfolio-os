@@ -2,9 +2,10 @@
 import React, {useCallback, useEffect, useRef} from 'react';
 import Icon from "@/components/common/Icon";
 import {ApplicationType} from "@/constants/types";
-import {motion, useSpring} from "framer-motion"
+import {AnimatePresence, motion, useSpring} from "framer-motion"
 import {WindowAnimationState} from "@/constants/enums";
-import {getAnimationDuration, getOpacity, getScale} from "@/components/os/AnimationUtils";
+import {getAnimationDuration, getOpacity, getScale} from "@/components/utils/AnimationUtils";
+import ScrollBar from "@/components/os/ScrollBar";
 
 const titleBarColors = {
     red: 'bg-retro-red',
@@ -48,6 +49,7 @@ interface WindowProps {
 function Window(props: WindowProps) {
     const [firstRender, setFirstRender] = React.useState<boolean>(true);
     const [isMaximized, setIsMaximized] = React.useState<boolean>(false);
+    const [isOverflown, setIsOverflown] = React.useState<boolean>(false);
     const {animationState, setAnimationState} = props;
 
     const windowRef = useRef<HTMLDivElement>(null);
@@ -58,8 +60,8 @@ function Window(props: WindowProps) {
     const [currentWindowDimensions, setCurrentWindowDimensions] = React.useState<WindowDimensions>({
         x: props.left,
         y: props.top,
-        width: props.application.width,
-        height: props.application.height,
+        width: props.application.width || MIN_WIDTH,
+        height: props.application.height || MIN_HEIGHT,
     } as WindowDimensions);
 
     const [prevWindowDimensions, setPrevWindowDimensions] = React.useState<WindowDimensions>({
@@ -69,11 +71,11 @@ function Window(props: WindowProps) {
         height: props.application.height,
     } as WindowDimensions);
 
-    const springOptions = { damping: 50, stiffness: 2000 }
+    const springOptions = { damping: 60, stiffness: 2000 }
     const motionX = useSpring(currentWindowDimensions.x, springOptions)
     const motionY = useSpring(currentWindowDimensions.y, springOptions)
-    const motionWidth = useSpring(0, springOptions)
-    const motionHeight = useSpring(0, springOptions)
+    const motionWidth = useSpring(currentWindowDimensions.width, springOptions)
+    const motionHeight = useSpring(currentWindowDimensions.height, springOptions)
 
     const dragCoords = useRef<{
         dragStartX: any,
@@ -85,8 +87,6 @@ function Window(props: WindowProps) {
         motionY.set(values.y)
         motionWidth.set(values.width || MIN_WIDTH)
         motionHeight.set(values.height || MIN_HEIGHT)
-        console.log('Setting Motion Values', values)
-        console.log('Motion Values', motionWidth.get(), motionHeight.get())
     }, [motionX, motionY, motionWidth, motionHeight])
 
     const startResize = (e: React.MouseEvent) => {
@@ -235,10 +235,9 @@ function Window(props: WindowProps) {
     }
 
     useEffect(() => {
-        console.log('Animation State', animationState)
         switch (animationState) {
             case WindowAnimationState.OPENING:
-                revertWindow()
+                // revertWindow()
                 break;
             case WindowAnimationState.RESTORING:
                 revertWindow()
@@ -261,28 +260,40 @@ function Window(props: WindowProps) {
     }, [animationState]);
 
     useEffect(() => {
-        if(windowRef.current && contentRef.current && !currentWindowDimensions.height && !currentWindowDimensions.width && firstRender) {
-            const { width, height } = windowRef.current.getBoundingClientRect();
-            const { maxWidth, maxHeight } = { maxWidth: Math.max(width, MIN_WIDTH), maxHeight: Math.max(height, MIN_HEIGHT) };
-            console.log(maxHeight, maxWidth)
-            setCurrentWindowDimensions({ x: props.left, y: props.top, width: maxWidth, height: maxHeight });
-            setPrevWindowDimensions({ x: props.left, y: props.top, width: maxWidth, height: maxHeight })
+        if (firstRender && contentRef.current && animationState === WindowAnimationState.OPENING) {
             setFirstRender(false);
+            const contentRect = contentRef.current.getBoundingClientRect();
+            setCurrentWindowDimensions({
+                ...currentWindowDimensions,
+                width: contentRect.width,
+                height: contentRect.height
+            });
+            setPrevWindowDimensions({
+                ...prevWindowDimensions,
+                width: contentRect.width,
+                height: contentRect.height
+            });
         }
-    }, [contentRef, windowRef, currentWindowDimensions, firstRender, props.left, props.top]);
+    }, [firstRender, contentRef, animationState, currentWindowDimensions, prevWindowDimensions]);
 
     useEffect(() => {
-        console.log('Current Window Dimensions', currentWindowDimensions)
+        if(!contentRef.current) return
+        console.log('scrollHeight', contentRef.current?.scrollHeight)
+        console.log('clientHeight', contentRef.current?.clientHeight)
+        setIsOverflown(contentRef.current.scrollHeight > contentRef.current.clientHeight )
+    }, [animationState, currentWindowDimensions]);
+
+    useEffect(() => {
+        // console.log(isOverflown)
+    }, [isOverflown]);
+
+    useEffect(() => {
         setMotionValues(currentWindowDimensions)
     }, [currentWindowDimensions, setMotionValues])
 
-    useEffect(() => {
-        console.log('First Load', firstRender)
-    }, [firstRender]);
-
     return (
         <motion.div
-            className={`flex flex-col bg-retro-white absolute  divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
+            className={`flex flex-col bg-retro-white absolute divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
                 ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? 'border-b-0  shadow-window-maximized' : 'shadow-window'}`}
             animate={{
                 scale: getScale(animationState, isMaximized, firstRender),
@@ -300,7 +311,7 @@ function Window(props: WindowProps) {
             onMouseDown={props.onInteract}
         >
             <div
-                className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ` + titleBarColor}
+                className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px]  ` + titleBarColor}
             >
                 <div
                     className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-3"
@@ -328,18 +339,23 @@ function Window(props: WindowProps) {
                     </div>
                 </div>
             </div>
-            <section className={'h-full'}>
-                <div
-                    className={"h-full"}
-                    ref={contentRef}
+            <section className={"flex-grow min-h-9 overflow-y-hidden overflow-x-hidden flex flex-row"} ref={contentRef}>
+                <props.application.component/>
+                <AnimatePresence
                 >
-                    <props.application.component />
-                </div>
+                    { isOverflown &&
+                        <ScrollBar
+                            scrollWidth={statusBarHeight.value}
+                            scrollPosition={0}
+                            setScrollPosition={() => {}}
+                        />
+                    }
+                </AnimatePresence>
             </section>
             {!isMaximized &&
-                <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg p-[2px]`}>
+                <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg`}>
                     <button
-                        className={"flex flex-row cursor-se-resize"}
+                        className={`flex flex-row cursor-se-resize p-[2px] border-retro-dark h-full`}
                         onMouseDown={startResize}
                     >
                         <Icon className={'text-retro-background self-end'} icon={'resize'} size={12} colorize={true}/>

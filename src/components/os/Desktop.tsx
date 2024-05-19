@@ -7,7 +7,8 @@ import {APPLICATIONS} from "@/constants/data";
 import AppShortcut, {AppShortcutProps} from "@/components/os/AppShortcut";
 import {ApplicationType, DesktopWindows} from "@/constants/types";
 import {WindowAnimationState} from "@/constants/enums";
-import {WINDOW_ANIMATION_DURATION} from "@/components/os/AnimationUtils";
+import {WINDOW_ANIMATION_DURATION} from "@/components/utils/AnimationUtils";
+import {setDynamicColors} from "@/components/utils/ColorUtils";
 
 const nunito = Nunito({
     weight: ['400', '500', '600', '700', '800'],
@@ -133,6 +134,17 @@ function Desktop() {
         return windows['myPortfolio'].minimized ? 'myPortfolioClosed' : 'myPortfolioOpened';
     }, [windows]);
 
+    const setShortcutOnFocus = useCallback((name: string) => {
+        setShortcuts((prevShortcuts) => {
+            return prevShortcuts.map(shortcut => {
+                return {
+                    ...shortcut,
+                    isFocused: shortcut.name === name,
+                }
+            });
+        });
+    }, []);
+
     useEffect(() => {
         APPLICATIONS.find(application => application.key === 'myPortfolio')!.icon = getPortfolioIcon();
         const newShortcuts = APPLICATIONS.map((application) => {
@@ -140,6 +152,7 @@ function Desktop() {
                 icon: application.icon,
                 name: application.name,
                 isFocused: false,
+                setFocused: () => setShortcutOnFocus(application.name),
                 onOpen: () => onOpen(application),
             }
         });
@@ -155,6 +168,10 @@ function Desktop() {
             }
         }
     }, [firstRender, onOpen]);
+
+    useEffect(() => {
+        setDynamicColors();
+    }, []);
 
     return (
         <main
@@ -191,7 +208,8 @@ function Desktop() {
                                 key={shortcut.name}
                                 icon={shortcut.icon}
                                 name={shortcut.name}
-                                isFocused={false}
+                                isFocused={shortcut.isFocused}
+                                setFocused={shortcut.setFocused}
                                 onOpen={shortcut.onOpen}
                             />
                         )

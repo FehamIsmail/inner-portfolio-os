@@ -6,8 +6,9 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --color-retro-dark: #42220e;
   --color-retro-background: #c7a589;
+  --color-retro-semi-dark: var(--color-retro-semi-dark, #5f3b1e);  /* Default values in case JS fails */
+  --color-retro-dark: var(--color-retro-dark, #42220e);  /* Default values in case JS fails */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,11 +46,7 @@ body {
   }
 
   .shortcut-focused {
-    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.5));
-  }
-
-  .icon-overlay {
-    filter: brightness(0) saturate(100%) sepia(1);
+    background-color: var(--color-retro-semi-dark);
   }
 
 }
