@@ -16,7 +16,11 @@ const nunito = Nunito({
     style: 'normal'
 });
 
-function Desktop() {
+interface DesktopProps {
+    children?: React.ReactNode;
+}
+
+function Desktop({children}: DesktopProps) {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>([]);
     const [taskbarAppPosX, setTaskbarAppPosX] = React.useState<{[key: string]: number}>({});
@@ -179,6 +183,8 @@ function Desktop() {
         >
             {Object.keys(windows).map((key) => {
                 const window = windows[key];
+                if(key === 'myPortfolio')
+                    window.application.children = children;
                 return (
                     <div
                         className={`relative ${window.minimized ? 'hidden' : ''}`}

@@ -238,30 +238,20 @@ function Window(props: WindowProps) {
     const checkOverflow = () => {
         const el = containerRef.current;
         if (el && animationState !== WindowAnimationState.MINIMIZING) {
-            console.log('checking overflow')
             setIsOverflown(el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
         }
     };
 
     useEffect(() => {
         switch (animationState) {
-            case WindowAnimationState.OPENING:
-                // revertWindow()
-                break;
             case WindowAnimationState.RESTORING:
                 revertWindow()
-                break;
-            case WindowAnimationState.CLOSING:
-                // animateClose()
                 break;
             case WindowAnimationState.MINIMIZING:
                 animateMinimize()
                 break;
             case WindowAnimationState.MINIMIZED:
                 repositionWindow()
-                break;
-            case WindowAnimationState.DRAGGING:
-                // setSpringOptions(2000, 1)
                 break;
             default:
                 return
@@ -292,10 +282,6 @@ function Window(props: WindowProps) {
             });
         }
     }, [firstRender, contentRef, animationState]);
-
-    useEffect(() => {
-
-    }, [firstRender]);
 
     useEffect(() => {
         setMotionValues(currentWindowDimensions)
@@ -354,7 +340,9 @@ function Window(props: WindowProps) {
                     ${animationState === WindowAnimationState.RESTORING ||  animationState === WindowAnimationState.OPENING ? 
                     'overflow-hidden' : 'overflow-y-auto'} ${scrollBarClassNames}`}
                      ref={containerRef}>
-                <props.application.component ref={contentRef}/>
+                <props.application.component ref={contentRef}>
+                    {props.application.children}
+                </props.application.component>
                 {isOverflown &&
                     <div
                         className={"ml-auto bg-retro-dark w-[3px] scrollbar-right-border"}

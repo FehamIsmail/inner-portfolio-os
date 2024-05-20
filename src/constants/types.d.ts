@@ -1,5 +1,6 @@
 import {IconName} from "@/assets/icons";
 import React from "react";
+import {WindowAnimationState} from "@/constants/enums";
 
 declare type DesktopWindow = {
     zIndex: number;
@@ -17,7 +18,8 @@ declare type ApplicationType = {
     name: string;
     icon: IconName;
     titleBarColor: 'red' | 'green' | 'blue' | 'yellow';
-    component: React.ForwardRefExoticComponent<React.RefAttributes<HTMLDivElement>>;
+    component: React.ForwardRefExoticComponent<T & React.RefAttributes<HTMLDivElement>>;
+    children?: React.ReactNode; // Used in MyPortfolioLayout
     width?: number;
     height?: number;
 };
