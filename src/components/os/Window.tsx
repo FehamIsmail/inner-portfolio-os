@@ -56,7 +56,7 @@ function Window(props: WindowProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const titleBarColor = titleBarColors[props.application.titleBarColor];
-    const scrollBarClassNames = ""
+    const scrollBarClassNames = " scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none"
 
     const [currentWindowDimensions, setCurrentWindowDimensions] = React.useState<WindowDimensions>({
         x: props.left,
@@ -259,10 +259,12 @@ function Window(props: WindowProps) {
         if (firstRender && contentRef.current && animationState === WindowAnimationState.OPENING) {
             setFirstRender(false);
             const contentRect = contentRef.current.getBoundingClientRect();
+            const margin = statusBarHeight.value + titleBarHeight.value + 9;
             const { width, height } = {
-                width: props.application.width || contentRect.width || MIN_WIDTH,
-                height: props.application.height || contentRect.height || MIN_HEIGHT,
+                width: props.application.width || contentRect.width + margin || MIN_WIDTH,
+                height: props.application.height || contentRect.height + margin || MIN_HEIGHT,
             }
+            console.log(width, height)
             setCurrentWindowDimensions({
                 ...currentWindowDimensions,
                 width,
@@ -277,24 +279,13 @@ function Window(props: WindowProps) {
     }, [firstRender, contentRef, animationState]);
 
     useEffect(() => {
-        const checkScrollbarVisibility = () => {
-            if (containerRef.current) {
-                const { scrollHeight, clientHeight } = containerRef.current;
-                setIsOverflown(scrollHeight > clientHeight);
-            }
-        };
-
-        // Check on mount
-        checkScrollbarVisibility();
-
-        // Check on window resize
-        window.addEventListener('resize', checkScrollbarVisibility);
-
-        // Cleanup event listener on unmount
-        return () => {
-            window.removeEventListener('resize', checkScrollbarVisibility);
-        };
-    }, [currentWindowDimensions, currentWindowDimensions.height]);
+        if (containerRef.current) {
+            console.log('here')
+            const {scrollHeight, clientHeight} = containerRef.current;
+            console.log(scrollHeight + " > " + clientHeight + ' is Maximized: ' + isMaximized)
+            setIsOverflown(scrollHeight > clientHeight);
+        }
+    }, [contentRef.current, animationState, containerRef.current, currentWindowDimensions, isMaximized, motionY, motionY.get()]);
 
     useEffect(() => {
         setMotionValues(currentWindowDimensions)
@@ -348,38 +339,18 @@ function Window(props: WindowProps) {
                     </div>
                 </div>
             </div>
-            <section className={`flex-grow flex flex-row overflow-y-auto ${scrollBarClassNames} scrollbar scrollbar-w-1/12 scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none`}
+            <section
+                    className={`flex-grow flex flex-row
+                    ${animationState === WindowAnimationState.RESTORING ||  animationState === WindowAnimationState.OPENING ? 
+                    'overflow-hidden' : 'overflow-y-auto'} ${scrollBarClassNames}`}
                      ref={containerRef}>
-                <div className={"shrink"}>
-                    <props.application.component
-                        ref={contentRef}
-                    />
-                </div>
+                <props.application.component ref={contentRef}/>
                 {isOverflown &&
-                    <div className={"ml-auto bg-retro-dark w-[3px]"}
+                    <div
+                        className={"ml-auto bg-retro-dark w-[3px] scrollbar-right-border"}
                         style={{height: contentRef.current?.clientHeight}}
-                    >
-
-                    </div>
+                    />
                 }
-                {/*<div className="h-full ml-auto">*/}
-                {/*    <AnimatePresence>*/}
-                {/*        { isOverflown &&*/}
-                {/*            <ScrollBar*/}
-                {/*                contentRef={contentRef}*/}
-                {/*                containerRef={containerRef}*/}
-                {/*                scrollWidth={20} // Adjust as needed*/}
-                {/*                scrollPosition={scrollPosition}*/}
-                {/*                setScrollPosition={(pos) => {*/}
-                {/*                    if (contentRef.current) {*/}
-                {/*                        contentRef.current.scrollTop = pos;*/}
-                {/*                    }*/}
-                {/*                    setScrollPosition(pos);*/}
-                {/*                }}*/}
-                {/*            />*/}
-                {/*        }*/}
-                {/*    </AnimatePresence>*/}
-                {/*</div>*/}
             </section>
 
             {!isMaximized &&
