@@ -5,6 +5,7 @@ import {ApplicationType} from "@/constants/types";
 import {motion, useSpring} from "framer-motion"
 import {WindowAnimationState} from "@/constants/enums";
 import {getAnimationDuration, getOpacity, getScale} from "@/components/utils/AnimationUtils";
+import useResizeObserver from "@react-hook/resize-observer";
 
 const titleBarColors = {
     red: 'bg-retro-red',
@@ -72,11 +73,15 @@ function Window(props: WindowProps) {
         height: props.application.height,
     } as WindowDimensions);
 
-    const springOptions = { damping: 50, stiffness: 2500 }
+    const springOptions = { damping: 54, stiffness: 3000 }
     const motionX = useSpring(currentWindowDimensions.x, springOptions)
     const motionY = useSpring(currentWindowDimensions.y, springOptions)
     const motionWidth = useSpring(currentWindowDimensions.width, springOptions)
     const motionHeight = useSpring(currentWindowDimensions.height, springOptions)
+
+    useResizeObserver(containerRef, () => {
+        checkOverflow();
+    });
 
     const dragCoords = useRef<{
         dragStartX: any,
@@ -230,6 +235,14 @@ function Window(props: WindowProps) {
         )
     }
 
+    const checkOverflow = () => {
+        const el = containerRef.current;
+        if (el && animationState !== WindowAnimationState.MINIMIZING) {
+            console.log('checking overflow')
+            setIsOverflown(el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
+        }
+    };
+
     useEffect(() => {
         switch (animationState) {
             case WindowAnimationState.OPENING:
@@ -253,10 +266,12 @@ function Window(props: WindowProps) {
             default:
                 return
         }
-    }, [animationState, currentWindowDimensions]);
+    }, [animationState]);
 
     useEffect(() => {
-        if (firstRender && contentRef.current && animationState === WindowAnimationState.OPENING) {
+        if(!firstRender) return
+        checkOverflow()
+        if (contentRef.current && animationState === WindowAnimationState.OPENING) {
             setFirstRender(false);
             const contentRect = contentRef.current.getBoundingClientRect();
             const margin = statusBarHeight.value + titleBarHeight.value + 9;
@@ -279,13 +294,8 @@ function Window(props: WindowProps) {
     }, [firstRender, contentRef, animationState]);
 
     useEffect(() => {
-        if (containerRef.current) {
-            console.log('here')
-            const {scrollHeight, clientHeight} = containerRef.current;
-            console.log(scrollHeight + " > " + clientHeight + ' is Maximized: ' + isMaximized)
-            setIsOverflown(scrollHeight > clientHeight);
-        }
-    }, [contentRef.current, animationState, containerRef.current, currentWindowDimensions, isMaximized, motionY, motionY.get()]);
+
+    }, [firstRender]);
 
     useEffect(() => {
         setMotionValues(currentWindowDimensions)

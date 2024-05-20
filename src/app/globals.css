@@ -29,11 +29,6 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-section::-webkit-scrollbar-track {
-    background: transparent;
-  border-left: #5f3b1e 5px solid;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: normal;
