@@ -17,7 +17,7 @@ declare type ApplicationType = {
     name: string;
     icon: IconName;
     titleBarColor: 'red' | 'green' | 'blue' | 'yellow';
-    component: React.ComponentType<any>;
+    component: React.ForwardRefExoticComponent<React.RefAttributes<HTMLDivElement>>;
     width?: number;
     height?: number;
 };

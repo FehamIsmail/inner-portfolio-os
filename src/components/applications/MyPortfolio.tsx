@@ -1,22 +1,21 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import Icon from "@/components/common/Icon";
 
-
-function MyPortfolio() {
-    const myPortfolioRef = React.useRef<HTMLDivElement>(null);
-
+const MyPortfolio = forwardRef<HTMLDivElement>((_, ref) => {
     return (
-        <div ref={myPortfolioRef} className={"h-[500px] w-[650px] flex flex-col gap-10 bg-indigo-700 bg-opacity-30"}>
-            {myPortfolioRef.current?.getBoundingClientRect().width.toFixed(2)}{' \n'}
-            {myPortfolioRef.current?.getBoundingClientRect().height.toFixed(2)}
-            <span>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
+        <div className={"h-[500px] w-full flex flex-row gap-10 bg-indigo-700 bg-opacity-30"}
+             ref={ref}
+        >
             <div><Icon icon={'networkTabs'} size={90}/> </div>
-
+            <div><Icon icon={'networkTabs'} size={90}/> </div>
+            <div><Icon icon={'networkTabs'} size={90}/> </div>
+            <div><Icon icon={'networkTabs'} size={90}/> </div>
+            <div><Icon icon={'networkTabs'} size={90}/> </div>
+            <div><Icon icon={'networkTabs'} size={90}/> </div>
         </div>
     );
-}
+})
+
+MyPortfolio.displayName = 'MyPortfolio';
 
 export default MyPortfolio;

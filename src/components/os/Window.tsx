@@ -2,10 +2,9 @@
 import React, {useCallback, useEffect, useRef} from 'react';
 import Icon from "@/components/common/Icon";
 import {ApplicationType} from "@/constants/types";
-import {AnimatePresence, motion, useSpring} from "framer-motion"
+import {motion, useSpring} from "framer-motion"
 import {WindowAnimationState} from "@/constants/enums";
 import {getAnimationDuration, getOpacity, getScale} from "@/components/utils/AnimationUtils";
-import ScrollBar from "@/components/os/ScrollBar";
 
 const titleBarColors = {
     red: 'bg-retro-red',
@@ -54,8 +53,10 @@ function Window(props: WindowProps) {
 
     const windowRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const titleBarColor = titleBarColors[props.application.titleBarColor];
+    const scrollBarClassNames = ""
 
     const [currentWindowDimensions, setCurrentWindowDimensions] = React.useState<WindowDimensions>({
         x: props.left,
@@ -71,7 +72,7 @@ function Window(props: WindowProps) {
         height: props.application.height,
     } as WindowDimensions);
 
-    const springOptions = { damping: 60, stiffness: 2000 }
+    const springOptions = { damping: 50, stiffness: 2500 }
     const motionX = useSpring(currentWindowDimensions.x, springOptions)
     const motionY = useSpring(currentWindowDimensions.y, springOptions)
     const motionWidth = useSpring(currentWindowDimensions.width, springOptions)
@@ -229,11 +230,6 @@ function Window(props: WindowProps) {
         )
     }
 
-    const setSpringOptions = (stiffness: number, damping: number) => {
-        springOptions.stiffness = stiffness;
-        springOptions.damping = damping;
-    }
-
     useEffect(() => {
         switch (animationState) {
             case WindowAnimationState.OPENING:
@@ -252,40 +248,53 @@ function Window(props: WindowProps) {
                 repositionWindow()
                 break;
             case WindowAnimationState.DRAGGING:
-                setSpringOptions(2, 2)
+                // setSpringOptions(2000, 1)
                 break;
             default:
                 return
         }
-    }, [animationState]);
+    }, [animationState, currentWindowDimensions]);
 
     useEffect(() => {
         if (firstRender && contentRef.current && animationState === WindowAnimationState.OPENING) {
             setFirstRender(false);
             const contentRect = contentRef.current.getBoundingClientRect();
+            const { width, height } = {
+                width: props.application.width || contentRect.width || MIN_WIDTH,
+                height: props.application.height || contentRect.height || MIN_HEIGHT,
+            }
             setCurrentWindowDimensions({
                 ...currentWindowDimensions,
-                width: contentRect.width,
-                height: contentRect.height
+                width,
+                height,
             });
             setPrevWindowDimensions({
                 ...prevWindowDimensions,
-                width: contentRect.width,
-                height: contentRect.height
+                width,
+                height,
             });
         }
-    }, [firstRender, contentRef, animationState, currentWindowDimensions, prevWindowDimensions]);
+    }, [firstRender, contentRef, animationState]);
 
     useEffect(() => {
-        if(!contentRef.current) return
-        console.log('scrollHeight', contentRef.current?.scrollHeight)
-        console.log('clientHeight', contentRef.current?.clientHeight)
-        setIsOverflown(contentRef.current.scrollHeight > contentRef.current.clientHeight )
-    }, [animationState, currentWindowDimensions]);
+        const checkScrollbarVisibility = () => {
+            if (containerRef.current) {
+                const { scrollHeight, clientHeight } = containerRef.current;
+                setIsOverflown(scrollHeight > clientHeight);
+            }
+        };
 
-    useEffect(() => {
-        // console.log(isOverflown)
-    }, [isOverflown]);
+        // Check on mount
+        checkScrollbarVisibility();
+
+        // Check on window resize
+        window.addEventListener('resize', checkScrollbarVisibility);
+
+        // Cleanup event listener on unmount
+        return () => {
+            window.removeEventListener('resize', checkScrollbarVisibility);
+        };
+    }, [currentWindowDimensions, currentWindowDimensions.height]);
 
     useEffect(() => {
         setMotionValues(currentWindowDimensions)
@@ -339,19 +348,40 @@ function Window(props: WindowProps) {
                     </div>
                 </div>
             </div>
-            <section className={"flex-grow min-h-9 overflow-y-hidden overflow-x-hidden flex flex-row"} ref={contentRef}>
-                <props.application.component/>
-                <AnimatePresence
-                >
-                    { isOverflown &&
-                        <ScrollBar
-                            scrollWidth={statusBarHeight.value}
-                            scrollPosition={0}
-                            setScrollPosition={() => {}}
-                        />
-                    }
-                </AnimatePresence>
+            <section className={`flex-grow flex flex-row overflow-y-auto ${scrollBarClassNames} scrollbar scrollbar-w-1/12 scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none`}
+                     ref={containerRef}>
+                <div className={"shrink"}>
+                    <props.application.component
+                        ref={contentRef}
+                    />
+                </div>
+                {isOverflown &&
+                    <div className={"ml-auto bg-retro-dark w-[3px]"}
+                        style={{height: contentRef.current?.clientHeight}}
+                    >
+
+                    </div>
+                }
+                {/*<div className="h-full ml-auto">*/}
+                {/*    <AnimatePresence>*/}
+                {/*        { isOverflown &&*/}
+                {/*            <ScrollBar*/}
+                {/*                contentRef={contentRef}*/}
+                {/*                containerRef={containerRef}*/}
+                {/*                scrollWidth={20} // Adjust as needed*/}
+                {/*                scrollPosition={scrollPosition}*/}
+                {/*                setScrollPosition={(pos) => {*/}
+                {/*                    if (contentRef.current) {*/}
+                {/*                        contentRef.current.scrollTop = pos;*/}
+                {/*                    }*/}
+                {/*                    setScrollPosition(pos);*/}
+                {/*                }}*/}
+                {/*            />*/}
+                {/*        }*/}
+                {/*    </AnimatePresence>*/}
+                {/*</div>*/}
             </section>
+
             {!isMaximized &&
                 <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg`}>
                     <button

@@ -1,8 +1,6 @@
 import {ApplicationType} from "@/constants/types";
 import MyPortfolio from "@/components/applications/MyPortfolio";
-import Test from "@/components/applications/Test";
 
-// Applications as a list of ApplicationType objects
 export const APPLICATIONS: ApplicationType[] = [
     {
         key: 'myPortfolio',
@@ -10,7 +8,7 @@ export const APPLICATIONS: ApplicationType[] = [
         icon: 'myPortfolioClosed',
         width: 800,
         titleBarColor: 'blue',
-        component: MyPortfolio,
+        component: MyPortfolio
     },
     {
         key: 'myPortfolioOpened',
@@ -24,13 +22,13 @@ export const APPLICATIONS: ApplicationType[] = [
         name: 'Test',
         icon: 'start',
         titleBarColor: 'yellow',
-        component: Test
+        component: MyPortfolio
     },
     {
         key: 'test2',
         name: 'Test2',
         icon: 'start',
         titleBarColor: 'green',
-        component: Test
-    }
+        component: MyPortfolio
+    },
 ];

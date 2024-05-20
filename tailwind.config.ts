@@ -41,6 +41,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar')({ nocompatible: true }),
+    require('tailwind-scrollbar')({ preferredStrategy: 'pseudoelements' })
+  ]
 };
 export default config;
