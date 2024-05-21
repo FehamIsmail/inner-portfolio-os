@@ -22,7 +22,7 @@ const SideNav = () => {
     }, [navigation]);
 
     return (!isHome ? (
-        <div className="font-vt323 w-[250px] h-[calc(100%-47px)] bg-retro-medium border-r-3 fixed overflow-hidden border-retro-dark divide-retro-dark divide-y-3">
+        <div className="font-millennium w-[250px] h-[calc(100%-47px)] bg-retro-medium border-r-3 fixed overflow-hidden border-retro-dark divide-retro-dark divide-y-3">
             <div className="text-4xl p-[48px]">
                 <h1 className="font-[600]">Ismail</h1>
                 <h1 className="ml-2 font-[900]">Feham</h1>

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Noto_Serif, Nunito, VT323 } from "next/font/google";
+import { Noto_Serif, Nunito } from "next/font/google";
 import "./globals.css";
 import Desktop from "@/components/os/Desktop";
+import localFont from "next/dist/compiled/@next/font/dist/local";
 
 const nunito = Nunito({
     weight: ['400', '500', '600', '700', '800', '900', '1000'],
@@ -14,15 +15,13 @@ const noto = Noto_Serif({
     weight: ['400', '600', '700', '800', '900'],
     subsets: ['latin'],
     style: 'normal',
-    variable: '--font-vt323-serif'
+    variable: '--font-noto-serif'
 });
 
-const vt323 = VT323({
-    weight: ['400'],
-    subsets: ['latin'],
-    style: 'normal',
-    variable: '--font-vt323'
-});
+const millennium = localFont({
+    src: '../assets/fonts/Millennium.ttf',
+    variable: '--font-millennium'
+})
 
 export const metadata: Metadata = {
   title: "Ismail Feham's Desktop",
@@ -35,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en">
-        <body className={`${noto.variable} ${nunito.variable} ${vt323.variable} overflow-hidden`}>
+        <body className={`${noto.variable} ${nunito.variable} ${millennium.variable} overflow-hidden`}>
           <Desktop>
             {children}
           </Desktop>
