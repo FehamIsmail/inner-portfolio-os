@@ -10,12 +10,6 @@ import {WindowAnimationState} from "@/constants/enums";
 import {WINDOW_ANIMATION_DURATION} from "@/components/utils/AnimationUtils";
 import {setDynamicColors} from "@/components/utils/ColorUtils";
 
-const nunito = Nunito({
-    weight: ['400', '500', '600', '700', '800'],
-    subsets: ['latin'],
-    style: 'normal'
-});
-
 interface DesktopProps {
     children?: React.ReactNode;
 }
@@ -79,7 +73,7 @@ function Desktop({children}: DesktopProps) {
                 return newWindows;
             });
         });
-    }, [setWindowAnimationState]);
+    }, [performPostAnimationAction, setWindowAnimationState]);
 
     const minimizeWindow = useCallback((key: string) => {
         setWindowAnimationState(key, WindowAnimationState.MINIMIZING);
@@ -124,7 +118,7 @@ function Desktop({children}: DesktopProps) {
         performPostAnimationAction(() => {
             setWindowAnimationState(application.key, WindowAnimationState.VISIBLE);
         })
-    }, [addWindow]);
+    }, [addWindow, performPostAnimationAction, setWindowAnimationState]);
 
     const updateTaskbarAppPosX = useCallback((key: string, posX: number) => {
         setTaskbarAppPosX((prev) => ({
@@ -179,7 +173,7 @@ function Desktop({children}: DesktopProps) {
 
     return (
         <main
-            className={"desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none" + nunito.className}
+            className={"font-nunito desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none"}
         >
             {Object.keys(windows).map((key) => {
                 const window = windows[key];
@@ -221,6 +215,7 @@ function Desktop({children}: DesktopProps) {
                         )
                     })}
                 </div>
+
             </div>
 
             <Taskbar

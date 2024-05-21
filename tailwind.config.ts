@@ -6,18 +6,19 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     colors: {
       ...colors,
       retro: {
-        'white': '#faefde',
+        'white': '#faf1e2',
         'red': '#e8693f',
         'green': '#5a9651',
         'blue': '#2693bd',
         'yellow': '#e5b53b',
-        'medium': '#ecdcc2',
-        'medium-dark': '#d3c7b4',
+        'medium': '#ead9c4',
+        'medium-dark': '#ccba99',
         'dark': 'var(--color-retro-dark)',
         'background': 'var(--color-retro-background)',
       }
@@ -39,6 +40,11 @@ const config: Config = {
       borderWidth: {
         '3': '3px',
       },
+      fontFamily: {
+        'nunito': ['var(--font-nunito)'],
+        'noto': ['var(--font-vt323-serif)'],
+        'vt323': ['var(--font-vt323)'],
+      }
     },
   },
   plugins: [

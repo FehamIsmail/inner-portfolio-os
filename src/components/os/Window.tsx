@@ -55,6 +55,7 @@ function Window(props: WindowProps) {
     const windowRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const scrollBarBorderRef = useRef<HTMLDivElement>(null);
 
     const titleBarColor = titleBarColors[props.application.titleBarColor];
     const scrollBarClassNames = " scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none"
@@ -236,16 +237,21 @@ function Window(props: WindowProps) {
     }
 
     const checkOverflow = () => {
-        const el = containerRef.current;
-        if (el && animationState !== WindowAnimationState.MINIMIZING) {
-            setIsOverflown(el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
+        const cont = containerRef.current;
+        const scrollBarBorder = scrollBarBorderRef.current;
+        if (cont && animationState !== WindowAnimationState.MINIMIZING) {
+            setIsOverflown(cont.scrollHeight > cont.clientHeight);
+            if (scrollBarBorder) {
+                scrollBarBorder.style.height = `${cont.clientHeight}px`;
+            }
         }
     };
 
     useEffect(() => {
         switch (animationState) {
             case WindowAnimationState.RESTORING:
-                revertWindow()
+                if(isMaximized) maximizeWindow('BUTTON')
+                else revertWindow()
                 break;
             case WindowAnimationState.MINIMIZING:
                 animateMinimize()
@@ -256,7 +262,7 @@ function Window(props: WindowProps) {
             default:
                 return
         }
-    }, [animationState]);
+    }, [animationState, isMaximized]);
 
     useEffect(() => {
         if(!firstRender) return
@@ -266,10 +272,9 @@ function Window(props: WindowProps) {
             const contentRect = contentRef.current.getBoundingClientRect();
             const margin = statusBarHeight.value + titleBarHeight.value + 9;
             const { width, height } = {
-                width: props.application.width || contentRect.width + margin || MIN_WIDTH,
-                height: props.application.height || contentRect.height + margin || MIN_HEIGHT,
+                width: props.application.width || Math.max(contentRect.width + margin, MIN_WIDTH),
+                height: props.application.height || Math.max(contentRect.height + margin, MIN_HEIGHT),
             }
-            console.log(width, height)
             setCurrentWindowDimensions({
                 ...currentWindowDimensions,
                 width,
@@ -307,7 +312,7 @@ function Window(props: WindowProps) {
             onMouseDown={props.onInteract}
         >
             <div
-                className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px]  ` + titleBarColor}
+                className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ${titleBarColor}`}
             >
                 <div
                     className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-3"
@@ -338,15 +343,15 @@ function Window(props: WindowProps) {
             <section
                     className={`flex-grow flex flex-row
                     ${animationState === WindowAnimationState.RESTORING ||  animationState === WindowAnimationState.OPENING ? 
-                    'overflow-hidden' : 'overflow-y-auto'} ${scrollBarClassNames}`}
+                    'overflow-hidden' : 'overflow-y-auto overflow-x-clip'} ${scrollBarClassNames}`}
                      ref={containerRef}>
                 <props.application.component ref={contentRef}>
                     {props.application.children}
                 </props.application.component>
                 {isOverflown &&
                     <div
-                        className={"ml-auto bg-retro-dark w-[3px] scrollbar-right-border"}
-                        style={{height: contentRef.current?.clientHeight}}
+                        className={"absolute z-200 right-[16px] bg-retro-dark w-[3px] scrollbar-right-border"}
+                        ref={scrollBarBorderRef}
                     />
                 }
             </section>

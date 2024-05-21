@@ -1,21 +1,25 @@
 import React, {forwardRef} from 'react';
-import Link from "next/link";
-
+import SideNav from "@/components/portfolio/SideNav";
 interface MyPortfolioProps {
     children: React.ReactNode;
 }
 
+export const TITLE_HEIGHT = {
+    className: "font-vt323 text-[60px] font-extrabold",
+    value: 60
+}
+
 const MyPortfolio = forwardRef<HTMLDivElement, MyPortfolioProps>((props, ref) => {
+
     return (
-        <div className={"h-[500px] w-full bg-indigo-700 bg-opacity-30"}
-             ref={ref}>
-        <nav className={"flex flex-col"}>
-            <Link href={"/"}>HOME</Link>
-            <Link href={"/about"}>ABOUT</Link>
-            <Link href={"/contact"}>CONTACT</Link>
-        </nav>
-        <div id={"portfolio-content"} />
-            {props.children}
+        <div
+            className={"w-full text-retro-dark font-bold bg-retro-white overflow-hidden bg-opacity-30"}
+             ref={ref}
+        >
+            <SideNav />
+            <div id={"portfolio-content"} className={"h-full"}>
+                {props.children}
+            </div>
         </div>
     );
 

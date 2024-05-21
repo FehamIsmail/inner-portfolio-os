@@ -1,11 +1,11 @@
 import React from 'react';
-import About from "@/components/portfolio/About";
+import Projects from "@/components/portfolio/Projects";
 import PortfolioContent from "@/components/portfolio/PortfolioContent";
 
 const Page = () => {
     return (
-        <PortfolioContent title={"Hello"}>
-            <About />
+        <PortfolioContent title={"Projects"}>
+            <Projects />
         </PortfolioContent>
     );
 };
