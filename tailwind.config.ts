@@ -12,12 +12,12 @@ const config: Config = {
     colors: {
       ...colors,
       retro: {
-        'white': '#faf1e2',
+        'white': '#fdf4e8',
         'red': '#e8693f',
         'green': '#5a9651',
         'blue': '#2693bd',
         'yellow': '#e5b53b',
-        'medium': '#ead9c4',
+        'medium': '#efe1d0',
         'medium-dark': '#ccba99',
         'dark': 'var(--color-retro-dark)',
         'background': 'var(--color-retro-background)',

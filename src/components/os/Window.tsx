@@ -308,6 +308,12 @@ function Window(props: WindowProps) {
                 height: motionHeight,
                 transitionDuration: `${getAnimationDuration(animationState, isMaximized)}ms`,
             }}
+            initial={
+                {
+                    scale: 0.8,
+                    opacity: 0,
+                }
+            }
             ref={windowRef}
             onMouseDown={props.onInteract}
         >

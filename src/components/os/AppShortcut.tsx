@@ -39,12 +39,12 @@ function AppShortcut(props: AppShortcutProps) {
                                              ${isNameWider ? 'rounded-t-md' : ''}`}
                 ref={nameRef}
             >
-                <p
+                <span
                     className={"px-[7px] py-[2px] max-w-full text-center select-none overflow-hidden whitespace-normal " +
                         "text-ellipsis bg-retro-white text-retro-dark font-bold rounded-md border-2 border-retro-dark line-clamp-2"}
                 >
                     {props.name}
-                </p>
+                </span>
             </div>
         </div>
     );

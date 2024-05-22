@@ -24,9 +24,9 @@ const SideNav = () => {
     return (!isHome ? (
         <div className="w-[250px] h-[calc(100%-47px)] bg-retro-medium border-r-3 fixed overflow-hidden border-retro-dark divide-retro-dark divide-y-3">
             <div className="text-4xl p-[48px]">
-                <h1 className="font-[600]">Ismail</h1>
-                <h1 className="ml-2 font-[900]">Feham</h1>
-                <h2 className="ml-2 font-[600] text-[22px]">Portfolio</h2>
+                <h2 className="font-[600]">Ismail</h2>
+                <h2 className="font-[900]">Feham</h2>
+                <h4 className="font-[600]">Portfolio</h4>
             </div>
             <nav className="flex flex-col p-[48px] font-[800] text-xl">
                 {navigationLinks.map((link) => (

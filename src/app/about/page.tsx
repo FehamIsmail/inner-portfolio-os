@@ -4,7 +4,7 @@ import PortfolioContent from "@/components/portfolio/PortfolioContent";
 
 const Page = () => {
     return (
-        <PortfolioContent title={"Hello"}>
+        <PortfolioContent title={"Hello,"}>
             <About />
         </PortfolioContent>
     );

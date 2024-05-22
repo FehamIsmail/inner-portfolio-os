@@ -12,7 +12,7 @@ const Home = () => {
             >
                 <div className={'flex flex-col items-center py-12 border-retro-dark w-full'}>
                     <div className={"w-fit"}>
-                        <h1 className={"text-xl"}>My Portfolio</h1>
+                        <h3 className={""}>My Portfolio</h3>
                         <div className={"w-full h-[2px] rounded-full bg-retro-dark -mt-[3px]"}></div>
                     </div>
                     <p className={"mt-3 font-medium text-md text-retro-dark"}>
@@ -22,7 +22,7 @@ const Home = () => {
 
                 <div>
                     <div className={"flex mb-[60px] flex-col items-center"}>
-                        <h1 className={"text-[80px] font-extrabold"}>
+                        <h1 className={"font-extrabold"}>
                             Ismail Feham
                         </h1>
                         <h2 className={"-mt-6 text-[30px] font-bold"}>

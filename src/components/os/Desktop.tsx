@@ -1,7 +1,6 @@
 "use client"
 import React, {useCallback, useEffect} from 'react';
 import Taskbar from "@/components/os/Taskbar";
-import {Nunito} from 'next/font/google'
 import Window from "@/components/os/Window";
 import {APPLICATIONS} from "@/constants/data";
 import AppShortcut, {AppShortcutProps} from "@/components/os/AppShortcut";
@@ -19,6 +18,7 @@ function Desktop({children}: DesktopProps) {
     const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>([]);
     const [taskbarAppPosX, setTaskbarAppPosX] = React.useState<{[key: string]: number}>({});
     const [firstRender, setFirstRender] = React.useState(true);
+    const [defaultWindowSize, setDefaultWindowSize] = React.useState({} as {margin:number, width: number, height: number});
 
     const updateWindowProperties = useCallback((key: string, properties: Partial<DesktopWindows[string]>) => {
         setWindows((prevWindows) => ({
@@ -169,6 +169,11 @@ function Desktop({children}: DesktopProps) {
 
     useEffect(() => {
         setDynamicColors();
+        setDefaultWindowSize({
+            margin: 0.05,
+            width: window.innerWidth - window.innerWidth * 0.05 * 2,
+            height: window.innerHeight - window.innerHeight * 0.05 * 2 - 40,
+        })
     }, []);
 
     return (
@@ -176,25 +181,28 @@ function Desktop({children}: DesktopProps) {
             className={"font-nunito desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none"}
         >
             {Object.keys(windows).map((key) => {
-                const window = windows[key];
-                if(key === 'myPortfolio')
-                    window.application.children = children;
+                const desktopWindow = windows[key];
+                if(key === 'myPortfolio'){
+                    desktopWindow.application.children = children;
+                    desktopWindow.application.width = defaultWindowSize.width;
+                    desktopWindow.application.height = defaultWindowSize.height;
+                }
                 return (
                     <div
-                        className={`relative ${window.minimized ? 'hidden' : ''}`}
+                        className={`relative ${desktopWindow.minimized ? 'hidden' : ''}`}
                         key={key}
-                        style={{zIndex: window.zIndex}}
+                        style={{zIndex: desktopWindow.zIndex}}
                     >
                         <Window
                             key={`window-${key}`}
-                            left={window.zIndex * 50 % 200 + 100}
-                            top={window.zIndex * 50 % 200 + 100}
-                            application={window.application}
+                            left={desktopWindow.zIndex * 50 % 200 + defaultWindowSize.margin * window.innerWidth}
+                            top={desktopWindow.zIndex * 50 % 200 + defaultWindowSize.margin * window.innerHeight}
+                            application={desktopWindow.application}
                             taskbarPos={taskbarAppPosX[key]}
                             onInteract={() => onInteract(key)}
                             onMinimize={() => minimizeWindow(key)}
                             onClose={() => removeWindow(key)}
-                            animationState={window.animationState}
+                            animationState={desktopWindow.animationState}
                             setAnimationState={(state) => setWindowAnimationState(key, state)}
                         />
                     </div>
