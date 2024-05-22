@@ -9,7 +9,7 @@ const PortfolioContent = (props: PortfolioContentProps) => {
     const { children, title } = props;
 
     return (
-        <div className={"font-millennium ml-[250px] p-[48px]"}>
+        <div className={"ml-[250px] p-[48px]"}>
             <h1 className={`${TITLE_HEIGHT.className}`}>{title}</h1>
             {children}
         </div>

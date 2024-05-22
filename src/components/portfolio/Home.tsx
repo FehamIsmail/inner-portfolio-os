@@ -22,17 +22,17 @@ const Home = () => {
 
                 <div>
                     <div className={"flex mb-[60px] flex-col items-center"}>
-                        <span className={"font-millennium text-[80px] font-extrabold"}>
+                        <h1 className={"text-[80px] font-extrabold"}>
                             Ismail Feham
-                        </span>
-                        <span className={"-mt-6 font-millennium text-[30px] font-bold"}>
+                        </h1>
+                        <h2 className={"-mt-6 text-[30px] font-bold"}>
                             Software Engineer COOP
-                        </span>
-                        <span className={"font-millennium text-[18px] font-bold"}>
+                        </h2>
+                        <h4 className={"text-[18px] font-bold"}>
                             Concordia University
-                        </span>
+                        </h4>
                     </div>
-                    <nav className={"font-millennium text-[30px] pb-[60px]"}>
+                    <nav className={"text-[30px] pb-[60px]"}>
                         <Link href={"/about"} className="p-4 visited:text-purple-950">
                             About
                         </Link>

@@ -43,7 +43,6 @@ const config: Config = {
       fontFamily: {
         'nunito': ['var(--font-nunito)'],
         'noto': ['var(--font-noto-serif)'],
-        'millennium': ['var(--font-millennium)'],
       }
     },
   },

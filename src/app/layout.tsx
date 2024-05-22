@@ -5,23 +5,39 @@ import Desktop from "@/components/os/Desktop";
 import localFont from "next/dist/compiled/@next/font/dist/local";
 
 const nunito = Nunito({
-    weight: ['400', '500', '600', '700', '800', '900', '1000'],
+    weight: [ '600', '700', '800', '900', '1000'],
     subsets: ['latin'],
     style: 'normal',
     variable: '--font-nunito'
 });
 
 const noto = Noto_Serif({
-    weight: ['400', '600', '700', '800', '900'],
+    weight: ['400', '700', '900'],
     subsets: ['latin'],
     style: 'normal',
     variable: '--font-noto-serif'
 });
 
-const millennium = localFont({
-    src: '../assets/fonts/Millennium.ttf',
-    variable: '--font-millennium'
-})
+// const pixolde = localFont({
+//     src: [
+//         {
+//             path: './Pixolde.ttf',
+//             style: 'normal',
+//             weight: '400'
+//         },
+//         // {
+//         //     path: './Pixolde-Bold.ttf',
+//         //     style: 'normal',
+//         //     weight: '700'
+//         // }
+//    ],
+//    variable: '--font-pixolde'
+// });
+
+// const pixolde = localFont({
+//     src: '../assets/fonts/Pixolde.ttf',
+//     display: 'swap',
+// })
 
 export const metadata: Metadata = {
   title: "Ismail Feham's Desktop",
@@ -34,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en">
-        <body className={`${noto.variable} ${nunito.variable} ${millennium.variable} overflow-hidden`}>
+        <body className={`${noto.variable} ${nunito.variable} overflow-hidden`}>
           <Desktop>
             {children}
           </Desktop>

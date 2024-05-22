@@ -5,7 +5,7 @@ interface MyPortfolioProps {
 }
 
 export const TITLE_HEIGHT = {
-    className: "font-millennium text-[60px] font-extrabold",
+    className: "text-[60px]",
     value: 60
 }
 
