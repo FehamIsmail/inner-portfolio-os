@@ -22,7 +22,10 @@ const SideNav = () => {
     }, [navigation]);
 
     return (!isHome ? (
-        <div className="w-[250px] h-[calc(100%-47px)] bg-retro-medium border-r-3 fixed overflow-hidden border-retro-dark divide-retro-dark divide-y-3">
+        <div
+            className={`flex flex-col w-[250px] fixed overflow-hidden border-retro-dark divide-retro-dark divide-y-3`}
+            style={{ height: 'calc(100% - 44px)' }}
+        >
             <div className="text-4xl p-[48px]">
                 <h2 className="font-[600]">Ismail</h2>
                 <h2 className="font-[900]">Feham</h2>

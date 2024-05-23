@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Noto_Serif, Nunito } from "next/font/google";
 import "./globals.css";
 import Desktop from "@/components/os/Desktop";
-import localFont from "next/dist/compiled/@next/font/dist/local";
 
 const nunito = Nunito({
     weight: [ '600', '700', '800', '900', '1000'],

@@ -6,7 +6,7 @@ export const WINDOW_ANIMATION_DURATION = 200;
 
 export const getScale = (animationState: WindowAnimationState, isMaximized: boolean, firstLoad: boolean) => {
     if(firstLoad) return 0;
-    const scale = 1.05;
+    const scale = 1.03;
     switch (animationState) {
         case WindowAnimationState.OPENING:
             return 1;

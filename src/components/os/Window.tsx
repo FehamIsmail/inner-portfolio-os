@@ -96,6 +96,17 @@ function Window(props: WindowProps) {
         motionHeight.set(values.height || MIN_HEIGHT)
     }, [motionX, motionY, motionWidth, motionHeight])
 
+    const checkOverflow = () => {
+        const cont = containerRef.current;
+        const scrollBarBorder = scrollBarBorderRef.current;
+        if (cont && animationState !== WindowAnimationState.MINIMIZING) {
+            setIsOverflown(cont.scrollHeight > cont.clientHeight);
+            if (scrollBarBorder) {
+                scrollBarBorder.style.height = `${cont.clientHeight}px`;
+            }
+        }
+    };
+
     const startResize = (e: React.MouseEvent) => {
         e.preventDefault()
         setAnimationState(WindowAnimationState.RESIZING)
@@ -236,17 +247,6 @@ function Window(props: WindowProps) {
         )
     }
 
-    const checkOverflow = () => {
-        const cont = containerRef.current;
-        const scrollBarBorder = scrollBarBorderRef.current;
-        if (cont && animationState !== WindowAnimationState.MINIMIZING) {
-            setIsOverflown(cont.scrollHeight > cont.clientHeight);
-            if (scrollBarBorder) {
-                scrollBarBorder.style.height = `${cont.clientHeight}px`;
-            }
-        }
-    };
-
     useEffect(() => {
         switch (animationState) {
             case WindowAnimationState.RESTORING:
@@ -318,7 +318,7 @@ function Window(props: WindowProps) {
             onMouseDown={props.onInteract}
         >
             <div
-                className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ${titleBarColor}`}
+                className={`titleBar cursor-move flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ${titleBarColor}`}
             >
                 <div
                     className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-3"
@@ -347,10 +347,11 @@ function Window(props: WindowProps) {
                 </div>
             </div>
             <section
-                    className={`flex-grow flex flex-row
+                    className={`flex-grow flex flex-row ${scrollBarClassNames} 
                     ${animationState === WindowAnimationState.RESTORING ||  animationState === WindowAnimationState.OPENING ? 
-                    'overflow-hidden' : 'overflow-y-auto overflow-x-clip'} ${scrollBarClassNames}`}
-                     ref={containerRef}>
+                    'overflow-hidden' : 'overflow-y-auto overflow-x-clip'}`}
+                     ref={containerRef}
+            >
                 <props.application.component ref={contentRef}>
                     {props.application.children}
                 </props.application.component>
