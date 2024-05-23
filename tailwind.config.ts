@@ -17,8 +17,8 @@ const config: Config = {
         'green': '#5a9651',
         'blue': '#2693bd',
         'yellow': '#e5b53b',
-        'medium': '#efe1d0',
-        'medium-dark': '#ccba99',
+        'medium': '#f3e4d1',
+        'medium-dark': '#d9c1a3',
         'dark': 'var(--color-retro-dark)',
         'background': 'var(--color-retro-background)',
       }
@@ -27,6 +27,7 @@ const config: Config = {
       boxShadow: {
         'window': '4px 4px 0  var(--color-retro-dark)',
         'window-maximized': '0 0 0 7px var(--color-retro-dark)',
+        'figure': '2px 2px 0 var(--color-retro-dark)',
         'taskbar': '0 8px 0 0 var(--color-retro-dark)',
       },
       backgroundImage: {

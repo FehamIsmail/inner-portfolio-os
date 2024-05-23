@@ -10,7 +10,7 @@ const PortfolioContent = (props: PortfolioContentProps) => {
 
     return (
         <div className={"bg-retro-medium min-h-full"}>
-            <div className={"ml-[250px] p-[48px] h-full border-l-3 border-retro-dark bg-retro-white"}>
+            <div className={"ml-[250px] p-[48px] h-full border-x-3 border-retro-dark bg-retro-white select-text mr-[100px]"}>
                 <h1 className={`${TITLE_HEIGHT.className} -ml-[3px] `}>{title}</h1>
                 {children}
             </div>
