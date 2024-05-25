@@ -1,5 +1,4 @@
 import React from 'react';
-import {TITLE_HEIGHT} from "@/components/applications/MyPortfolio";
 
 interface PortfolioContentProps {
     title: string,
@@ -11,8 +10,8 @@ const PortfolioContent = (props: PortfolioContentProps) => {
     return (
         <div className={"bg-retro-medium min-h-full"}>
             <div className={"ml-[250px] p-[48px] h-full border-x-3 border-retro-dark bg-retro-white select-text mr-[100px]"}>
-                <h1 className={`${TITLE_HEIGHT.className} -ml-[3px] `}>{title}</h1>
-                {children}
+                <h1 className={`-ml-[3px] -mb-12 `}>{title}</h1>
+                <div className={"font-pixolde font-extrabold text-[20px]"}>{children}</div>
             </div>
         </div>
     );

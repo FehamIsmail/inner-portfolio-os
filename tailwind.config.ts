@@ -43,7 +43,8 @@ const config: Config = {
       },
       fontFamily: {
         'nunito': ['var(--font-nunito)'],
-        'noto': ['var(--font-noto-serif)'],
+        'pixolde': ['var(--font-pixolde)'],
+        'nevrada': ['var(--font-nevrada)'],
       }
     },
   },

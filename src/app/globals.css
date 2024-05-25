@@ -30,7 +30,8 @@ body {
 }
 
 h1 {
-    font-size: 86px;
+    @apply font-nevrada;
+    font-size: 64px;
 }
 
 h2 {
@@ -42,7 +43,8 @@ h3 {
 }
 
 h4 {
-    @apply text-2xl;
+    font-size: 34px;
+    @apply font-[700]
 }
 
 h5 {
@@ -50,9 +52,11 @@ h5 {
 }
 
 p{
-    @apply mt-5;
-    @apply text-lg;
+    @apply mt-2;
+    font-size: 24px;
     @apply text-justify;
+    @apply font-medium;
+    @apply leading-tight;
 }
 
 h1, h2, h3, h4, h5 {

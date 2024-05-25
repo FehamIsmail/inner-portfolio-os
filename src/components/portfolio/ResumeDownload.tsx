@@ -27,10 +27,11 @@ const ResumeDownload = ({margin}: ResumeDownloadProps) => {
                         alt={'mailbox'}
                     />
                 </div>
-                <div className={"flex flex-col gap-1  center"}>
+                <div className={"flex flex-col gap-0 -mt-[5px] center"}>
                     <h4 className={"mt-0"}>Searching for my resume?</h4>
-                    <a className={"flex flex-row gap-2 items-center"} href={''}>Download it here!
-                        <Image src={download.src} width={24} height={14} alt={'download'}/>
+                    <a className={"-mt-3 flex flex-row w-fit gap-2 items-center"} href={''}>
+                        Download it here!
+                        <Image className={"-mt-[2px]"} src={download.src} width={24} height={14} alt={'download'}/>
                     </a>
                 </div>
             </div>

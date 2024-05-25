@@ -1,5 +1,5 @@
 import React from 'react';
-import Home from "@/components/portfolio/Home";
+import Home from "@/components/portfolio/pages/Home";
 
 export default function App() {
   return (

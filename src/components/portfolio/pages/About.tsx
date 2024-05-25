@@ -24,7 +24,7 @@ const About = () => {
             </p>
             <p>I&apos;m thrilled that you&apos;re taking the time to browse through my portfolio. It was a joy to put together,
                 and I hope you find it just as engaging. Should you have any inquiries or feedback, don&apos;t hesitate to
-                connect with me through <Link className={"visited:text-purple-950"} href="/contact"><b>this form</b></Link> or send an
+                connect with me through <Link className={"visited:text-purple-950"} href="/src/components/portfolio/pages/Contact"><b>this form</b></Link> or send an
                 email directly to <a href="mailto:ismail.feham64@gmail.com"><b>ismail.feham64@gmail.com</b></a>.</p>
             <ResumeDownload margin={20}/>
 
@@ -41,7 +41,7 @@ const About = () => {
                 eventually
                 programming in Java.
             </p>
-            <div className={"px-64 mt-2 w-full h-fit flex flex-col items-center"}>
+            <div className={"px-64 mt-4 w-full h-fit flex flex-col items-center"}>
                 <ImageCaption
                     src={me_robotics.src}
                     alt={""}
@@ -54,7 +54,7 @@ const About = () => {
 
             {/**************** College years ***********************/}
             <div className={"mt-4 flex flex-row items-center gap-6"}>
-                <div className={"flex-[3] mt-0 mb-8"}>
+                <div className={"flex-[3] mt-0 mb-14"}>
                     <h4>College years</h4>
                     <p className={""}>
                         My passion for robotics and programming led me to pursue a degree in Computer Science at Vanier
@@ -90,7 +90,7 @@ const About = () => {
                         count={3}
                     />
                 </div>
-                <div className={"flex-[3] mt-0  mb-8"}>
+                <div className={"flex-[3] mt-0  mb-14"}>
                     <h4 className={"text-right"}>Undergrad years</h4>
                     <p className={""}>
                         I applied and transferred to Concordia University in 2021 to pursue a Bachelor&apos;s degree in

@@ -1,5 +1,5 @@
 import React from 'react';
-import Contact from "@/components/portfolio/Contact";
+import Contact from "@/components/portfolio/pages/Contact";
 import PortfolioContent from "@/components/portfolio/PortfolioContent";
 
 const Page = () => {

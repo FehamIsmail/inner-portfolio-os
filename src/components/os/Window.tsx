@@ -162,13 +162,13 @@ function Window(props: WindowProps) {
         if (x === currentWindowDimensions.x && y === currentWindowDimensions.y) return;
         const { width, height } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
         const isGettingMaximized = y < 0;
+        setIsMaximized(isGettingMaximized)
         setCurrentWindowDimensions({
             x: isGettingMaximized ? 0 : x + getOffsetX(),
             y: isGettingMaximized ? 0 : y,
             width: isGettingMaximized ? window.innerWidth : width,
             height: isGettingMaximized ? window.innerHeight - 40 : height
         });
-        setIsMaximized(isGettingMaximized)
     }
 
     const stopDrag = ({ clientX, clientY }: MouseEvent) => {
@@ -249,6 +249,9 @@ function Window(props: WindowProps) {
 
     useEffect(() => {
         switch (animationState) {
+            case WindowAnimationState.OPENING:
+                setCurrentWindowDimensions(prevWindowDimensions)
+                break;
             case WindowAnimationState.RESTORING:
                 if(isMaximized) maximizeWindow('BUTTON')
                 else revertWindow()
@@ -308,17 +311,15 @@ function Window(props: WindowProps) {
                 height: motionHeight,
                 transitionDuration: `${getAnimationDuration(animationState, isMaximized)}ms`,
             }}
-            initial={
-                {
-                    scale: 0.8,
-                    opacity: 0,
-                }
-            }
+            initial={{
+                scale: 0.6,
+                opacity: 0.1,
+            }}
             ref={windowRef}
             onMouseDown={props.onInteract}
         >
             <div
-                className={`titleBar cursor-move flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ${titleBarColor}`}
+                className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-3 rounded-t-[4px] ${titleBarColor}`}
             >
                 <div
                     className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-3"

@@ -15,7 +15,7 @@ const Home = () => {
                         <h3 className={""}>My Portfolio</h3>
                         <div className={"w-full h-[2px] rounded-full bg-retro-dark -mt-[3px]"}></div>
                     </div>
-                    <p className={"mt-3 font-medium text-md text-retro-dark"}>
+                    <p className={"mt-3 font-medium text-[16px] text-retro-dark"}>
                         Welcome to my Portfolio! Here you can find all the information about me and my projects.
                     </p>
                 </div>
@@ -25,14 +25,14 @@ const Home = () => {
                         <h1 className={"font-extrabold"}>
                             Ismail Feham
                         </h1>
-                        <h2 className={"-mt-6 text-[30px] font-bold"}>
+                        <h2 className={"-mt-8 -mb-6 text-[31px] font-pixolde font-bold"}>
                             Software Engineer COOP
                         </h2>
-                        <h4 className={"text-[18px] font-bold"}>
+                        <h4 className={"text-[24px] font-pixolde font-bold"}>
                             Concordia University
                         </h4>
                     </div>
-                    <nav className={"text-[30px] pb-[60px]"}>
+                    <nav className={"text-[34px] underline font-pixolde pb-[60px]"}>
                         <Link href={"/about"} className="p-4 visited:text-purple-950">
                             About
                         </Link>

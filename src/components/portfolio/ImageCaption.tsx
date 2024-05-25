@@ -28,7 +28,7 @@ const ImageCaption = (props: ImageCaptionProps) => {
                     className={`rounded-md shadow-figure border-3 border-retro-dark ${props.layout === 'contain' ? 'object-contain' : 'object-cover'}`}
                 />
             </div>
-            <p className="mt-2 text-sm text-center overflow-hidden whitespace-normal text-ellipsis line-clamp-1 ">
+            <p className="mt-2 text-[21px] text-center overflow-hidden whitespace-normal text-ellipsis line-clamp-1 ">
                 <b>Figure {props.count}: </b>{props.caption}
             </p>
         </div>

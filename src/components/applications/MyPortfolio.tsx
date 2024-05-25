@@ -4,11 +4,6 @@ interface MyPortfolioProps {
     children: React.ReactNode;
 }
 
-export const TITLE_HEIGHT = {
-    className: "text-[60px]",
-    value: 60
-}
-
 const MyPortfolio = forwardRef<HTMLDivElement, MyPortfolioProps>((props, ref) => {
 
     return (
