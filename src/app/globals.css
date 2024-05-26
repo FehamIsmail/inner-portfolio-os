@@ -64,6 +64,11 @@ h1, h2, h3, h4, h5 {
     @apply font-bold;
 }
 
+a{
+    @apply text-blue-600;
+    @apply underline;
+}
+
 a:visited{
     @apply text-purple-950;
 }

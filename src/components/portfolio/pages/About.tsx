@@ -62,7 +62,7 @@ const About = () => {
                         of computer science. I was also interested in learning more about web development and how it could
                         be used to create engaging and interactive applications. I took on a variety of projects, including
                         developing a 2D platformer game <Link className={"visited:text-purple-950"} href={'/projects'}>
-                        <b> Gun Runner </b></Link> built in Java using JavaFX for the graphics and physics engine. I&apos;ve
+                        <b>Gun Runner</b></Link> built in Java using JavaFX for the graphics and physics engine. I&apos;ve
                         also worked on a physics simulation (<Link href={'/projects'} className={"visited:text-purple-950"}>
                         <b>EMS</b></Link>) project that simulates three laws of electromagnetism using Java and JavaFXML
                         by carefully following a project management plan.
@@ -100,7 +100,8 @@ const About = () => {
                         languages, including C, C++, C#, Python, Lisp, and so on. As a COOP student, I&apos;ve had the
                         opportunity to work on real-world projects and gain valuable experience in my first internship
                         at <a href={"https://www.rossvideo.com/"} className={"visited:text-purple-950"} target="_blank" rel="noreferrer noopener">
-                        <b>Ross Video</b></a> as a Full Stack Web Developer.
+                        <b>Ross Video</b></a> as a Full Stack Web Developer - and now at <a href={"https://www.flexspring.com/"}>
+                        <b>Flexspring</b></a>.
                     </p>
                 </div>
                 {/**************** End of Concordia years ***********************/}

@@ -31,7 +31,7 @@ const SideNav = () => {
                 <h2 className="font-[900] -mb-8">Feham</h2>
                 <h4 className="font-nunito text-[20px] font-[700]">My Portfolio</h4>
             </div>
-            <nav className="flex flex-col font-pixolde gap-2 p-[48px] font-[800] text-xl">
+            <nav className="flex flex-col font-pixolde gap-2 p-[48px] pr-0 font-[800] text-xl">
                 {navigationLinks.map((link) => (
                     <div key={`div-${link.name}`} className="flex flex-row items-center gap-2 mb-5">
                         {navOnFocus === link.name.toLowerCase() && (
