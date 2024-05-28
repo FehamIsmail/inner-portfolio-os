@@ -52,7 +52,7 @@ h5 {
 }
 
 p{
-    @apply mt-2;
+    @apply mt-4;
     font-size: 24px;
     @apply text-justify;
     @apply font-medium;

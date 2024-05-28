@@ -1,6 +1,6 @@
 import React from 'react';
-import mailbox from "@/assets/images/mailbox.gif";
-import download from "@/assets/images/down.png";
+import mailbox from "@/assets/resources/mailbox.gif";
+import download from "@/assets/resources/down.png";
 import Image from "next/image";
 
 interface ResumeDownloadProps {

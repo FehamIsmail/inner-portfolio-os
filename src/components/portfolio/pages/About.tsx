@@ -1,12 +1,12 @@
 import React from 'react';
 import Link from "next/link";
 import ResumeDownload from "@/components/portfolio/ResumeDownload";
-import ImageCaption from "@/components/portfolio/ImageCaption";
+import MediaCaption from "@/components/portfolio/MediaCaption";
 import Image from "next/image";
-import lego from "@/assets/images/lego_mindstorms.png";
-import me_robotics from "@/assets/images/childhood_robotics.png";
-import vanier_college from "@/assets/images/vanier_college.jpg";
-import concordia from "@/assets/images/concordia.jpg";
+import lego from "@/assets/resources/lego_mindstorms.png";
+import me_robotics from "@/assets/resources/childhood_robotics.png";
+import vanier_college from "@/assets/resources/vanier_college.jpg";
+import concordia from "@/assets/resources/concordia.jpg";
 
 const About = () => {
     return (
@@ -42,14 +42,15 @@ const About = () => {
                 programming in Java.
             </p>
             <div className={"px-64 mt-4 w-full h-fit flex flex-col items-center"}>
-                <ImageCaption
+                <MediaCaption
                     src={me_robotics.src}
-                    alt={""}
+                    type={"image"}
+                    alt={"Photo of me robotics meeting"}
                     caption={"Photo of myself intensely focused on team strategies."}
                     count={1}
                 />
             </div>
-            {/****************** End of childhood ***********************/}
+            {/****************** End of childhood ******************/}
 
 
             {/**************** College years ***********************/}
@@ -69,23 +70,25 @@ const About = () => {
                     </p>
                 </div>
                 <div className={"flex-1"}>
-                    <ImageCaption
+                    <MediaCaption
                         src={vanier_college.src}
                         alt={"Photo Vanier College"}
+                        type={"image"}
                         caption={"Vanier College"}
                         count={2}
                     />
                 </div>
             </div>
-            {/**************** End of college years ***********************/}
+            {/**************** End of college years ******************/}
 
 
             {/**************** Concordia years ***********************/}
             <div className={"mt-4 flex flex-row items-center gap-6"}>
                 <div className={"flex-1"}>
-                    <ImageCaption
+                    <MediaCaption
                         src={concordia.src}
                         alt={"Photo Concordia University"}
+                        type={"image"}
                         caption={"Concordia University"}
                         count={3}
                     />
@@ -104,7 +107,7 @@ const About = () => {
                         <b>Flexspring</b></a>.
                     </p>
                 </div>
-                {/**************** End of Concordia years ***********************/}
+                {/**************** End of Concordia years ******************/}
 
             </div>
         </div>

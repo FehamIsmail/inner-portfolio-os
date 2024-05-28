@@ -3,22 +3,37 @@ import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-const navigationLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Experiences', href: '/experiences' },
-    { name: 'Projects', href: '/projects' },
-    { name: 'Contact', href: '/contact' },
+interface NavigationLinkType {
+    name: string;
+    href: string;
+}
+
+const navigationLinks: NavigationLinkType[] = [
+    { name: 'Home',         href: '/' },
+    { name: 'About',        href: '/about' },
+    { name: 'Experiences',  href: '/experiences' },
+    { name: 'Projects',     href: '/projects' },
+    { name: 'Contact',      href: '/contact' },
 ];
+
+const projectsLinks: NavigationLinkType[] = [
+    { name: 'Software', href: '/projects/software' },
+    { name: 'Business', href: '/projects/business' },
+    { name: 'Arts',     href: '/projects/arts' },
+];
+
 
 const SideNav = () => {
     const [isHome, setIsHome] = React.useState(false);
-    const navigation = usePathname();
+    const [expandProjects, setExpandProjects] = React.useState(false);
     const [navOnFocus, setNavOnFocus] = React.useState<string>();
+    const navigation = usePathname();
 
     useEffect(() => {
         setIsHome(navigation === '/');
-        setNavOnFocus(navigation.substring(1));
+        setExpandProjects(navigation.includes('projects'));
+        const url = navigation.split('/');
+        setNavOnFocus(url[url.length - 1]);
     }, [navigation]);
 
     return (!isHome ? (
@@ -32,15 +47,33 @@ const SideNav = () => {
                 <h4 className="font-nunito text-[20px] font-[700]">My Portfolio</h4>
             </div>
             <nav className="flex flex-col font-pixolde gap-2 p-[48px] pr-0 font-[800] text-xl">
-                {navigationLinks.map((link) => (
-                    <div key={`div-${link.name}`} className="flex flex-row items-center gap-2 mb-5">
-                        {navOnFocus === link.name.toLowerCase() && (
-                            <div className="w-2 h-2 bg-retro-dark rounded-full" />
+                {navigationLinks.map((link, index) => (
+                    <React.Fragment key={`nav-link-${index}`}>
+                        {!link.href.includes('/projects/') && (
+                            <CustomLink
+                                key={`component-link-${link.name}-${index}`}
+                                size={28}
+                                margin={10}
+                                name={link.name}
+                                href={link.href}
+                                isFocused={navOnFocus === link.name.toLowerCase()}
+                            />
                         )}
-                        <Link className={"text-[28px]"} key={`link-${link.name}`} href={link.href}>
-                            {link.name}
-                        </Link>
-                    </div>
+                        {expandProjects && link.name === 'Projects' && (
+                            <div className="flex flex-col gap-1 -mt-2 mb-1 ml-8" key={`expanded-nav-${index}`}>
+                                {projectsLinks.map((subLink, subIndex) => (
+                                    <CustomLink
+                                        key={`sub-link-${subLink.name}-${subIndex}`}
+                                        margin={0}
+                                        size={26}
+                                        name={subLink.name}
+                                        href={subLink.href}
+                                        isFocused={navOnFocus === subLink.name.toLowerCase()}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </React.Fragment>
                 ))}
             </nav>
         </div>
@@ -49,4 +82,24 @@ const SideNav = () => {
     ));
 };
 
+interface CustomLinkProps {
+    name: string;
+    href: string;
+    size: number;
+    margin: number;
+    isFocused: boolean;
+}
+const CustomLink = (props: CustomLinkProps) => {
+    const { name, href, isFocused, size, margin } = props;
+    return (
+        <div className={'flex flex-row items-center gap-2'} style={{ marginBottom: `${margin}px` }}>
+            {isFocused && <div className="w-2 h-2 bg-retro-dark rounded-full" />}
+            <Link href={href} key={`link-${name}`} style={{ fontSize: `${size}px` }}>
+                {name}
+            </Link>
+        </div>
+    );
+};
+
 export default SideNav;
+
