@@ -51,8 +51,9 @@ const MediaCaption = (props: ImageCaptionProps) => {
                     loop
                     muted
                     preload={"auto"}
+                    style={{imageRendering: 'crisp-edges'}}
                 >
-                    <source src={props.src} type="video/mp4"/>
+                    <source src={props.src} type="video/mp4" />
                 </video>}
 
             </div>
