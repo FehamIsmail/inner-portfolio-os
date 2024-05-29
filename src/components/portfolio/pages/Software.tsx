@@ -1,9 +1,9 @@
 import React from 'react';
 import ResumeDownload from "@/components/portfolio/ResumeDownload";
-import github from "@/assets/resources/github.png";
+import github from "@/assets/images/github.png";
 import Image from "next/image";
 import MediaCaption from "@/components/portfolio/MediaCaption";
-import portfolio from "@/assets/resources/projects/software/portfolio.png";
+import portfolio from "@/assets/images/projects/software/portfolio.png";
 
 
 
@@ -90,7 +90,6 @@ const Software = () => {
                               caption={"Flying over mountains in 3D space"}
                               count={3}/>
             </div>
-
             <p>
                 Perhaps the most challenging aspect of this project was implementing the <b>clipping algorithm</b>, which is
                 responsible for determining which parts of an object are visible to the camera. By using a combination of
@@ -99,7 +98,6 @@ const Software = () => {
                 process that required a deep understanding of 3D graphics and rendering techniques. At the end, I was able
                 to make a fully functional clipping mechanism, which greatly improved the performance of the engine.
             </p>
-
             <p>
                 Nonetheless, the engine is still a work in progress. I plan to continue experimenting, adding new features
                 such as texture mapping, lighting, and shadows. I would also like to leverage my GPU to improve the

@@ -3,10 +3,10 @@ import Link from "next/link";
 import ResumeDownload from "@/components/portfolio/ResumeDownload";
 import MediaCaption from "@/components/portfolio/MediaCaption";
 import Image from "next/image";
-import lego from "@/assets/resources/lego_mindstorms.png";
-import me_robotics from "@/assets/resources/childhood_robotics.png";
-import vanier_college from "@/assets/resources/vanier_college.jpg";
-import concordia from "@/assets/resources/concordia.jpg";
+import lego from "@/assets/images/lego_mindstorms.png";
+import me_robotics from "@/assets/images/childhood_robotics.png";
+import vanier_college from "@/assets/images/vanier_college.jpg";
+import concordia from "@/assets/images/concordia.jpg";
 
 const About = () => {
     return (

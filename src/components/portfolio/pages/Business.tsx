@@ -1,9 +1,9 @@
 import React from 'react';
-import mdv_bill from "@/assets/resources/projects/business/500_BILL_MDV filtered.png";
-import mdv_back from "@/assets/resources/projects/business/mdv_back.png";
-import mdv_front from "@/assets/resources/projects/business/mdv_front.png";
-import cap_black from "@/assets/resources/projects/business/cap_black.png";
-import cap_white from "@/assets/resources/projects/business/cap_white.png";
+import mdv_bill from "@/assets/images/projects/business/500_BILL_MDV filtered.png";
+import mdv_back from "@/assets/images/projects/business/mdv_back.png";
+import mdv_front from "@/assets/images/projects/business/mdv_front.png";
+import cap_black from "@/assets/images/projects/business/cap_black.png";
+import cap_white from "@/assets/images/projects/business/cap_white.png";
 import MediaCaption from "@/components/portfolio/MediaCaption";
 import ImageExplorer from "@/components/common/ImageExplorer";
 
@@ -38,8 +38,22 @@ const Business = () => {
                 importance of customer feedback and how to use it to improve our products and services.
             </p>
             <div className={"mt-4 px-10 flex flex-row gap-10 w-full"}>
-                <ImageExplorer className={"flex-1"} images={[mdv_front.src, mdv_back.src]} />
-                <ImageExplorer className={"flex-1"} images={[cap_black.src, cap_white.src]} />
+                <ImageExplorer
+                    className={"flex-1"}
+                    height={500}
+                    images={[
+                        {name: "mdv_front.png", src: mdv_front.src},
+                        {name: "mdv_back.png", src: mdv_back.src}
+                    ]}
+                />
+                <ImageExplorer
+                    className={"flex-1"}
+                    height={500}
+                    images={[
+                        {name: "cap_black.png", src: cap_black.src},
+                        {name: "cap_white.png", src: cap_white.src}
+                    ]}
+                />
             </div>
         </div>
     );

@@ -1,44 +1,45 @@
 import React from 'react';
-import getIcon, {IconName} from "@/assets/icons";
+import getIcon, { IconName } from "@/assets/icons";
 import Image from "next/image";
 
 interface IconProps {
     icon: IconName;
     size?: number;
     className?: string;
-    colorize?: boolean;
+    colorize?: boolean | string;
 }
 
 function Icon(props: IconProps) {
+    const { icon, size, className, colorize } = props;
 
-    const iconStyle = {
-        color: props.colorize ? 'var(--color-retro-dark)' : 'inherit',
-    };
+    // Determine the icon color based on the `colorize` prop
+    const iconColor = typeof colorize === 'boolean'
+        ? (colorize ?  'var(--color-retro-dark)' : 'none')
+        : (colorize || 'none');
 
-    // it is a svg if getIcon(iconName) returns a StaticImageData type object
-    const IconComponent = getIcon(props.icon); // Retrieve the icon component using the icon name
+    // Retrieve the icon component using the icon name
+    const IconComponent = getIcon(icon);
 
-    const isSvg = typeof IconComponent === 'function'; // Check if it's an SVG component
+    // Check if it's an SVG component
+    const isSvg = typeof IconComponent === 'function';
 
     return (
-        <div className={"flex items-center justify-center"} style={iconStyle}>
-            { isSvg ? (
-                <IconComponent width={props.size} height={"100%"}  />
+        <div className={`flex items-center justify-center ${className}`} style={{ color: iconColor }}>
+            {isSvg ? (
+                <IconComponent width={size} height="100%" fill={iconColor} />
             ) : (
-                <div className={props.className + " h-fit w-fit"}>
+                <div className="h-fit w-fit">
                     <Image
-                        className={" select-none"}
-                        style={iconStyle}
+                        className="select-none"
                         src={IconComponent}
-                        alt={props.icon}
-                        width={props.size}
+                        alt={icon}
+                        width={size}
                         draggable={false}
                     />
                 </div>
             )}
         </div>
     );
-
 }
 
 export default Icon;
