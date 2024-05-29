@@ -1,4 +1,6 @@
 ## [Portolio Website Link](https://ismail-feham-inner-portfolio.vercel.app)
+## [Figma Link](https://www.figma.com/design/mul003xLBGLIALAVfLifWd/Portfolio---Ismail-Feham?node-id=0-1&t=PPtJadM5PoLSVXy5-1)
+<br />
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
