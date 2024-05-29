@@ -78,7 +78,7 @@ const Software = () => {
                 was a lot of fun to work on. Getting to see the 3D models I created in Blender rendered in real-time and
                 applying linear algebra concepts to manipulate them was a very rewarding experience.
             </p>
-            <div className={"mt-4 w-full h-fit flex flex-row justify-between gap-4 items-center"}>
+            <div className={"mt-4 w-full h-fit flex flex-row justify-center gap-[2%] items-center"}>
                 <MediaCaption src={"/videos/software/console3D_monkey.mp4"}
                               alt={"3D Monkey model"}
                               type={"video"}
