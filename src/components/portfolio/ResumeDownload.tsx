@@ -29,7 +29,7 @@ const ResumeDownload = ({margin}: ResumeDownloadProps) => {
                 </div>
                 <div className={"flex flex-col gap-0 -mt-[5px] center"}>
                     <h4 className={"mt-0"}>Searching for my resume?</h4>
-                    <a className={"-mt-3 flex flex-row w-fit gap-2 items-center"} href={''}>
+                    <a className={"-mt-3 flex flex-row w-fit gap-2 items-center"} rel="noopener noreferrer" target="_blank" href={"/resume/ismail_feham_resume.pdf"}>
                         Download it here!
                         <Image className={"-mt-[2px]"} src={download.src} width={24} height={14} alt={'download'}/>
                     </a>
