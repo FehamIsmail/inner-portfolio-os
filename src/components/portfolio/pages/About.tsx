@@ -24,7 +24,7 @@ const About = () => {
             </p>
             <p>I&apos;m thrilled that you&apos;re taking the time to browse through my portfolio. It was a joy to put together,
                 and I hope you find it just as engaging. Should you have any inquiries or feedback, don&apos;t hesitate to
-                connect with me through <Link className={"visited:text-purple-950"} href="/src/components/portfolio/pages/Contact"><b>this form</b></Link> or send an
+                connect with me through <Link className={"visited:text-purple-950"} href="/contact"><b>this form</b></Link> or send an
                 email directly to <a href="mailto:ismail.feham64@gmail.com"><b>ismail.feham64@gmail.com</b></a>.</p>
             <ResumeDownload margin={20}/>
 

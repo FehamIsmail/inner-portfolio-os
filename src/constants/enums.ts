@@ -7,4 +7,5 @@ export enum WindowAnimationState {
     VISIBLE = 'VISIBLE',
     DRAGGING = 'DRAGGING',
     RESIZING = 'RESIZING',
+    INITIALIZING = 'INITIALIZING',
 }

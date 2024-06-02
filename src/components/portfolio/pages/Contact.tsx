@@ -2,6 +2,7 @@
 import React from 'react';
 import Button from "@/components/common/Button";
 import ResumeDownload from "@/components/portfolio/ResumeDownload";
+import {useAlert} from "@/components/utils/AlertProvider";
 
 const formFields = [
     {
@@ -38,13 +39,14 @@ const formFields = [
     }
 ]
 const Contact = () => {
-
+    const [isValid, setIsValid] = React.useState(false)
     const [form, setForm] = React.useState({
         fullName: "",
         email: "",
         company: "",
         message: ""
     });
+    const { alert } = useAlert();
 
     const handleChange = (e: React.ChangeEvent<any>) => {
         setForm({
@@ -55,11 +57,14 @@ const Contact = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        submitMessage();
     }
 
-    const submitMessage = () => {
-        console.log(form);
+    const validateForm = () => {
+        if(form.fullName !== "" && form.email !== "" && form.message !== "") return false;
+        // check using regex if email is valid
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if(!emailRegex.test(form.email)) return false;
+        return form.fullName !== "" && form.email !== "" && form.message !== "";
     }
 
     return (
@@ -86,12 +91,10 @@ const Contact = () => {
                     />
                 ))}
                 <div className={"mt-10 w-[200px]"}>
-                    <Button label="Submit" disabled={true} onClick={handleSubmit} form/>
+                    <Button label="Submit" disabled={false} onClick={handleSubmit} form/>
                 </div>
             </form>
             <ResumeDownload margin={20}/>
-            <br/>
-            <br/>
         </div>
 );
 };

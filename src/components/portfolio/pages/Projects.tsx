@@ -28,7 +28,7 @@ const Projects = () => {
     return (
         <div className={""}>
             <h2>& Passions</h2>
-            <div className="mt-16 flex flex-row gap-6 justify-center pb-[150px]">
+            <div className="mt-16 flex flex-row gap-6 justify-center">
                 {projects.map((project, index) => (
                     <ProjectCard key={index} name={project.name} href={project.href} src={project.src} />
                     ))}

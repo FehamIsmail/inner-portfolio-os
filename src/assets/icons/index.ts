@@ -3,14 +3,15 @@ import arrowUp from './arrowUp.svg'
 import arrowLeft from './arrowLeft.svg'
 import arrowRight from './arrowRight.svg'
 import battery from './battery.svg'
-import close from './close.png'
-import maximize from './maximize.png'
-import minimize from './minimize.png'
+import close from './close.svg'
+import error from './error.svg'
+import maximize from './maximize.svg'
+import minimize from './minimize.svg'
 import myPortfolioClosed from './myPortfolioClosed.svg'
 import myPortfolioOpened  from './myPortfolioOpened.svg'
 import networkTabs from './networkTabs.png'
 import resize from './resize.svg'
-import restoreDown from './restoreDown.png'
+import restoreDown from './restoreDown.svg'
 import speaker from './speaker.svg'
 import start from './start.png'
 import wifi1 from './wifi1.svg'
@@ -24,6 +25,7 @@ const icons = {
     arrowRight,
     battery,
     close,
+    error,
     maximize,
     minimize,
     myPortfolioClosed,

@@ -21,7 +21,6 @@ const MediaCaption = (props: ImageCaptionProps) => {
         const media = videoRef.current;
         if (media) {
             media.onloadeddata = () => {
-                console.log('loaded');
                 media.play();
             }
         }

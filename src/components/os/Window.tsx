@@ -6,6 +6,7 @@ import {motion, useSpring} from "framer-motion"
 import {WindowAnimationState} from "@/constants/enums";
 import {getAnimationDuration, getOpacity, getScale} from "@/components/utils/AnimationUtils";
 import useResizeObserver from "@react-hook/resize-observer";
+import {usePathname} from "next/navigation";
 
 const titleBarColors = {
     red: 'bg-retro-red',
@@ -15,7 +16,7 @@ const titleBarColors = {
 }
 
 export const MIN_WIDTH = 420;
-export const MIN_HEIGHT = 220;
+export const MIN_HEIGHT = 180;
 
 const titleBarHeight = {
     value: 24,
@@ -24,7 +25,7 @@ const titleBarHeight = {
 
 const statusBarHeight = {
     value: 20,
-    className: 'h-[20px]',
+    className: 'min-h-[20px]',
 };
 
 interface WindowDimensions {
@@ -35,22 +36,25 @@ interface WindowDimensions {
 }
 
 interface WindowProps {
+    top: number;
+    left: number;
     onClose: () => void;
-    onMinimize: () => void;
+    onMinimize?: () => void;
     onInteract: () => void;
     animationState: WindowAnimationState;
     setAnimationState: (state: WindowAnimationState) => void;
     application: ApplicationType;
-    top: number;
-    left: number;
     taskbarPos: number;
+    isModal?: boolean;
 }
 
 function Window(props: WindowProps) {
     const [firstRender, setFirstRender] = React.useState<boolean>(true);
+    const [sizeInitialized, setSizeInitialized] = React.useState<boolean>(false);
     const [isMaximized, setIsMaximized] = React.useState<boolean>(false);
     const [isOverflown, setIsOverflown] = React.useState<boolean>(false);
     const {animationState, setAnimationState} = props;
+    const navigation = usePathname();
 
     const windowRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -79,6 +83,7 @@ function Window(props: WindowProps) {
     const motionY = useSpring(currentWindowDimensions.y, springOptions)
     const motionWidth = useSpring(currentWindowDimensions.width, springOptions)
     const motionHeight = useSpring(currentWindowDimensions.height, springOptions)
+    const motionScale = useSpring(0.6, springOptions)
 
     useResizeObserver(containerRef, () => {
         checkOverflow();
@@ -90,13 +95,20 @@ function Window(props: WindowProps) {
     }>()
 
     const setMotionValues = useCallback((values: WindowDimensions) => {
-        motionX.set(values.x)
-        motionY.set(values.y)
-        motionWidth.set(values.width || MIN_WIDTH)
-        motionHeight.set(values.height || MIN_HEIGHT)
-    }, [motionX, motionY, motionWidth, motionHeight])
+        if (animationState === WindowAnimationState.DRAGGING && !isMaximized) {
+            motionX.jump(values.x, true);
+            motionY.jump(values.y, true);
+            motionWidth.jump(values.width || MIN_WIDTH, true);
+            motionHeight.jump(values.height || MIN_HEIGHT, true);
+        } else {
+            motionX.set(values.x);
+            motionY.set(values.y);
+            motionWidth.set(values.width || MIN_WIDTH);
+            motionHeight.set(values.height || MIN_HEIGHT);
+        }
+    }, [motionX, motionY, motionWidth, motionHeight, animationState, isMaximized]);
 
-    const checkOverflow = () => {
+    const checkOverflow = useCallback(() => {
         const cont = containerRef.current;
         const scrollBarBorder = scrollBarBorderRef.current;
         if (cont && animationState !== WindowAnimationState.MINIMIZING) {
@@ -105,7 +117,7 @@ function Window(props: WindowProps) {
                 scrollBarBorder.style.height = `${cont.clientHeight}px`;
             }
         }
-    };
+    }, [containerRef, scrollBarBorderRef, animationState]);
 
     const startResize = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -161,14 +173,14 @@ function Window(props: WindowProps) {
         // Check for a change in position
         if (x === currentWindowDimensions.x && y === currentWindowDimensions.y) return;
         const { width, height } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
-        const isGettingMaximized = y < 0;
-        setIsMaximized(isGettingMaximized)
+        const isGettingMaximized = props.isModal ? false : y < 0;
         setCurrentWindowDimensions({
             x: isGettingMaximized ? 0 : x + getOffsetX(),
             y: isGettingMaximized ? 0 : y,
             width: isGettingMaximized ? window.innerWidth : width,
             height: isGettingMaximized ? window.innerHeight - 40 : height
         });
+        setIsMaximized(isGettingMaximized)
     }
 
     const stopDrag = ({ clientX, clientY }: MouseEvent) => {
@@ -178,7 +190,7 @@ function Window(props: WindowProps) {
         const { width } = windowRef.current.getBoundingClientRect();
         // Add boundary checks
         if (x + getOffsetX() < -width + 145) x = -width + 145 - getOffsetX();
-        if (y < 0) {
+        if (y < 0 && !props.isModal) {
             maximizeWindow('DRAG')
             window.removeEventListener('mousemove', onDrag, false);
             window.removeEventListener('mouseup', stopDrag, false);
@@ -187,6 +199,7 @@ function Window(props: WindowProps) {
         }
         if (x > window.innerWidth - 102) x = window.innerWidth - 102;
         if (y > window.innerHeight - 100) y = window.innerHeight - 100;
+        if (y < 0) y = 0;
         const { width: finalWidth, height: finalHeight } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
         setCurrentWindowDimensions({ x: x + getOffsetX(), y, width:finalWidth, height:finalHeight });
         setPrevWindowDimensions({ ...prevWindowDimensions, x: x + getOffsetX(), y });
@@ -213,6 +226,7 @@ function Window(props: WindowProps) {
         }
     }
     const maximizeWindow = (actionOrigin: 'DRAG' | 'BUTTON') => {
+        if(props.isModal) return
         setIsMaximized(true);
         if(actionOrigin === 'BUTTON') setPrevWindowDimensions(currentWindowDimensions);
         setCurrentWindowDimensions({
@@ -224,8 +238,7 @@ function Window(props: WindowProps) {
     }
 
     const animateMinimize = () => {
-        setCurrentWindowDimensions(
-            {
+        setCurrentWindowDimensions({
                 ...currentWindowDimensions,
                 x: props.taskbarPos - currentWindowDimensions.width / 2,
                 y: window.innerHeight - 140,
@@ -238,8 +251,7 @@ function Window(props: WindowProps) {
     }
 
     const repositionWindow = () => {
-        setCurrentWindowDimensions(
-            {
+        setCurrentWindowDimensions({
                 ...currentWindowDimensions,
                 x: (currentWindowDimensions.x + prevWindowDimensions.x) / 2,
                 y: (currentWindowDimensions.y + prevWindowDimensions.y) / 2,
@@ -262,21 +274,25 @@ function Window(props: WindowProps) {
             case WindowAnimationState.MINIMIZED:
                 repositionWindow()
                 break;
+            case WindowAnimationState.INITIALIZING:
+                setTimeout(() => {
+                    setAnimationState(WindowAnimationState.VISIBLE);
+                }, 400);
+                break;
             default:
-                return
+                break;
         }
-    }, [animationState, isMaximized]);
+        motionScale.set(getScale(animationState, isMaximized, firstRender));
+    }, [animationState, isMaximized, firstRender, motionScale]);
 
     useEffect(() => {
-        if(!firstRender) return
+        if(!firstRender || !contentRef.current) return
         checkOverflow()
-        if (contentRef.current && animationState === WindowAnimationState.OPENING) {
+        if (animationState === WindowAnimationState.OPENING) {
             setFirstRender(false);
-            const contentRect = contentRef.current.getBoundingClientRect();
-            const margin = statusBarHeight.value + titleBarHeight.value + 9;
             const { width, height } = {
-                width: props.application.width || Math.max(contentRect.width + margin, MIN_WIDTH),
-                height: props.application.height || Math.max(contentRect.height + margin, MIN_HEIGHT),
+                width: props.application.width ||  MIN_WIDTH,
+                height: props.application.height || (props.isModal ? 50 : MIN_HEIGHT),
             }
             setCurrentWindowDimensions({
                 ...currentWindowDimensions,
@@ -288,27 +304,47 @@ function Window(props: WindowProps) {
                 width,
                 height,
             });
+            if(props.application.width && props.application.height)
+                setSizeInitialized(true);
         }
     }, [firstRender, contentRef, animationState]);
+
+    useEffect(() => {
+        if(!contentRef.current) return
+        if(!sizeInitialized && animationState === WindowAnimationState.VISIBLE) {
+            setAnimationState(WindowAnimationState.INITIALIZING)
+            const { clientWidth, clientHeight } = contentRef.current;
+            const margin = titleBarHeight.value + (props.isModal ? 0 : statusBarHeight.value) + 9;
+            if (!props.application.width)
+                setCurrentWindowDimensions({...currentWindowDimensions, width: clientWidth + margin});
+            if (!props.application.height)
+                setCurrentWindowDimensions({...currentWindowDimensions, height: clientHeight + margin});
+            setSizeInitialized(true)
+        }
+    }, [sizeInitialized, contentRef, animationState]);
 
     useEffect(() => {
         setMotionValues(currentWindowDimensions)
     }, [currentWindowDimensions, setMotionValues])
 
+    useEffect(() => {
+        checkOverflow()
+    }, [checkOverflow, navigation]);
+
     return (
         <motion.div
             className={`flex flex-col bg-retro-white absolute divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
-                ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? 'border-b-0  shadow-window-maximized' : 'shadow-window'}`}
+            ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? 'border-b-0  shadow-window-maximized' : 'shadow-window'}`}
             animate={{
-                scale: getScale(animationState, isMaximized, firstRender),
                 opacity: getOpacity(animationState),
-                transitionDuration: animationState === WindowAnimationState.RESTORING ? `20ms`: undefined,
+                transitionDuration: animationState === WindowAnimationState.RESTORING ? `20ms` : undefined,
             }}
             style={{
                 x: motionX,
                 y: motionY,
                 width: motionWidth,
                 height: motionHeight,
+                scale: motionScale,
                 transitionDuration: `${getAnimationDuration(animationState, isMaximized)}ms`,
             }}
             initial={{
@@ -329,34 +365,42 @@ function Window(props: WindowProps) {
                 </div>
                 <div className="flex items-center right-titleBar">
                     <div className="flex gap-4 items-center">
-                        <button
-                            className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
-                            onClick={props.onMinimize}
-                        >
-                        </button>
-                        <button
-                            className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
-                            onClick={maximizeHandler}
-                        >
-                        </button>
+                        {!props.isModal &&
+                            <button
+                                className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
+                                onClick={props.onMinimize}
+                            />}
+                        {!props.isModal &&
+                            <button
+                                className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
+                                onClick={maximizeHandler}
+                            />}
                         <button
                             className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#fd89c2]"
                             onClick={props.onClose}
-                        >
-                        </button>
+                        />
                     </div>
                 </div>
             </div>
             <section
-                    className={`flex-grow flex flex-row ${scrollBarClassNames} 
-                    ${animationState === WindowAnimationState.RESTORING ||  animationState === WindowAnimationState.OPENING ? 
+                className={`flex-grow flex flex-row ${scrollBarClassNames} ${(
+                    animationState === WindowAnimationState.RESTORING || 
+                    animationState === WindowAnimationState.OPENING || 
+                    animationState === WindowAnimationState.INITIALIZING ||
+                    !sizeInitialized
+                ) ?
                     'overflow-hidden' : 'overflow-y-auto overflow-x-clip'}`}
-                     ref={containerRef}
+                ref={containerRef}
             >
-                <props.application.component ref={contentRef}>
+                <props.application.component ref={contentRef} {...props.application.props}>
                     {props.application.children}
                 </props.application.component>
-                {isOverflown &&
+                {(
+                    isOverflown &&
+                    animationState !== WindowAnimationState.INITIALIZING &&
+                    animationState !== WindowAnimationState.OPENING &&
+                    sizeInitialized
+                ) &&
                     <div
                         className={"absolute z-200 right-[16px] bg-retro-dark w-[3px] scrollbar-right-border"}
                         ref={scrollBarBorderRef}
@@ -364,14 +408,16 @@ function Window(props: WindowProps) {
                 }
             </section>
 
-            {!isMaximized &&
-                <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg`}>
-                    <button
-                        className={`flex flex-row cursor-se-resize p-[2px] border-retro-dark h-full`}
-                        onMouseDown={startResize}
-                    >
-                        <Icon className={'text-retro-background self-end'} icon={'resize'} size={12} colorize={true}/>
-                    </button>
+            {(!isMaximized && !props.isModal) &&
+                <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg ${props.isModal ? 'bg-retro-medium' : ''}`}>
+                    {!props.isModal &&
+                        <button
+                            className={`flex flex-row cursor-se-resize p-[2px] border-retro-dark h-full`}
+                            onMouseDown={startResize}
+                        >
+                            <Icon className={'text-retro-background self-end'} icon={'resize'} size={12}
+                                  colorize={true}/>
+                        </button>}
                 </div>
             }
         </motion.div>

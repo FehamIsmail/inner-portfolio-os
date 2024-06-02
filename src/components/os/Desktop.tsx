@@ -8,10 +8,20 @@ import {ApplicationType, DesktopWindows} from "@/constants/types";
 import {WindowAnimationState} from "@/constants/enums";
 import {WINDOW_ANIMATION_DURATION} from "@/components/utils/AnimationUtils";
 import {setDynamicColors} from "@/components/utils/ColorUtils";
+import AlertProvider, {ALERT_WIDTH} from "@/components/utils/AlertProvider";
 
 interface DesktopProps {
     children?: React.ReactNode;
 }
+
+interface DesktopContextProps {
+    addModal: (application: ApplicationType) => void;
+    removeModal: () => void;
+    addWindow: (application: ApplicationType) => void;
+    removeWindow: (key: string) => void;
+}
+
+export const DesktopContext = React.createContext<DesktopContextProps>({} as DesktopContextProps);
 
 function Desktop({children}: DesktopProps) {
     const [windows, setWindows] = React.useState<DesktopWindows>({} as DesktopWindows);
@@ -84,12 +94,14 @@ function Desktop({children}: DesktopProps) {
     }, [performPostAnimationAction, setWindowAnimationState, updateWindowProperties]);
 
     const minimizeAll = useCallback(() => {
+        if(checkIfModalIsOpen()) return;
         Object.keys(windows).forEach((key) => {
             minimizeWindow(key);
         });
     }, [minimizeWindow, windows]);
 
     const toggleMinimize = useCallback((key: string) => {
+        if(checkIfModalIsOpen()) return;
         const highestZIndex = getHighestZIndex();
         const isFocused = windows[key].zIndex === highestZIndex;
         const newAnimationState = windows[key].minimized ? WindowAnimationState.RESTORING : isFocused ? WindowAnimationState.MINIMIZING : WindowAnimationState.VISIBLE;
@@ -110,8 +122,9 @@ function Desktop({children}: DesktopProps) {
     }, [getHighestZIndex, getLowestZIndex, performPostAnimationAction, setWindowAnimationState, updateWindowProperties, windows]);
 
     const onInteract = useCallback((key: string) => {
+        if(checkIfModalIsOpen()) return;
         updateWindowProperties(key, {zIndex: getHighestZIndex() + 1});
-    }, [getHighestZIndex, updateWindowProperties]);
+    }, [getHighestZIndex, updateWindowProperties, windows]);
 
     const onOpen = useCallback((application: ApplicationType) => {
         addWindow(application);
@@ -142,6 +155,18 @@ function Desktop({children}: DesktopProps) {
             });
         });
     }, []);
+
+    const checkIfModalIsOpen = useCallback(() => {
+        return Object.keys(windows).includes('modal');
+    }, [windows]);
+
+    const addModal = useCallback((application: ApplicationType) => {
+        onOpen(application);
+    }, [onOpen]);
+
+    const removeModal = useCallback(() => {
+        removeWindow('modal');
+    }, [removeWindow]);
 
     useEffect(() => {
         APPLICATIONS.find(application => application.key === 'myPortfolio')!.icon = getPortfolioIcon();
@@ -177,62 +202,74 @@ function Desktop({children}: DesktopProps) {
     }, []);
 
     return (
-        <main
-            className={"font-nunito desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none"}
-        >
-            {Object.keys(windows).map((key) => {
-                const desktopWindow = windows[key];
-                if(key === 'myPortfolio'){
-                    desktopWindow.application.children = children;
-                    desktopWindow.application.width = defaultWindowSize.width;
-                    desktopWindow.application.height = defaultWindowSize.height;
-                }
-                return (
-                    <div
-                        className={`relative ${desktopWindow.minimized ? 'hidden' : ''}`}
-                        key={key}
-                        style={{zIndex: desktopWindow.zIndex}}
-                    >
-                        <Window
-                            key={`window-${key}`}
-                            left={desktopWindow.zIndex * 50 % 200 + defaultWindowSize.margin * window.innerWidth}
-                            top={desktopWindow.zIndex * 50 % 200 + defaultWindowSize.margin * window.innerHeight}
-                            application={desktopWindow.application}
-                            taskbarPos={taskbarAppPosX[key]}
-                            onInteract={() => onInteract(key)}
-                            onMinimize={() => minimizeWindow(key)}
-                            onClose={() => removeWindow(key)}
-                            animationState={desktopWindow.animationState}
-                            setAnimationState={(state) => setWindowAnimationState(key, state)}
-                        />
-                    </div>
-                );
-            })}
-            <div className={"h-screen w-screen"}>
-                <div className={"text-sm flex flex-col w-fit whitespace-nowrap p-6 flex-wrap gap-8"}>
-                    {shortcuts?.map((shortcut) => {
+        <DesktopContext.Provider value={{ addModal, addWindow, removeWindow, removeModal }}>
+            <AlertProvider>
+                <main
+                    className={"font-nunito desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none"}
+                >
+                    {Object.keys(windows).map((key) => {
+                        const desktopWindow = windows[key];
+                        const isModal = key === 'modal';
+                        if(key === 'myPortfolio'){
+                            desktopWindow.application.children = children;
+                            desktopWindow.application.width = defaultWindowSize.width;
+                            desktopWindow.application.height = defaultWindowSize.height;
+                        }
                         return (
-                            <AppShortcut
-                                key={shortcut.name}
-                                icon={shortcut.icon}
-                                name={shortcut.name}
-                                isFocused={shortcut.isFocused}
-                                setFocused={shortcut.setFocused}
-                                onOpen={shortcut.onOpen}
-                            />
-                        )
+                            <div
+                                className={`relative ${desktopWindow.minimized ? 'hidden' : ''}`}
+                                key={key}
+                                style={{zIndex: desktopWindow.zIndex}}
+                            >
+                                <Window
+                                    key={`window-${key}`}
+                                    left={
+                                        isModal ? window.innerWidth / 2 - ALERT_WIDTH / 2
+                                            : desktopWindow.zIndex * 50 % 200 + defaultWindowSize.margin * window.innerWidth}
+                                    top={
+                                        isModal ? 0.17 * window.innerHeight
+                                            : desktopWindow.zIndex * 50 % 200 + defaultWindowSize.margin * window.innerHeight}
+                                    application={desktopWindow.application}
+                                    taskbarPos={taskbarAppPosX[key]}
+                                    onInteract={() => onInteract(key)}
+                                    onMinimize={() => minimizeWindow(key)}
+                                    onClose={
+                                        isModal ? desktopWindow.application.props.onCancel : () => removeWindow(key)
+                                    }
+                                    animationState={desktopWindow.animationState}
+                                    setAnimationState={(state) => setWindowAnimationState(key, state)}
+                                    isModal={isModal}
+                                />
+                            </div>
+                        );
                     })}
-                </div>
+                    <div className={"h-screen w-screen"}>
+                        <div className={"text-sm flex flex-col w-fit whitespace-nowrap p-6 flex-wrap gap-8"}>
+                            {shortcuts?.map((shortcut) => {
+                                return (
+                                    <AppShortcut
+                                        key={shortcut.name}
+                                        icon={shortcut.icon}
+                                        name={shortcut.name}
+                                        isFocused={shortcut.isFocused}
+                                        setFocused={shortcut.setFocused}
+                                        onOpen={shortcut.onOpen}
+                                    />
+                                )
+                            })}
+                        </div>
 
-            </div>
+                    </div>
 
-            <Taskbar
-                toggleMinimize={toggleMinimize}
-                windows={windows}
-                minimizeAll={minimizeAll}
-                updateTaskbarAppPosX={updateTaskbarAppPosX}
-            />
-        </main>
+                    <Taskbar
+                        toggleMinimize={toggleMinimize}
+                        windows={windows}
+                        minimizeAll={minimizeAll}
+                        updateTaskbarAppPosX={updateTaskbarAppPosX}
+                    />
+                </main>
+            </AlertProvider>
+        </DesktopContext.Provider>
     );
 }
 
