@@ -95,7 +95,9 @@ function Window(props: WindowProps) {
     }>()
 
     const setMotionValues = useCallback((values: WindowDimensions) => {
-        if (animationState === WindowAnimationState.DRAGGING && !isMaximized) {
+        if ((animationState === WindowAnimationState.DRAGGING ||
+            animationState === WindowAnimationState.RESIZING)
+            && !isMaximized) {
             motionX.jump(values.x, true);
             motionY.jump(values.y, true);
             motionWidth.jump(values.width || MIN_WIDTH, true);

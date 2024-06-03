@@ -3,6 +3,8 @@ import React from 'react';
 import Button from "@/components/common/Button";
 import ResumeDownload from "@/components/portfolio/ResumeDownload";
 import {useAlert} from "@/components/utils/AlertProvider";
+import {sendEmail} from "@/components/utils/EmailUtils";
+import {AxiosError, AxiosResponse} from "axios";
 
 const formFields = [
     {
@@ -39,7 +41,6 @@ const formFields = [
     }
 ]
 const Contact = () => {
-    const [isValid, setIsValid] = React.useState(false)
     const [form, setForm] = React.useState({
         fullName: "",
         email: "",
@@ -57,14 +58,29 @@ const Contact = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if(validateForm() !== "success") {
+            alert("Error", "Please fill in all required fields", "error").then(
+                () => {return}
+            )
+            return;
+        }
+        sendEmail(form.email, form.fullName, form.message, form.company).then((res: AxiosResponse<any>) => {
+            alert("Success", `${res.data.message} :]`, "success").then(
+                () => {return}
+            )
+        }).catch((err: AxiosError<any>) => {
+            alert("Error", `${err.response?.data.error} :[`, "error").then(
+                () => {return}
+            )
+        })
     }
 
-    const validateForm = () => {
-        if(form.fullName !== "" && form.email !== "" && form.message !== "") return false;
+    const validateForm = (): string => {
+        if(form.fullName == "" || form.email == "" || form.message == "") return "Please fill in all required fields";
         // check using regex if email is valid
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if(!emailRegex.test(form.email)) return false;
-        return form.fullName !== "" && form.email !== "" && form.message !== "";
+        if(!emailRegex.test(form.email)) return "Please enter a valid email address";
+        return "success";
     }
 
     return (
@@ -96,7 +112,7 @@ const Contact = () => {
             </form>
             <ResumeDownload margin={20}/>
         </div>
-);
+    );
 };
 
 interface FieldInputProps {

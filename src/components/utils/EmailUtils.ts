@@ -1,26 +1,10 @@
-import sgMail from '@sendgrid/mail';
-sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
+import axios from "axios";
 
-export const sendEmailWithSendGrid =
-    async (to: string = 'ismail.feham64@gmail.com,',
-           from: string,
-           name: string,
-           message: string,
-           company?: string,
-           ) =>
-    {
-        const msg = {
-            to,
-            from,
-            subject: `New message from ${name} at ${company || 'Unknown'}`,
-            text: message,
-        };
-        sgMail
-            .send(msg)
-            .then(() => {
-                console.log('Email sent');
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
+export const sendEmail = async (email: string, subject: string, message: string, company?: string) => {
+    return axios.post("/api/sendEmail", {
+        from: email,
+        name: subject,
+        message,
+        company
+    });
+};
