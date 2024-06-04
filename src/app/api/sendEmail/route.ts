@@ -14,16 +14,11 @@ export async function POST(request: Request) {
             from: personalEmail,
             subject: `New email from ${name} - ${company}`,
             text: message,
-            html: `<p>${message}   ${from}</p>`
+            html: `<p>${message}<br/><br/>${from}</p>`
         };
-
-
-        console.log(email);
-
         const response = await sgMail.send(email);
-        console.log('response', response);
-        return NextResponse.json({ message: "Email sent successfully!" }, { status: 200 });
+        return NextResponse.json({ message: "Email sent successfully!" }, { status: response[0].statusCode });
     } catch (error: any) {
-        return NextResponse.json({ error: `Error sending email: ${error.message}` }, { status: 500 });
+        return NextResponse.json({ error: `Error sending email: ${error.message}` }, { status: error[0].statusCode });
     }
 }
