@@ -50,13 +50,13 @@ const AlertProvider = ({children}: AlertProviderProps) => {
     const mapTypeToIcon = (type: keyof AlertTypes): IconName => {
         switch (type) { // TODO: Add icons
             case 'success':
-                return 'start';
+                return 'success';
             case 'error':
-                return 'start';
+                return 'error';
             case 'warning':
-                return 'start';
+                return 'alert';
             case 'info':
-                return 'start';
+                return 'alert';
             default:
                 return 'start';
         }
@@ -74,6 +74,7 @@ const AlertProvider = ({children}: AlertProviderProps) => {
                 props: {
                     title,
                     message,
+                    icon: mapTypeToIcon(type),
                     onConfirm: () => {
                         desktopContext.removeModal();
                         resolve();
@@ -106,6 +107,7 @@ const AlertProvider = ({children}: AlertProviderProps) => {
                 props: {
                     title,
                     message,
+                    icon: mapTypeToIcon(type),
                     onConfirm: () => {
                         desktopContext.removeModal();
                         resolve(true);
