@@ -317,10 +317,14 @@ function Window(props: WindowProps) {
             setAnimationState(WindowAnimationState.INITIALIZING)
             const { clientWidth, clientHeight } = contentRef.current;
             const margin = titleBarHeight.value + (props.isModal ? 0 : statusBarHeight.value) + 9;
-            if (!props.application.width)
+            if (!props.application.width){
                 setCurrentWindowDimensions({...currentWindowDimensions, width: clientWidth + margin});
-            if (!props.application.height)
+                setPrevWindowDimensions({...prevWindowDimensions, width: clientWidth + margin})
+            }
+            if (!props.application.height){
                 setCurrentWindowDimensions({...currentWindowDimensions, height: clientHeight + margin});
+                setPrevWindowDimensions({...prevWindowDimensions, height: clientHeight + margin})
+            }
             setSizeInitialized(true)
         }
     }, [sizeInitialized, contentRef, animationState]);
@@ -367,12 +371,12 @@ function Window(props: WindowProps) {
                 </div>
                 <div className="flex items-center right-titleBar">
                     <div className="flex gap-4 items-center">
-                        {!props.isModal &&
+                        {props.application.resizable !== false &&
                             <button
                                 className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
                                 onClick={props.onMinimize}
                             />}
-                        {!props.isModal &&
+                        {props.application.resizable !== false &&
                             <button
                                 className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
                                 onClick={maximizeHandler}
@@ -411,8 +415,8 @@ function Window(props: WindowProps) {
             </section>
 
             {(!isMaximized && !props.isModal) &&
-                <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg ${props.isModal ? 'bg-retro-medium' : ''}`}>
-                    {!props.isModal &&
+                <div className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg ${props.application.resizable !== false ? '' : 'bg-retro-medium'}`}>
+                    {props.application.resizable !== false &&
                         <button
                             className={`flex flex-row cursor-se-resize p-[2px] border-retro-dark h-full`}
                             onMouseDown={startResize}

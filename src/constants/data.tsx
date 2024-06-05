@@ -1,5 +1,6 @@
 import {ApplicationType} from "@/constants/types";
 import MyPortfolio from "@/components/applications/MyPortfolio";
+import ChatWithMe from "@/components/applications/ChatWithMe";
 
 export const APPLICATIONS: ApplicationType[] = [
     {
@@ -8,28 +9,15 @@ export const APPLICATIONS: ApplicationType[] = [
         icon: 'myPortfolioClosed',
         width: 1000,
         height: 800,
-        titleBarColor: 'blue',
+        titleBarColor: 'red',
         component: MyPortfolio
     },
-    // {
-    //     key: 'myPortfolioOpened',
-    //     name: 'My Portfolio Opened',
-    //     icon: 'myPortfolioOpened',
-    //     titleBarColor: 'red',
-    //     component: MyPortfolio
-    // },
-    // {
-    //     key: 'test',
-    //     name: 'Test',
-    //     icon: 'start',
-    //     titleBarColor: 'yellow',
-    //     component: MyPortfolio
-    // },
-    // {
-    //     key: 'test2',
-    //     name: 'Test2',
-    //     icon: 'start',
-    //     titleBarColor: 'green',
-    //     component: MyPortfolio
-    // },
+    {
+        key: 'chatWithMe',
+        name: 'Chat with me',
+        icon: 'robot',
+        titleBarColor: 'blue',
+        resizable: false,
+        component: ChatWithMe
+    }
 ];

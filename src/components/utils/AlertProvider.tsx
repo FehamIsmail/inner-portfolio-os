@@ -68,6 +68,7 @@ const AlertProvider = ({children}: AlertProviderProps) => {
                 key: 'modal',
                 name: title,
                 width: ALERT_WIDTH,
+                resizable: false,
                 icon: mapTypeToIcon(type),
                 titleBarColor: mapTypeToColor(type),
                 component: Modal,

@@ -13,6 +13,7 @@ import myPortfolioOpened  from './myPortfolioOpened.svg'
 import networkTabs from './networkTabs.png'
 import resize from './resize.svg'
 import restoreDown from './restoreDown.svg'
+import robot from './robot.svg'
 import speaker from './speaker.svg'
 import start from './start.png'
 import success from './success.svg'
@@ -36,6 +37,7 @@ const icons = {
     networkTabs,
     resize,
     restoreDown,
+    robot,
     speaker,
     start,
     success,
