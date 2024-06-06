@@ -24,9 +24,9 @@ function Icon(props: IconProps) {
     const isSvg = typeof IconComponent === 'function';
 
     return (
-        <div className={`flex items-center justify-center ${className}`} style={{ color: iconColor }}>
+        <div className={`flex items-center justify-center ${className}`} style={{color: iconColor}} >
             {isSvg ? (
-                <IconComponent width={size} height="100%" fill={iconColor} />
+                <IconComponent width={size} height="100%" />
             ) : (
                 <div className="h-fit w-fit">
                     <Image

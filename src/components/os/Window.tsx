@@ -111,6 +111,7 @@ function Window(props: WindowProps) {
     }, [motionX, motionY, motionWidth, motionHeight, animationState, isMaximized]);
 
     const checkOverflow = useCallback(() => {
+        if(props.application.resizable === false) return
         const cont = containerRef.current;
         const scrollBarBorder = scrollBarBorderRef.current;
         if (cont && animationState !== WindowAnimationState.MINIMIZING) {
@@ -175,7 +176,7 @@ function Window(props: WindowProps) {
         // Check for a change in position
         if (x === currentWindowDimensions.x && y === currentWindowDimensions.y) return;
         const { width, height } = isMaximized ? prevWindowDimensions : currentWindowDimensions;
-        const isGettingMaximized = props.isModal ? false : y < 0;
+        const isGettingMaximized = props.application.resizable !== true ? false : y < 0;
         setCurrentWindowDimensions({
             x: isGettingMaximized ? 0 : x + getOffsetX(),
             y: isGettingMaximized ? 0 : y,
@@ -192,7 +193,7 @@ function Window(props: WindowProps) {
         const { width } = windowRef.current.getBoundingClientRect();
         // Add boundary checks
         if (x + getOffsetX() < -width + 145) x = -width + 145 - getOffsetX();
-        if (y < 0 && !props.isModal) {
+        if (y < 0 && props.application.resizable) {
             maximizeWindow('DRAG')
             window.removeEventListener('mousemove', onDrag, false);
             window.removeEventListener('mouseup', stopDrag, false);
@@ -228,7 +229,7 @@ function Window(props: WindowProps) {
         }
     }
     const maximizeWindow = (actionOrigin: 'DRAG' | 'BUTTON') => {
-        if(props.isModal) return
+        if(props.application.resizable !== true) return
         setIsMaximized(true);
         if(actionOrigin === 'BUTTON') setPrevWindowDimensions(currentWindowDimensions);
         setCurrentWindowDimensions({
@@ -316,7 +317,7 @@ function Window(props: WindowProps) {
         if(!sizeInitialized && animationState === WindowAnimationState.VISIBLE) {
             setAnimationState(WindowAnimationState.INITIALIZING)
             const { clientWidth, clientHeight } = contentRef.current;
-            const margin = titleBarHeight.value + (props.isModal ? 0 : statusBarHeight.value) + 9;
+            const margin = titleBarHeight.value + (props.isModal ? 0 : statusBarHeight.value) + 8;
             if (!props.application.width){
                 setCurrentWindowDimensions({...currentWindowDimensions, width: clientWidth + margin});
                 setPrevWindowDimensions({...prevWindowDimensions, width: clientWidth + margin})
@@ -370,21 +371,31 @@ function Window(props: WindowProps) {
                     <span className={"select-none"}>{props.application.name}</span>
                 </div>
                 <div className="flex items-center right-titleBar">
-                    <div className="flex gap-4 items-center">
+                    <div className="flex gap-4 items-end">
                         {props.application.resizable !== false &&
                             <button
-                                className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#c5e351]"
+                                className="h-full flex justify-center hover:cursor-pointer pb-[1px]"
                                 onClick={props.onMinimize}
-                            />}
+                            >
+                                <Icon icon={'minimize'} size={13} colorize={true}/>
+                            </button>
+                        }
                         {props.application.resizable !== false &&
                             <button
-                                className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center hover:cursor-pointer bg-[#FEED5C]"
+                                className="flex items-center justify-center hover:cursor-pointer"
                                 onClick={maximizeHandler}
-                            />}
+                            >
+                                <Icon icon={isMaximized ? 'restoreDown' : 'maximize'}
+                                      size={13}
+                                      colorize={true}/>
+                            </button>
+                        }
                         <button
-                            className="w-4 h-4 border-3 border-retro-dark rounded-full flex items-center justify-center bg-[#fd89c2]"
+                            className="flex items-center justify-center hover:cursor-pointer"
                             onClick={props.onClose}
-                        />
+                        >
+                            <Icon icon={'close'} size={11} colorize={true}/>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -393,7 +404,8 @@ function Window(props: WindowProps) {
                     animationState === WindowAnimationState.RESTORING || 
                     animationState === WindowAnimationState.OPENING || 
                     animationState === WindowAnimationState.INITIALIZING ||
-                    !sizeInitialized
+                    props.application.resizable === false ||
+                    !sizeInitialized 
                 ) ?
                     'overflow-hidden' : 'overflow-y-auto overflow-x-clip'}`}
                 ref={containerRef}
