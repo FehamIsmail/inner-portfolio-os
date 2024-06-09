@@ -15,6 +15,7 @@ export const APPLICATIONS: ApplicationType[] = [
     {
         key: 'chatWithMe',
         name: 'Chat with me',
+        width: 500,
         icon: 'robot',
         titleBarColor: 'blue',
         resizable: false,

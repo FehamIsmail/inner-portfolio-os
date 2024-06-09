@@ -5,7 +5,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 const personalEmail = "ismail.feham64@gmail.com";
 
 export async function POST(request: Request) {
-    console.log(process.env.SENDGRID_API_KEY)
     try {
         const data = await request.json();
         const { from, name, message, company } = data;

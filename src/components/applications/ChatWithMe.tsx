@@ -1,83 +1,149 @@
 "use client"
-import React, {forwardRef} from 'react';
-import Button from "@/components/common/Button";
-import axios from "axios";
+import React, {forwardRef, useCallback, useEffect} from 'react';
+import {Message, useChat} from "ai/react";
+import {scrollBarClassNames} from "@/constants/styles";
+import {motion} from "framer-motion";
+import useResizeObserver from "@react-hook/resize-observer";
 import {useAlert} from "@/components/utils/AlertProvider";
 
-interface Message {
-    content: string;
-    from: 'user' | 'bot';
-}
-
-const botId = process.env.COZE_BOT_ID as string;
-const personalAccessToken = process.env.COZE_PERSONAL_ACCESS_TOKEN as string;
 
 const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
-    const [conversationId, setConversationId] = React.useState<string | undefined>(undefined)
-    const [messages, setMessages] = React.useState<Message[]>([])
-    const [input, setInput] = React.useState<string>("")
-    const {alert} = useAlert()
-    const sendMessage = async () => {
-        const response = await axios.post('/api/chatWithMe', {
-            query: input,
-            conversation_id: conversationId
-        },
-            {
-                responseType: 'stream',
-            }
-        );
 
-        const reader = response.data.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
+    const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+        api: '../api/chatWithMe',
+        initialMessages: [{
+            id: '0',
+            role: 'assistant',
+            content: 'Hello! I am [BOT] Ismail Feham and I am here to help you with anything you need. How can I help you today?'
+        }]
+    })
+    const messageContainerRef = React.useRef<HTMLDivElement>(null);
+    const [isOverflowing, setIsOverflowing] = React.useState(false);
+    const scrollBarBorderRef = React.useRef<HTMLDivElement>(null);
+    const { alert } = useAlert();
 
-        let message = "";
-        while (!done) {
-            const { value, done: readerDone } = await reader.read();
-            console.log(value, readerDone)
-            if (readerDone) {
-                done = true;
-                break;
-            }
-            message += decoder.decode(value);
+
+    const checkOverflow = useCallback(() => {
+        if(!messageContainerRef || !messageContainerRef.current) return;
+        const cont = messageContainerRef.current;
+        const scrollBarBorder = scrollBarBorderRef.current;
+        setIsOverflowing(cont.scrollHeight > cont.clientHeight);
+        if (scrollBarBorder) {
+            scrollBarBorder.style.height = `${cont.clientHeight}px`;
         }
-    };
+    }, []);
+
+    useResizeObserver(messageContainerRef, checkOverflow);
+
+
+    useEffect(() => {
+        if(isLoading) {
+            messageContainerRef.current?.scrollTo({
+                top: messageContainerRef.current.scrollHeight,
+                behavior: 'auto'
+            })
+        }
+    }, [isLoading, messages])
+
+    useEffect(() => {
+        if(error) {
+            alert(error.name, 'Uncaught OpenAI error. Please try again later.', 'error').catch(console.error)
+        }
+    }, [error]);
+
 
     return (
-        <div className={"w-[500px] h-[600px] overflow-hidden font-pixolde text-retro-dark flex flex-col items-center justify-center "}
+        <div className={"w-[600px] h-[650px] overflow-hidden font-pixolde text-retro-dark flex flex-col items-center justify-center "}
              ref={ref}>
-              <h1 className={"mt-0 py-3 text-3xl bg-retro-medium w-full  flex items-center justify-center leading-relaxed "}>Chat with me</h1>
-            <h1>
-                Application is under construction
-            </h1>
-              <div className={"flex-grow "}>
-
-              </div>
-              <div className={"w-full flex flex-row border-t-3 border-0 border-retro-dark"}>
-                  <input
-                      className={"h-full flex-1 border-r-3 border-retro-dark outline-none text-[24px] px-2 bg-retro-white text-retro-dark"}
-                      type={"text"}
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                  />
-                  <button className={"h-full pl-[14px] pr-[16px] text-[24px] font-bold ml-auto max-w-[70px] border-0 outline-none"} onClick={
-                      (e: any) => {
-                          e.preventDefault()
-                         sendMessage()
-                     }
-                 }>Send
-                 </button>
+            <div className={"w-full flex h-[78px] py-4 items-center justify-center bg-retro-medium border-retro-dark border-b-3"}>
+                <h1 className={"mt-0 py-3 text-3xl w-fit -mb-4 "}>Chat with me 🤖</h1>
             </div>
+            <div
+                className={`flex-grow flex-row overflow-y-auto overflow-x-hidden ${scrollBarClassNames} py-1 w-full ${isOverflowing ? 'pl-[2px] pr-2' : ''}`}
+                ref={messageContainerRef}
+            >
+                {messages.map((message, index) => (
+                    <ChatBubble
+                        key={index}
+                        message={message}
+                        role={message.role === 'user' ? 'user' : 'bot'}
+                        isLoading={isLoading && index === messages.length - 1}
+                    />
+                ))}
+                {
+                    isOverflowing && (
+                        <div
+                            className={"absolute z-200 h-[calc(100%-160px)] top-[104px] right-[16px] bg-retro-dark w-[3px] scrollbar-right-border"}
+                            ref={scrollBarBorderRef}
+                        />
+                    )
+                }
+            </div>
+            <form
+                className={"w-full flex flex-row border-t-3 border-0 border-retro-dark"}
+                onSubmit={handleSubmit}
+            >
+                <input
+                    className={"h-full flex-1 border-r-3 border-retro-dark outline-none text-[24px] px-2 bg-retro-white text-retro-dark"}
+                    type={"text"}
+                    name={"prompt"}
+                    value={input}
+                    onChange={handleInputChange}
+                />
+                <button
+                    className={"h-full pl-[14px] pr-[16px] text-[24px] font-bold ml-auto max-w-[70px] border-0 outline-none"}
+                    type={"submit"}
+                >
+                    Send
+                </button>
+            </form>
         </div>
     );
 })
 
 interface ChatBubbleProps {
     message: Message;
+    role: 'user' | 'bot';
+    isLoading: boolean;
 }
 
 const ChatBubble = (props: ChatBubbleProps) => {
+    const {
+        message,
+        role,
+        isLoading
+    } = props;
 
+    const symbols = ['|', '/', '-', '\\'];
+    const [symbolIndex, setSymbolIndex] = React.useState(0);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setSymbolIndex(prevIndex => (prevIndex + 1) % symbols.length);
+        }, 200); // Change symbol every 200ms
+
+        return () => clearInterval(intervalId);
+    }, [symbols.length]);
+
+    return (
+        <motion.div
+            animate={{ scale : 1 }}
+            initial={{ scale: 0 }}
+        >
+        <div className={`w-full flex flex-row ${role === 'user' ? 'justify-end' : 'justify-start'} p-2`}>
+            <div className={`flex flex-row gap-2 ${role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`mt-[1px] flex items-center justify-center min-h-8 max-h-8 min-w-8 max-w-8 rounded-full p-1 bg-retro-dark`}>
+                    <span className={"mt-[4px]"}>{role === 'user' ? '👤' : '🤖'}</span>
+                </div>
+                <div className={`bg-retro-${role === 'user' ? 'medium-dark' : 'medium'} rounded-lg py-2 px-3`}>
+                    <p className={`mt-1 text-[24px] text-retro-${role === 'user' ? 'light' : 'dark'}`}>
+                        {message.content} {(isLoading && role !== 'user') && symbols[symbolIndex]}
+                    </p>
+                </div>
+            </div>
+        </div>
+        </motion.div>
+    );
 }
 
 ChatWithMe.displayName = 'ChatWithMe';
