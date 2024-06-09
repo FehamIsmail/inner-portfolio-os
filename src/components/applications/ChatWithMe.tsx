@@ -73,7 +73,7 @@ const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
                 {
                     isOverflowing && (
                         <div
-                            className={"absolute z-200 h-[calc(100%-160px)] top-[104px] right-[16px] bg-retro-dark w-[3px] scrollbar-right-border"}
+                            className={"absolute z-200 h-[calc(100%-158px)] top-[104px] right-[16px] bg-retro-dark w-[3px] scrollbar-right-border"}
                             ref={scrollBarBorderRef}
                         />
                     )
