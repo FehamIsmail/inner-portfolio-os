@@ -1,7 +1,6 @@
 "use client"
 import React, {forwardRef, useCallback, useEffect} from 'react';
 import {Message, useChat} from "ai/react";
-import {scrollBarClassNames} from "@/constants/styles";
 import {motion} from "framer-motion";
 import useResizeObserver from "@react-hook/resize-observer";
 import {useAlert} from "@/components/utils/AlertProvider";
@@ -20,6 +19,7 @@ const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
     const messageContainerRef = React.useRef<HTMLDivElement>(null);
     const [isOverflowing, setIsOverflowing] = React.useState(false);
     const scrollBarBorderRef = React.useRef<HTMLDivElement>(null);
+    const scrollBarClassNames = "scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none"
     const { alert } = useAlert();
 
 

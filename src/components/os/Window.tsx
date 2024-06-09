@@ -7,7 +7,6 @@ import {WindowAnimationState} from "@/constants/enums";
 import {getAnimationDuration, getOpacity, getScale} from "@/components/utils/AnimationUtils";
 import useResizeObserver from "@react-hook/resize-observer";
 import {usePathname} from "next/navigation";
-import {scrollBarClassNames} from "@/constants/styles";
 
 const titleBarColors = {
     red: 'bg-retro-red',
@@ -61,6 +60,7 @@ function Window(props: WindowProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const scrollBarBorderRef = useRef<HTMLDivElement>(null);
+    const scrollBarClassNames = "scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none"
 
     const titleBarColor = titleBarColors[props.application.titleBarColor];
 
