@@ -187,7 +187,7 @@ function Desktop({children}: DesktopProps) {
             setFirstRender(false);
             const myPortfolio = APPLICATIONS.find(application => application.key === 'myPortfolio');
             if (myPortfolio) {
-                onOpen(myPortfolio);
+                // onOpen(myPortfolio);
             }
         }
     }, [firstRender, onOpen]);

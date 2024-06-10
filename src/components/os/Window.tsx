@@ -289,6 +289,11 @@ function Window(props: WindowProps) {
     }, [animationState, isMaximized, firstRender, motionScale]);
 
     useEffect(() => {
+        console.log('width', currentWindowDimensions.width, 'height', currentWindowDimensions.height)
+        console.log('animationState', animationState)
+    }, [currentWindowDimensions, animationState])
+
+    useEffect(() => {
         if(!firstRender || !contentRef.current) return
         checkOverflow()
         if (animationState === WindowAnimationState.OPENING) {

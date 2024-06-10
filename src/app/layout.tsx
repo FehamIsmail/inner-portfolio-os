@@ -3,6 +3,9 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 import Desktop from "@/components/os/Desktop";
 import local from 'next/font/local';
+import Script from "next/script";
+import React from "react";
+import '@/assets/styles/js-dos.css'
 
 const nunito = Nunito({
     weight: [ '600', '700', '800', '900', '1000'],
@@ -36,7 +39,9 @@ const nevrada = local({
 
 export const metadata: Metadata = {
   title: "Ismail Feham's Desktop",
-  description: "My personal desktop",};
+  description: "My personal desktop",
+    }
+;
 
 export default function RootLayout({
   children,
@@ -45,11 +50,13 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en">
-        <body className={`${nevrada.variable} ${nunito.variable} ${pixolde.variable} overflow-hidden`}>
+      <Script src="/js-dos/js-dos.js"></Script>
+      <Script src="/js-dos/script.js"></Script>
+      <body className={`${nevrada.variable} ${nunito.variable} ${pixolde.variable} overflow-hidden`}>
           <Desktop>
-            {children}
+              {children}
           </Desktop>
-        </body>
+      </body>
       </html>
   );
 }

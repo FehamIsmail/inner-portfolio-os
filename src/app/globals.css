@@ -73,6 +73,8 @@ a:visited{
     @apply text-purple-950;
 }
 
+
+
 @layer utilities {
   .text-balance {
     text-wrap: normal;
