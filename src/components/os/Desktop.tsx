@@ -244,7 +244,7 @@ function Desktop({children}: DesktopProps) {
                         );
                     })}
                     <div className={"h-screen w-screen"}>
-                        <div className={"text-sm flex flex-col w-fit whitespace-nowrap p-6 flex-wrap gap-2"}>
+                        <div className={"text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0"}>
                             {shortcuts?.map((shortcut) => {
                                 return (
                                     <AppShortcut

@@ -1,9 +1,8 @@
 import {ApplicationType} from "@/constants/types";
 import MyPortfolio from "@/components/applications/MyPortfolio";
 import ChatWithMe from "@/components/applications/ChatWithMe";
-import DosPlayer from "@/components/os/DosPlayer";
+import GamePlayer from "@/components/os/GamePlayer";
 
-const bundlePrefix = 'js-dos-bundles';
 export const APPLICATIONS: ApplicationType[] = [
     {
         key: 'myPortfolio',
@@ -26,15 +25,49 @@ export const APPLICATIONS: ApplicationType[] = [
     {
         key: 'doom',
         name: 'DOOM',
-        icon: 'robot',
-        width: 640,
-        height: 400,
-        titleBarColor: 'blue',
-        component: DosPlayer,
+        icon: 'doom',
+        titleBarColor: 'red',
+        width: 800,
+        height: 600,
+        component: GamePlayer,
         props: {
-            width: 640,
-            height: 400,
-            bundleSrc: `doom.jsdoss`
+            gameSrc: `https://emupedia.net/emupedia-game-doom1/`
         }
-    }
+    },
+    {
+        key: 'persia',
+        name: 'Prince of Persia',
+        icon: 'persia',
+        titleBarColor: 'blue',
+        width: 800,
+        height: 600,
+        component: GamePlayer,
+        props: {
+            gameSrc: `https://emupedia.net/emupedia-game-prince/`
+        }
+    },
+    {
+        key: 'minecraft',
+        name: 'Minecraft Alpha',
+        icon: 'minecraft',
+        titleBarColor: 'green',
+        width: 800,
+        height: 600,
+        component: GamePlayer,
+        props: {
+            gameSrc: `https://emupedia.net/emupedia-game-minecraft-classic/`
+        }
+    },
+    {
+        key: 'pinball',
+        name: 'Space Cadet Pinball',
+        icon: 'pinball',
+        titleBarColor: 'blue',
+        width: 800,
+        height: 600,
+        component: GamePlayer,
+        props: {
+            gameSrc: `https://emupedia.net/emupedia-game-space-cadet-pinball/`
+        }
+    },
 ];

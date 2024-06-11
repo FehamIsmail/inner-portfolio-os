@@ -1,1 +1,0 @@
-emulators.pathPrefix = "/js-dos/";

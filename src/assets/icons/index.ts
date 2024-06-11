@@ -5,12 +5,16 @@ import arrowLeft from './arrowLeft.svg'
 import arrowRight from './arrowRight.svg'
 import battery from './battery.svg'
 import close from './close.svg'
+import doom from './doom.svg'
 import error from './error.svg'
 import maximize from './maximize.svg'
+import minecraft from './minecraft.svg'
 import minimize from './minimize.svg'
 import myPortfolioClosed from './myPortfolioClosed.svg'
 import myPortfolioOpened  from './myPortfolioOpened.svg'
 import networkTabs from './networkTabs.png'
+import persia from './persia.svg'
+import pinball from './pinball.svg'
 import resize from './resize.svg'
 import restoreDown from './restoreDown.svg'
 import robot from './robot.svg'
@@ -29,12 +33,16 @@ const icons = {
     arrowRight,
     battery,
     close,
+    doom,
     error,
     maximize,
+    minecraft,
     minimize,
     myPortfolioClosed,
     myPortfolioOpened,
     networkTabs,
+    persia,
+    pinball,
     resize,
     restoreDown,
     robot,

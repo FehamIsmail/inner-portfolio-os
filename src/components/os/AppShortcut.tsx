@@ -23,7 +23,7 @@ function AppShortcut(props: AppShortcutProps) {
 
     return (
         <div
-            className={`flex flex-col max-w-[120px] items-center justify-center app-shortcut`}
+            className={`min-h-[150px] flex flex-col max-w-[120px] items-center justify-center app-shortcut text-retro-dark`}
             onDoubleClick={props.onOpen}
             onClick={props.setFocused}
         >

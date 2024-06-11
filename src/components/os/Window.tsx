@@ -172,6 +172,10 @@ function Window(props: WindowProps) {
     }
 
     const onDrag = (e: MouseEvent) => {
+        if (!(e.buttons & 1)) { // Check if the left mouse button is not pressed
+            stopDrag(e);
+            return;
+        }
         const { x, y } = getRealCoords(e.clientX, e.clientY);
         // Check for a change in position
         if (x === currentWindowDimensions.x && y === currentWindowDimensions.y) return;
@@ -289,11 +293,6 @@ function Window(props: WindowProps) {
     }, [animationState, isMaximized, firstRender, motionScale]);
 
     useEffect(() => {
-        console.log('width', currentWindowDimensions.width, 'height', currentWindowDimensions.height)
-        console.log('animationState', animationState)
-    }, [currentWindowDimensions, animationState])
-
-    useEffect(() => {
         if(!firstRender || !contentRef.current) return
         checkOverflow()
         if (animationState === WindowAnimationState.OPENING) {
@@ -378,15 +377,15 @@ function Window(props: WindowProps) {
                 <div className="flex items-center right-titleBar">
                     <div className="flex gap-2 items-end">
                         {props.application.resizable !== false &&
-                            <button
+                            <div
                                 className="flex-grow justify-center hover:cursor-pointer pb-[1px]"
                                 onClick={props.onMinimize}
                             >
                                 <Icon className={"pt-[14px] pb-[3px] px-[4px]"} icon={'minimize'} size={13} colorize={true}/>
-                            </button>
+                            </div>
                         }
                         {props.application.resizable !== false &&
-                            <button
+                            <div
                                 className="flex items-center justify-center hover:cursor-pointer"
                                 onClick={maximizeHandler}
                             >
@@ -394,14 +393,14 @@ function Window(props: WindowProps) {
                                       icon={isMaximized ? 'restoreDown' : 'maximize'}
                                       size={13}
                                       colorize={true}/>
-                            </button>
+                            </div>
                         }
-                        <button
+                        <div
                             className="flex items-center justify-center hover:cursor-pointer"
                             onClick={props.onClose}
                         >
                             <Icon className={"p-[4px]"} icon={'close'} size={11} colorize={true}/>
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>
