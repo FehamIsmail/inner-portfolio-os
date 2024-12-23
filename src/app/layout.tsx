@@ -2,44 +2,43 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import Desktop from "@/components/os/Desktop";
-import local from 'next/font/local';
+import local from "next/font/local";
 import React from "react";
 
 const nunito = Nunito({
-    weight: [ '600', '700', '800', '900', '1000'],
-    subsets: ['latin'],
-    style: 'normal',
-    variable: '--font-nunito'
+  weight: ["600", "700", "800", "900", "1000"],
+  subsets: ["latin"],
+  style: "normal",
+  variable: "--font-nunito",
 });
 
 const pixolde = local({
-    src: [
-        {
-            path: '../assets/fonts/Pixolde.ttf',
-            style: 'normal',
-            weight: '400'
-        },
-        {
-            path: '../assets/fonts/Pixolde-Bold.ttf',
-            style: 'normal',
-            weight: '700'
-        }
-   ],
-   variable: '--font-pixolde'
+  src: [
+    {
+      path: "../assets/fonts/Pixolde.ttf",
+      style: "normal",
+      weight: "400",
+    },
+    {
+      path: "../assets/fonts/Pixolde-Bold.ttf",
+      style: "normal",
+      weight: "700",
+    },
+  ],
+  variable: "--font-pixolde",
 });
 
 const nevrada = local({
-    src: '../assets/fonts/Nevrada.ttf',
-    style: 'normal',
-    weight: '400',
-    variable: '--font-nevrada'
+  src: "../assets/fonts/Nevrada.ttf",
+  style: "normal",
+  weight: "400",
+  variable: "--font-nevrada",
 });
 
 export const metadata: Metadata = {
   title: "Ismail Feham's Desktop",
   description: "My personal desktop",
-    }
-;
+};
 
 export default function RootLayout({
   children,
@@ -47,12 +46,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="en">
-      <body className={`${nevrada.variable} ${nunito.variable} ${pixolde.variable} overflow-hidden`}>
-          <Desktop>
-              {children}
-          </Desktop>
+    <html lang="en">
+      <body
+        className={`${nevrada.variable} ${nunito.variable} ${pixolde.variable} overflow-hidden`}
+      >
+        <Desktop>{children}</Desktop>
       </body>
-      </html>
+    </html>
   );
 }

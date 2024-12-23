@@ -1,28 +1,28 @@
-import {IconName} from "@/assets/icons";
+import { IconName } from "@/assets/icons";
 import React from "react";
-import {WindowAnimationState} from "@/constants/enums";
+import { WindowAnimationState } from "@/constants/enums";
 
 declare type DesktopWindow = {
-    zIndex: number;
-    minimized: boolean;
-    maximized: boolean;
-    animationState: WindowAnimationState;
-    application: ApplicationType;
-}
-
-declare type DesktopWindows = {key
-    [key: string]: DesktopWindow
+  zIndex: number;
+  minimized: boolean;
+  maximized: boolean;
+  animationState: WindowAnimationState;
+  application: ApplicationType;
 };
 
+declare type DesktopWindows = { key; [key: string]: DesktopWindow };
+
 declare type ApplicationType = {
-    key: string;
-    name: string;
-    icon: IconName;
-    titleBarColor: 'red' | 'green' | 'blue' | 'yellow';
-    component: React.ForwardRefExoticComponent<T & React.RefAttributes<HTMLDivElement>>;
-    children?: React.ReactNode; // Used in MyPortfolioLayout to handle routing
-    resizable?: boolean;
-    props?: any;
-    width?: number;
-    height?: number;
+  key: string;
+  name: string;
+  icon: IconName;
+  titleBarColor: "red" | "green" | "blue" | "yellow";
+  component: React.ForwardRefExoticComponent<
+    T & React.RefAttributes<HTMLDivElement>
+  >;
+  children?: React.ReactNode; // Used in MyPortfolioLayout to handle routing
+  resizable?: boolean;
+  props?: any;
+  width?: number;
+  height?: number;
 };

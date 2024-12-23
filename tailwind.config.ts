@@ -12,23 +12,23 @@ const config: Config = {
     colors: {
       ...colors,
       retro: {
-        'white': '#fdf4e8',
-        'red': '#e8693f',
-        'green': '#5a9651',
-        'blue': '#2693bd',
-        'yellow': '#e5b53b',
-        'medium': '#f3e4d1',
-        'medium-dark': '#d9c1a3',
-        'dark': 'var(--color-retro-dark)',
-        'background': 'var(--color-retro-background)',
-      }
+        white: "#fdf4e8",
+        red: "#e8693f",
+        green: "#5a9651",
+        blue: "#2693bd",
+        yellow: "#e5b53b",
+        medium: "#f3e4d1",
+        "medium-dark": "#d9c1a3",
+        dark: "var(--color-retro-dark)",
+        background: "var(--color-retro-background)",
+      },
     },
     extend: {
       boxShadow: {
-        'window': '4px 4px 0  var(--color-retro-dark)',
-        'window-maximized': '0 0 0 7px var(--color-retro-dark)',
-        'figure': '2px 2px 0 var(--color-retro-dark)',
-        'taskbar': '0 8px 0 0 var(--color-retro-dark)',
+        window: "4px 4px 0  var(--color-retro-dark)",
+        "window-maximized": "0 0 0 7px var(--color-retro-dark)",
+        figure: "2px 2px 0 var(--color-retro-dark)",
+        taskbar: "0 8px 0 0 var(--color-retro-dark)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -36,21 +36,21 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       divideWidth: {
-        '3': '3px',
+        "3": "3px",
       },
       borderWidth: {
-        '3': '3px',
+        "3": "3px",
       },
       fontFamily: {
-        'nunito': ['var(--font-nunito)'],
-        'pixolde': ['var(--font-pixolde)'],
-        'nevrada': ['var(--font-nevrada)'],
-      }
+        nunito: ["var(--font-nunito)"],
+        pixolde: ["var(--font-pixolde)"],
+        nevrada: ["var(--font-nevrada)"],
+      },
     },
   },
   plugins: [
-    require('tailwind-scrollbar')({ nocompatible: true }),
-    require('tailwind-scrollbar')({ preferredStrategy: 'pseudoelements' }),
-  ]
+    require("tailwind-scrollbar")({ nocompatible: true }),
+    require("tailwind-scrollbar")({ preferredStrategy: "pseudoelements" }),
+  ],
 };
 export default config;
