@@ -1,16 +1,21 @@
 "use client";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import Icon from "@/components/common/Icon";
 import { ApplicationType } from "@/constants/types";
 import { motion, useSpring } from "framer-motion";
 import { WindowAnimationState } from "@/constants/enums";
-import {
-  getAnimationDuration,
-  getOpacity,
-  getScale,
-} from "@/components/utils/AnimationUtils";
+import { getOpacity, getScale } from "@/components/utils/AnimationUtils";
 import useResizeObserver from "@react-hook/resize-observer";
 import { usePathname } from "next/navigation";
+
+const SPRING_OPTIONS = { damping: 54, stiffness: 3000 };
+const MIN_WIDTH = 420;
+const MIN_HEIGHT = 180;
+const TITLE_BAR_HEIGHT = { value: 24, className: "max-h-[24px]" };
+const STATUS_BAR_HEIGHT = { value: 20, className: "min-h-[20px]" };
+
+const scrollBarClassNames =
+  "scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none";
 
 const titleBarColors = {
   red: "bg-retro-red",
@@ -18,10 +23,6 @@ const titleBarColors = {
   blue: "bg-retro-blue",
   yellow: "bg-retro-yellow",
 };
-
-export const MIN_WIDTH = 420;
-export const MIN_HEIGHT = 180;
-
 const titleBarHeight = {
   value: 24,
   className: "max-h-[24px]",
@@ -53,53 +54,65 @@ interface WindowProps {
 }
 
 function Window(props: WindowProps) {
-  const [firstRender, setFirstRender] = React.useState<boolean>(true);
-  const [sizeInitialized, setSizeInitialized] = React.useState<boolean>(false);
-  const [isMaximized, setIsMaximized] = React.useState<boolean>(false);
-  const [isOverflowing, setIsOverflowing] = React.useState<boolean>(false);
-  const { animationState, setAnimationState } = props;
+  const {
+    animationState,
+    setAnimationState,
+    application,
+    taskbarPos,
+    onInteract,
+    onClose,
+    onMinimize,
+    isModal,
+    top,
+    left,
+  } = props;
+
+  const dragCoords = useRef({ dragStartX: 0, dragStartY: 0 });
+  const isDragging = useRef(false);
+  const lastMousePos = useRef({ x: 0, y: 0 });
+
+  const initialDimensions = useMemo(
+    () => ({
+      x: left,
+      y: top,
+      width: application.width || MIN_WIDTH,
+      height: application.height || MIN_HEIGHT,
+    }),
+    [left, top, application.width, application.height],
+  );
+
+  const [firstRender, setFirstRender] = React.useState(true);
+  const [sizeInitialized, setSizeInitialized] = React.useState(false);
+  const [isMaximized, setIsMaximized] = React.useState(false);
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
+  const [currentWindowDimensions, setCurrentWindowDimensions] =
+    React.useState(initialDimensions);
+  const [prevWindowDimensions, setPrevWindowDimensions] =
+    React.useState(initialDimensions);
+
+  const rafRef = useRef<number>();
+
   const navigation = usePathname();
 
   const windowRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollBarBorderRef = useRef<HTMLDivElement>(null);
-  const scrollBarClassNames =
-    "scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none";
 
   const titleBarColor = titleBarColors[props.application.titleBarColor];
 
-  const [currentWindowDimensions, setCurrentWindowDimensions] =
-    React.useState<WindowDimensions>({
-      x: props.left,
-      y: props.top,
-      width: props.application.width || MIN_WIDTH,
-      height: props.application.height || MIN_HEIGHT,
-    } as WindowDimensions);
-
-  const [prevWindowDimensions, setPrevWindowDimensions] =
-    React.useState<WindowDimensions>({
-      x: props.left,
-      y: props.top,
-      width: props.application.width,
-      height: props.application.height,
-    } as WindowDimensions);
-
-  const springOptions = { damping: 54, stiffness: 3000 };
-  const motionX = useSpring(currentWindowDimensions.x, springOptions);
-  const motionY = useSpring(currentWindowDimensions.y, springOptions);
-  const motionWidth = useSpring(currentWindowDimensions.width, springOptions);
-  const motionHeight = useSpring(currentWindowDimensions.height, springOptions);
-  const motionScale = useSpring(0.6, springOptions);
+  const motionX = useSpring(currentWindowDimensions.x, SPRING_OPTIONS);
+  const motionY = useSpring(currentWindowDimensions.y, SPRING_OPTIONS);
+  const motionWidth = useSpring(currentWindowDimensions.width, SPRING_OPTIONS);
+  const motionHeight = useSpring(
+    currentWindowDimensions.height,
+    SPRING_OPTIONS,
+  );
+  const motionScale = useSpring(0.6, SPRING_OPTIONS);
 
   useResizeObserver(containerRef, () => {
     checkOverflow();
   });
-
-  const dragCoords = useRef<{
-    dragStartX: any;
-    dragStartY: any;
-  }>();
 
   const setMotionValues = useCallback(
     (values: WindowDimensions) => {
@@ -173,80 +186,6 @@ function Window(props: WindowProps) {
     return offsetX;
   };
 
-  const startDrag = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    props.onInteract();
-    const { clientX, clientY } = e;
-    dragCoords.current = {
-      dragStartX: clientX,
-      dragStartY: clientY,
-    };
-    setAnimationState(WindowAnimationState.DRAGGING);
-    window.addEventListener("mousemove", onDrag, false);
-    window.addEventListener("mouseup", stopDrag, false);
-  };
-
-  const onDrag = (e: MouseEvent) => {
-    if (!(e.buttons & 1)) {
-      // Check if the left mouse button is not pressed
-      stopDrag(e);
-      return;
-    }
-    const { x, y } = getRealCoords(e.clientX, e.clientY);
-    // Check for a change in position
-    if (x === currentWindowDimensions.x && y === currentWindowDimensions.y)
-      return;
-    const { width, height } = isMaximized
-      ? prevWindowDimensions
-      : currentWindowDimensions;
-    const isGettingMaximized =
-      props.application.resizable === false ? false : y < 0;
-    setCurrentWindowDimensions({
-      x: isGettingMaximized ? 0 : x + getOffsetX(),
-      y: isGettingMaximized ? 0 : y,
-      width: isGettingMaximized ? window.innerWidth : width,
-      height: isGettingMaximized ? window.innerHeight - 40 : height,
-    });
-    setIsMaximized(isGettingMaximized);
-  };
-
-  const stopDrag = ({ clientX, clientY }: MouseEvent) => {
-    if (!windowRef.current) return;
-    let { x, y } = getRealCoords(clientX, clientY);
-    // Get Window dimensions
-    const { width } = windowRef.current.getBoundingClientRect();
-    // Add boundary checks
-    if (x + getOffsetX() < -width + 145) x = -width + 145 - getOffsetX();
-    if (y < 0 && props.application.resizable !== false) {
-      maximizeWindow("DRAG");
-      window.removeEventListener("mousemove", onDrag, false);
-      window.removeEventListener("mouseup", stopDrag, false);
-      setAnimationState(WindowAnimationState.VISIBLE);
-      return;
-    }
-    if (x > window.innerWidth - 102) x = window.innerWidth - 102;
-    if (y > window.innerHeight - 100) y = window.innerHeight - 100;
-    if (y < 0) y = 0;
-    const { width: finalWidth, height: finalHeight } = isMaximized
-      ? prevWindowDimensions
-      : currentWindowDimensions;
-    setCurrentWindowDimensions({
-      x: x + getOffsetX(),
-      y,
-      width: finalWidth,
-      height: finalHeight,
-    });
-    setPrevWindowDimensions({
-      ...prevWindowDimensions,
-      x: x + getOffsetX(),
-      y,
-    });
-    setAnimationState(WindowAnimationState.VISIBLE);
-    window.removeEventListener("mousemove", onDrag, false);
-    window.removeEventListener("mouseup", stopDrag, false);
-  };
-
   const getRealCoords = (
     clientX: number,
     clientY: number,
@@ -259,6 +198,96 @@ function Window(props: WindowProps) {
     };
   };
 
+  const startDrag = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onInteract();
+
+      const { clientX, clientY } = e;
+      dragCoords.current = {
+        dragStartX: clientX,
+        dragStartY: clientY,
+      };
+      isDragging.current = true;
+      lastMousePos.current = { x: clientX, y: clientY };
+
+      setAnimationState(WindowAnimationState.DRAGGING);
+      window.addEventListener("mousemove", onDrag, { passive: true });
+      window.addEventListener("mouseup", stopDrag);
+    },
+    [onInteract, setAnimationState],
+  );
+
+  const onDrag = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging.current) return;
+
+      // Cancel existing RAF before scheduling new one
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+
+      // Use RAF for smooth animation
+      rafRef.current = requestAnimationFrame(() => {
+        if (!(e.buttons & 1)) {
+          stopDrag(e);
+          return;
+        }
+
+        const { clientX, clientY } = e;
+        // Skip if mouse hasn't moved enough to warrant update
+        if (
+          Math.abs(clientX - lastMousePos.current.x) < 1 &&
+          Math.abs(clientY - lastMousePos.current.y) < 1
+        ) {
+          return;
+        }
+
+        lastMousePos.current = { x: clientX, y: clientY };
+        const { x, y } = getRealCoords(clientX, clientY);
+
+        const { width, height } = isMaximized
+          ? prevWindowDimensions
+          : currentWindowDimensions;
+
+        const isGettingMaximized =
+          application.resizable === false ? false : y < 0;
+
+        setCurrentWindowDimensions((prev) => ({
+          x: isGettingMaximized ? 0 : x + getOffsetX(),
+          y: isGettingMaximized ? 0 : y,
+          width: isGettingMaximized ? window.innerWidth : width,
+          height: isGettingMaximized ? window.innerHeight - 40 : height,
+        }));
+
+        setIsMaximized(isGettingMaximized);
+      });
+    },
+    [
+      isMaximized,
+      prevWindowDimensions,
+      currentWindowDimensions,
+      application.resizable,
+    ],
+  );
+
+  const maximizeWindow = useCallback(
+    (actionOrigin: "DRAG" | "BUTTON") => {
+      if (props.application.resizable === false) return;
+      setIsMaximized(true);
+      if (actionOrigin === "BUTTON")
+        setPrevWindowDimensions(currentWindowDimensions);
+      setCurrentWindowDimensions({
+        x: 0,
+        y: 0,
+        width: window.innerWidth,
+        height: window.innerHeight - 40,
+      });
+    },
+    [currentWindowDimensions, props.application.resizable],
+  );
+
   const maximizeHandler = () => {
     if (isMaximized) {
       setCurrentWindowDimensions(prevWindowDimensions);
@@ -267,18 +296,60 @@ function Window(props: WindowProps) {
       maximizeWindow("BUTTON");
     }
   };
-  const maximizeWindow = (actionOrigin: "DRAG" | "BUTTON") => {
-    if (props.application.resizable === false) return;
-    setIsMaximized(true);
-    if (actionOrigin === "BUTTON")
-      setPrevWindowDimensions(currentWindowDimensions);
-    setCurrentWindowDimensions({
-      x: 0,
-      y: 0,
-      width: window.innerWidth,
-      height: window.innerHeight - 40,
-    });
-  };
+
+  const stopDrag = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      isDragging.current = false;
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      if (!windowRef.current) return;
+      let { x, y } = getRealCoords(e.clientX, e.clientY);
+      // Get Window dimensions
+      const { width } = windowRef.current.getBoundingClientRect();
+      // Add boundary checks
+      if (x + getOffsetX() < -width + 145) x = -width + 145 - getOffsetX();
+      if (y < 0 && props.application.resizable !== false) {
+        maximizeWindow("DRAG");
+        window.removeEventListener("mousemove", onDrag, false);
+        window.removeEventListener("mouseup", stopDrag, false);
+        setAnimationState(WindowAnimationState.VISIBLE);
+        return;
+      }
+      if (x > window.innerWidth - 102) x = window.innerWidth - 102;
+      if (y > window.innerHeight - 100) y = window.innerHeight - 100;
+      if (y < 0) y = 0;
+      const { width: finalWidth, height: finalHeight } = isMaximized
+        ? prevWindowDimensions
+        : currentWindowDimensions;
+      setCurrentWindowDimensions({
+        x: x + getOffsetX(),
+        y,
+        width: finalWidth,
+        height: finalHeight,
+      });
+      setPrevWindowDimensions({
+        ...prevWindowDimensions,
+        x: x + getOffsetX(),
+        y,
+      });
+      setAnimationState(WindowAnimationState.VISIBLE);
+      window.removeEventListener("mousemove", onDrag, false);
+      window.removeEventListener("mouseup", stopDrag, false);
+    },
+    [
+      currentWindowDimensions,
+      getOffsetX,
+      getRealCoords,
+      isMaximized,
+      maximizeWindow,
+      onDrag,
+      prevWindowDimensions,
+      props.application.resizable,
+      setAnimationState,
+    ],
+  );
 
   const animateMinimize = () => {
     setCurrentWindowDimensions({
@@ -392,13 +463,9 @@ function Window(props: WindowProps) {
   return (
     <motion.div
       className={`flex flex-col bg-retro-white absolute divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
-            ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? "border-b-0  shadow-window-maximized" : "shadow-window"}`}
+            ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? "border-b-0 shadow-window-maximized" : "shadow-window"}`}
       animate={{
         opacity: getOpacity(animationState),
-        transitionDuration:
-          animationState === WindowAnimationState.RESTORING
-            ? `20ms`
-            : undefined,
       }}
       style={{
         x: motionX,
@@ -406,14 +473,14 @@ function Window(props: WindowProps) {
         width: motionWidth,
         height: motionHeight,
         scale: motionScale,
-        transitionDuration: `${getAnimationDuration(animationState, isMaximized)}ms`,
+        willChange: isDragging.current ? "transform" : "auto",
       }}
       initial={{
         scale: 0.6,
         opacity: 0.1,
       }}
       ref={windowRef}
-      onMouseDown={props.onInteract}
+      onMouseDown={onInteract}
     >
       <div
         className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-[6px] rounded-t-[4px] ${titleBarColor}`}
