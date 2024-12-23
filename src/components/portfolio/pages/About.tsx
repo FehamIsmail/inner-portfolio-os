@@ -11,19 +11,16 @@ import concordia from "@/assets/images/concordia.jpg";
 const About = () => {
   return (
     <div>
-      <h2 className={""}>I&apos;m Ismail Feham.</h2>
+      <h2 className={""}>I&apos;m Ismail.</h2>
       <p>
-        I&apos;m a Software Engineer undergraduate currently interning at&nbsp;
-        <a
-          href="https://www.flexspring.com/"
-          className={"visited:text-purple-950"}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <b>Flexspring</b>
-        </a>
-        &nbsp;as a Full Stack Web Developer. I&apos;m a fourth-year student at
-        Concordia University, expecting to graduate on May 2025.
+        I&apos;m a Software Engineer undergraduate with experience in{" "}
+        <b>3D Software Development</b> and <b>Full Stack Development</b>.
+        I&apos;m a fourth-year student at Concordia University,{" "}
+        <b>
+          expecting to graduate in <u>May 2025</u>
+        </b>
+        . My passion lies in creating efficient, user-friendly solutions across
+        various domains of software engineering.
       </p>
       <p>
         I&apos;m thrilled that you&apos;re taking the time to browse through my
