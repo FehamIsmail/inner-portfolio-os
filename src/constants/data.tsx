@@ -2,6 +2,7 @@ import { ApplicationType } from "@/constants/types";
 import MyPortfolio from "@/components/applications/MyPortfolio";
 import ChatWithMe from "@/components/applications/ChatWithMe";
 import GamePlayer from "@/components/os/GamePlayer";
+import ReadMe from "@/components/applications/ReadMe";
 
 export const APPLICATIONS: ApplicationType[] = [
   {
@@ -21,6 +22,14 @@ export const APPLICATIONS: ApplicationType[] = [
     titleBarColor: "blue",
     resizable: false,
     component: ChatWithMe,
+  },
+  {
+    key: "readme",
+    name: "README",
+    icon: "readme",
+    titleBarColor: "blue",
+    resizable: true,
+    component: ReadMe,
   },
   {
     key: "doom",
