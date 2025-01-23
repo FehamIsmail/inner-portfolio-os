@@ -4,7 +4,10 @@ import Icon from "@/components/common/Icon";
 import { ApplicationType } from "@/constants/types";
 import { motion, useSpring } from "framer-motion";
 import { WindowAnimationState } from "@/constants/enums";
-import { getOpacity, getScale } from "@/components/utils/AnimationUtils";
+import {
+  getOpacity,
+  getScaleByAnimationState,
+} from "@/components/utils/AnimationUtils";
 import useResizeObserver from "@react-hook/resize-observer";
 import { usePathname } from "next/navigation";
 
@@ -394,7 +397,9 @@ function Window(props: WindowProps) {
       default:
         break;
     }
-    motionScale.set(getScale(animationState, isMaximized, firstRender));
+    motionScale.set(
+      getScaleByAnimationState(animationState, isMaximized, firstRender),
+    );
   }, [animationState, isMaximized, firstRender, motionScale]);
 
   useEffect(() => {

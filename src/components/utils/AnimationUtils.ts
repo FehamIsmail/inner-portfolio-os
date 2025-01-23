@@ -2,7 +2,7 @@ import { WindowAnimationState } from "@/constants/enums";
 
 export const WINDOW_ANIMATION_DURATION = 200;
 
-export const getScale = (
+export const getScaleByAnimationState = (
   animationState: WindowAnimationState,
   isMaximized: boolean,
   firstLoad: boolean,
