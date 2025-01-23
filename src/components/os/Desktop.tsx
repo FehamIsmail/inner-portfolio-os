@@ -327,7 +327,7 @@ function Desktop({ children }: DesktopProps) {
           <div className={"h-screen w-screen"}>
             <div
               className={
-                "text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0"
+                "text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0 max-h-[calc(100vh-40px)]"
               }
             >
               {shortcuts?.map((shortcut) => {
