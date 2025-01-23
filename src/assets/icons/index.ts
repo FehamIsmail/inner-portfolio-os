@@ -15,6 +15,7 @@ import myPortfolioOpened from "./myPortfolioOpened.svg";
 import networkTabs from "./networkTabs.png";
 import persia from "./persia.svg";
 import pinball from "./pinball.svg";
+import readme from "./readme.svg";
 import resize from "./resize.svg";
 import restoreDown from "./restoreDown.svg";
 import robot from "./robot.svg";
@@ -43,6 +44,7 @@ const icons = {
   networkTabs,
   persia,
   pinball,
+  readme,
   resize,
   restoreDown,
   robot,
