@@ -36,25 +36,27 @@ const Experiences = () => {
         websiteUrl={"https://www.innovmetric.com"}
         website={"www.innovmetric.com"}
       />
-      <ImageExplorer
-        className={"mt-8 ml-12"}
-        images={[
-          {
-            name: "InnovMetric 1",
-            image: innov1,
-          },
-          {
-            name: "InnovMetric 2",
-            image: innov2,
-          },
-          {
-            name: "InnovMetric 3",
-            image: innov3,
-          },
-        ]}
-        height={500}
-        width={900}
-      />
+      <div className={"pr-8"}>
+        <ImageExplorer
+          className={"mt-8 ml-12"}
+          images={[
+            {
+              name: "InnovMetric 1",
+              image: innov1,
+            },
+            {
+              name: "InnovMetric 2",
+              image: innov2,
+            },
+            {
+              name: "InnovMetric 3",
+              image: innov3,
+            },
+          ]}
+          height={500}
+          width={900}
+        />
+      </div>
       <WorkExperience
         company={"Flexspring"}
         title={"Full Stack Developer"}
