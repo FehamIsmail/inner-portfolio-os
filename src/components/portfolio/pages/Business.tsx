@@ -43,7 +43,7 @@ const Business = () => {
         learned the importance of customer feedback and how to use it to improve
         our products and services.
       </p>
-      <div className={"mt-4 px-10 flex flex-row gap-10 w-full"}>
+      <div className={"mt-4 px-10 flex flex-row mx-auto gap-[6%]"}>
         <ImageExplorer
           className={"flex-1"}
           height={500}
