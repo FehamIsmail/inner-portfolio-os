@@ -8,6 +8,8 @@ import innov2 from "../../../../public/images/innovmetric/innov2.png";
 import innov3 from "../../../../public/images/innovmetric/innov3.png";
 
 import ross1 from "../../../../public/images/rossvideo/ross1.png";
+import ross2 from "../../../../public/images/rossvideo/ross2.png";
+import ross3 from "../../../../public/images/rossvideo/ross3.png";
 
 import flex1 from "../../../../public/images/flexspring/flex2.png";
 import flex2 from "../../../../public/images/flexspring/flex1.png";
@@ -125,11 +127,11 @@ const Experiences = () => {
           },
           {
             name: "Ross Video 2",
-            image: innov2,
+            image: ross2,
           },
           {
             name: "Ross Video 3",
-            image: innov3,
+            image: ross3,
           },
         ]}
         height={500}
