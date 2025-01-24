@@ -1,11 +1,12 @@
 "use client";
 import React, { forwardRef, useEffect, useState } from "react";
+import Image from "next/image";
 
 const texts = [
   "Software Engineer COOP @ Concordia University",
-  "Passionate about Web Development",
-  "Learning new technologies",
-  "Building awesome projects",
+  "Passionate about Web Development & 3D Graphics",
+  "Avid learner of new technologies",
+  "Always open to new opportunities!",
 ];
 
 const ReadMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
@@ -78,23 +79,28 @@ const ReadMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
       className="flex w-full h-full bg-retro-medium text-retro-dark"
       ref={ref}
     >
-      <div className="w-32 flex-shrink-0">
-        {/* Left placeholder for GIFs */}
-        <div className="w-full h-32 border-2 border-retro-medium rounded mb-4"></div>
+      <div className="w-64 flex-shrink-0 flex items-center justify-center">
+        <Image
+          src={"/videos/readme/dog.gif"}
+          width={180}
+          height={180}
+          alt={"Computer"}
+        />
       </div>
 
-      <div className="flex-grow mx-8 bg-retro-white border-x-retro-dark border-x-3">
+      <div className="flex-grow bg-retro-white border-x-retro-dark border-x-3">
         <div className="text-center py-8">
-          <h4>Hi there 👋</h4>
-          <h1 className="text-4xl font-bold mb-4 font-mono">
+          <h5 className={"text-2xl"}>Hi there 👋</h5>
+          <h6>Welcome to my profile! Feel free to explore around.</h6>
+          <h1 className="text-4xl font-bold mb-4 font-mono mt-12">
             {nameText}
             <span
-              className={`${showCursor ? "opacity-100" : "opacity-0"} text-retro-medium`}
+              className={`${showCursor ? "opacity-100" : "opacity-0"} text-retro-dark`}
             >
               |
             </span>
           </h1>
-          <div className="h-8 text-xl font-mono text-retro-medium">
+          <div className="h-8 text-2xl font-pixolde text-retro-dark">
             {displayText}
             <span className={`${showCursor ? "opacity-100" : "opacity-0"}`}>
               |
@@ -103,9 +109,13 @@ const ReadMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
         </div>
       </div>
 
-      <div className="w-32 flex-shrink-0">
-        {/* Right placeholder for GIFs */}
-        <div className="w-full h-32 border-2 border-retro-medium rounded mb-4"></div>
+      <div className="w-64 flex-shrink-0 flex items-center justify-center">
+        <Image
+          src={"/videos/readme/computer.gif"}
+          width={180}
+          height={180}
+          alt={"Computer"}
+        />
       </div>
     </div>
   );

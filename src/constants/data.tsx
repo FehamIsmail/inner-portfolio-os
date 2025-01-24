@@ -25,10 +25,12 @@ export const APPLICATIONS: ApplicationType[] = [
   },
   {
     key: "readme",
-    name: "README",
+    name: "README.md",
     icon: "readme",
     titleBarColor: "blue",
-    resizable: true,
+    width: 1070,
+    height: 400,
+    resizable: false,
     component: ReadMe,
   },
   {
