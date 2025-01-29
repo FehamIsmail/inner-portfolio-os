@@ -3,66 +3,65 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-  --color-retro-background: #c7a589;
-  --color-retro-semi-dark: var(
-    --color-retro-semi-dark,
-    #5f3b1e
-  ); /* Default values in case JS fails */
-  --color-retro-dark: var(
-    --color-retro-dark,
-    #42220e
-  ); /* Default values in case JS fails */
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+    --color-retro-background: #ba8752;
+    --color-retro-semi-dark: var(
+            --color-retro-semi-dark,
+            #5f3b1e
+    ); /* Default values in case JS fails */
+    --color-retro-dark: var(
+            --color-retro-dark,
+            #42220e
+    ); /* Default values in case JS fails */
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+            to bottom,
+            transparent,
+            rgb(var(--background-end-rgb))
+    ) rgb(var(--background-start-rgb));
 }
 
 h1 {
-  @apply font-nevrada;
-  font-size: 64px;
+    @apply font-nevrada;
+    font-size: 64px;
 }
 
 h2 {
-  @apply text-4xl;
+    @apply text-4xl;
 }
 
 h3 {
-  @apply text-3xl;
+    @apply text-3xl;
 }
 
 h4 {
-  font-size: 34px;
-  @apply font-[700];
+    font-size: 34px;
+    @apply font-[700];
 }
 
 h5 {
-  @apply text-xl;
+    @apply text-xl;
 }
 
 p {
-  @apply mt-4;
-  font-size: 24px;
-  @apply text-justify;
-  @apply font-medium;
-  @apply leading-tight;
+    @apply mt-4;
+    font-size: 24px;
+    @apply text-justify;
+    @apply font-medium;
+    @apply leading-tight;
 }
 
 h1,
@@ -70,39 +69,38 @@ h2,
 h3,
 h4,
 h5 {
-  @apply mt-5;
-  @apply font-bold;
+    @apply mt-5;
+    @apply font-bold;
 }
 
 a {
-  @apply text-blue-600;
-  @apply underline;
+    @apply text-blue-600;
+    @apply underline;
 }
 
 a:visited {
-  @apply text-purple-950;
+    @apply text-purple-950;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: normal;
-  }
+    .text-balance {
+        text-wrap: normal;
+    }
 
-  .border-thin {
-    border: 3px solid rgba(0, 0, 0, 0.27);
-  }
+    .border-thin {
+        border: 3px solid rgba(0, 0, 0, 0.27);
+    }
 
-  .dotted {
-    background-image: radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%),
-      radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%);
-    background-position:
-      6px 6px,
-      6px,
-      0;
-    background-size: 5px 5px;
-  }
+    .dotted {
+        background-image: radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%),
+        radial-gradient(rgba(0, 0, 0, 0.4) 25%, transparent 20%);
+        background-position: 6px 6px,
+        6px,
+        0;
+        background-size: 5px 5px;
+    }
 
-  .shortcut-focused {
-    background-color: var(--color-retro-semi-dark);
-  }
+    .shortcut-focused {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
 }

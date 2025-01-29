@@ -23,30 +23,24 @@ function AppShortcut(props: AppShortcutProps) {
 
   return (
     <div
-      className={`min-h-[150px] flex flex-col max-w-[120px] items-center justify-center app-shortcut text-retro-dark`}
+      className="min-h-[150px] flex flex-col max-w-[120px] items-center justify-center app-shortcut text-retro-dark"
       onDoubleClick={props.onOpen}
       onClick={props.setFocused}
     >
       <div
-        className={`p-2 -mb-2 rounded-t-md ${props.isFocused ? "shortcut-focused" : ""}
-                                             ${isNameWider ? "" : "rounded-b-md"}`}
-        ref={iconRef}
+        className={`rounded-md ${props.isFocused ? "shortcut-focused" : ""}`}
       >
-        <Icon icon={props.icon} size={70} />
-      </div>
-      <div
-        className={`p-2 rounded-b-md ${props.isFocused ? "shortcut-focused" : ""}
-                                             ${isNameWider ? "rounded-t-md" : ""}`}
-        ref={nameRef}
-      >
-        <span
-          className={
-            "px-[7px] py-[2px] max-w-full text-center select-none overflow-hidden whitespace-normal " +
-            "text-ellipsis bg-retro-white text-retro-dark font-bold rounded-md border-2 border-retro-dark line-clamp-2"
-          }
-        >
-          {props.name}
-        </span>
+        <div className={`p-2 -mb-2`} ref={iconRef}>
+          <Icon icon={props.icon} size={70} />
+        </div>
+        <div className="p-2" ref={nameRef}>
+          <span
+            className="px-[7px] py-[2px] max-w-full text-center select-none overflow-hidden whitespace-normal
+                     text-ellipsis bg-retro-white text-retro-dark font-bold rounded-md border-2 border-retro-dark line-clamp-2"
+          >
+            {props.name}
+          </span>
+        </div>
       </div>
     </div>
   );

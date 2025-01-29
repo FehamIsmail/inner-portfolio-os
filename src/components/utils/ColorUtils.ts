@@ -1,6 +1,6 @@
-const adjustColorBrightness = (hex: string, percent: number) => {
+const adjustColorBrightness = (hex: string, shift: number) => {
   const num = parseInt(hex.slice(1), 16),
-    amt = Math.round(2.55 * percent),
+    amt = Math.round(2.55 * shift),
     R = (num >> 16) + amt,
     G = ((num >> 8) & 0x00ff) + amt,
     B = (num & 0x0000ff) + amt;
@@ -25,8 +25,8 @@ export const setDynamicColors = () => {
   const retroBackground = getComputedStyle(root)
     .getPropertyValue("--color-retro-background")
     .trim();
-  const semiDark = adjustColorBrightness(retroBackground, -12); // Adjust the percentage as needed
-  const dark = adjustColorBrightness(retroBackground, -50); // Adjust the percentage as needed
+  const semiDark = adjustColorBrightness(retroBackground, -12);
+  const dark = adjustColorBrightness(retroBackground, -50);
 
   root.style.setProperty("--color-retro-semi-dark", semiDark);
   root.style.setProperty("--color-retro-dark", dark);

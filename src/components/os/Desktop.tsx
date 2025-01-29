@@ -9,6 +9,7 @@ import { WindowAnimationState } from "@/constants/enums";
 import { WINDOW_ANIMATION_DURATION } from "@/components/utils/AnimationUtils";
 import { setDynamicColors } from "@/components/utils/ColorUtils";
 import AlertProvider, { ALERT_WIDTH } from "@/components/utils/AlertProvider";
+import Wallpaper from "@/components/os/Wallpaper";
 
 interface DesktopProps {
   children?: React.ReactNode;
@@ -273,11 +274,8 @@ function Desktop({ children }: DesktopProps) {
       value={{ addModal, addWindow, removeWindow, removeModal }}
     >
       <AlertProvider>
-        <main
-          className={
-            "font-nunito desktop-background z-[-999] min-h-full bg-retro-background flex flex-col select-none"
-          }
-        >
+        <main className="font-nunito z-[-200] background-retro-gradient min-h-full flex flex-col select-none">
+          <Wallpaper />
           {Object.keys(windows).map((key) => {
             const desktopWindow = windows[key];
             const isModal = key === "modal";
