@@ -4,38 +4,46 @@ import ResumeDownload from "@/components/portfolio/ResumeDownload";
 import MediaCaption from "@/components/portfolio/MediaCaption";
 import Image from "next/image";
 import lego from "@/assets/images/lego_mindstorms.png";
+import me from "@/assets/images/me.png";
 import me_robotics from "@/assets/images/childhood_robotics.png";
 import vanier_college from "@/assets/images/vanier_college.jpg";
 import concordia from "@/assets/images/concordia.jpg";
+import MediaImage from "@/components/portfolio/MediaImage";
 
 const About = () => {
   return (
-    <div>
-      <h2 className={""}>I&apos;m Ismail.</h2>
-      <p>
-        I&apos;m a Software Engineer undergraduate with experience in{" "}
-        <b>3D Software Development</b> and <b>Full Stack Development</b>.
-        I&apos;m a fourth-year student at Concordia University,{" "}
-        <b>
-          expecting to graduate in <u>May 2025</u>
-        </b>
-        . My passion lies in creating efficient, user-friendly solutions across
-        various domains of software engineering.
-      </p>
-      <p>
-        I&apos;m thrilled that you&apos;re taking the time to browse through my
-        portfolio. It was a joy to put together, and I hope you find it just as
-        engaging. Should you have any inquiries or feedback, don&apos;t hesitate
-        to connect with me through{" "}
-        <Link className={"visited:text-purple-950"} href="/contact">
-          <b>this form</b>
-        </Link>{" "}
-        or send an email directly to{" "}
-        <a href="mailto:ismail.feham64@gmail.com">
-          <b>ismail.feham64@gmail.com</b>
-        </a>
-        .
-      </p>
+    <div className={"mt-10"}>
+      <div className={"flex flex-row gap-10"}>
+        <MediaImage height={450} width={300} src={me.src} alt={"Photo of me"} />
+        <div className={"max-w-[800px]"}>
+          <h2 className={""}>I&apos;m Ismail.</h2>
+          <p>
+            I&apos;m a Software Engineer undergraduate with experience in{" "}
+            <b>3D Software Development</b> and <b>Full Stack Development</b>.
+            I&apos;m a fourth-year student at Concordia University,{" "}
+            <b>
+              expecting to graduate in <u>May 2025</u>
+            </b>
+            . My passion lies in solving complex problems and creating
+            innovative solutions that make a difference. I&apos;m always eager
+            to learn new technologies and improve my skills.
+          </p>
+          <p>
+            I&apos;m thrilled that you&apos;re taking the time to browse through
+            my portfolio. It was a joy to put together, and I hope you find it
+            just as engaging. Should you have any inquiries or feedback,
+            don&apos;t hesitate to connect with me through{" "}
+            <Link className={"visited:text-purple-950"} href="/contact">
+              <b>this form</b>
+            </Link>{" "}
+            or send an email directly to{" "}
+            <a href="mailto:ismail.feham64@gmail.com">
+              <b>ismail.feham64@gmail.com</b>
+            </a>
+            .
+          </p>
+        </div>
+      </div>
       <ResumeDownload margin={20} />
 
       {/****************** Childhood ***********************/}
