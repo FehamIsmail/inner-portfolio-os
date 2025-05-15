@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { DesktopWindows } from "@/constants/types";
 import Icon from "@/components/common/Icon";
 import { IconName } from "@/assets/icons";
+import StartMenu from "@/components/os/StartMenu";
 
 interface TaskbarProps {
   windows: DesktopWindows;
@@ -76,65 +77,86 @@ function Taskbar(props: TaskbarProps) {
     return () => clearInterval(timer);
   }, []);
 
-  return (
-    <div className="z-[1000] text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
-      <div className="flex flex-row w-full h-full pl-3 gap-1">
-        <div className="flex items-center flex-row gap-1">
-          <button
-            className={
-              "h-full hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6"
-            }
-          >
-            Start
-          </button>
-        </div>
-        <div className="flex flex-row min-w-0 flex-grow gap-1 h-full">
-          {Object.keys(props.windows).map((key) => {
-            return (
-              <button
-                key={key}
-                ref={(el) => {
-                  taskbarButtonRefs.current[key] = el;
-                }}
-                className={`max-w-[220px] min-w-0 flex flex-row gap-2 cursor-default items-center h-full w-full border-x-3 border-retro-dark px-3 bg-retro-white
-                                    ${key == windowOnFocus ? "dotted" : ""}`}
-                onClick={() => props.toggleMinimize(key)}
-              >
-                <Icon icon={props.windows[key].application.icon} size={24} />
-                <span
-                  className={
-                    "h-fit overflow-hidden whitespace-nowrap text-ellipsis"
-                  }
-                >
-                  {props.windows[key].application.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showStartMenu) {
+        setShowStartMenu(false);
+      }
+    };
 
-        <div className="flex gap-3 items-center pr-1">
-          <div className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
-            <div
-              className={`min-w-[18px] h-full + ${wifiBarsStyles[wifiBars].paddingTop}`}
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showStartMenu]);
+
+  const toggleStartMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowStartMenu(prev => !prev);
+  };
+
+  return (
+    <>
+      <StartMenu isOpen={showStartMenu} onClose={() => setShowStartMenu(false)} />
+      
+      <div className="z-[1000] text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
+        <div className="flex flex-row w-full h-full pl-3 gap-1">
+          <div className="flex items-center flex-row gap-1">
+            <button
+              className={`h-full hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6 ${showStartMenu ? 'bg-retro-medium' : ''}`}
+              onClick={toggleStartMenu}
             >
-              <Icon
-                icon={`wifi${wifiBars}` as IconName}
-                size={wifiBarsStyles[wifiBars].width}
-                colorize={true}
-              />
-            </div>
-            <Icon icon={"speaker"} size={16} colorize={true} />
-            <span className={"whitespace-nowrap"}>{time}</span>
-            <Icon icon={"battery"} className={"pb-1"} size={13} />
+              Start
+            </button>
           </div>
-          <button
-            className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0"
-            onClick={props.minimizeAll}
-          />
+          <div className="flex flex-row min-w-0 flex-grow gap-1 h-full">
+            {Object.keys(props.windows).map((key) => {
+              return (
+                <button
+                  key={key}
+                  ref={(el) => {
+                    taskbarButtonRefs.current[key] = el;
+                  }}
+                  className={`max-w-[220px] min-w-0 flex flex-row gap-2 cursor-default items-center h-full w-full border-x-3 border-retro-dark px-3 bg-retro-white
+                                    ${key == windowOnFocus ? "dotted" : ""}`}
+                  onClick={() => props.toggleMinimize(key)}
+                >
+                  <Icon icon={props.windows[key].application.icon} size={24} />
+                  <span
+                    className={
+                      "h-fit overflow-hidden whitespace-nowrap text-ellipsis"
+                    }
+                  >
+                    {props.windows[key].application.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-3 items-center pr-1">
+            <div className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
+              <div
+                className={`min-w-[18px] h-full + ${wifiBarsStyles[wifiBars].paddingTop}`}
+              >
+                <Icon
+                  icon={`wifi${wifiBars}` as IconName}
+                  size={wifiBarsStyles[wifiBars].width}
+                  colorize={true}
+                />
+              </div>
+              <Icon icon={"speaker"} size={16} colorize={true} />
+              <span className={"whitespace-nowrap"}>{time}</span>
+              <Icon icon={"battery"} className={"pb-1"} size={13} />
+            </div>
+            <button
+              className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0"
+              onClick={props.minimizeAll}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

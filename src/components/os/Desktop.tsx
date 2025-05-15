@@ -7,9 +7,10 @@ import AppShortcut, { AppShortcutProps } from "@/components/os/AppShortcut";
 import { ApplicationType, DesktopWindows } from "@/constants/types";
 import { WindowAnimationState } from "@/constants/enums";
 import { WINDOW_ANIMATION_DURATION } from "@/components/utils/AnimationUtils";
-import { setDynamicColors } from "@/components/utils/ColorUtils";
-import AlertProvider, { ALERT_WIDTH } from "@/components/utils/AlertProvider";
+import { setDynamicColors, initializeThemeChangeListener } from "@/components/utils/ColorUtils";
+import AlertProvider, { ALERT_WIDTH } from "@/components/alerts/AlertProvider";
 import Wallpaper from "@/components/os/Wallpaper";
+
 
 interface DesktopProps {
   children?: React.ReactNode;
@@ -262,6 +263,7 @@ function Desktop({ children }: DesktopProps) {
 
   useEffect(() => {
     setDynamicColors();
+    initializeThemeChangeListener();
     setDefaultWindowSize({
       margin: 0.05,
       width: window.innerWidth - window.innerWidth * 0.05 * 2,

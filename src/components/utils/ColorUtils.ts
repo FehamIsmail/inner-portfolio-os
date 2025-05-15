@@ -31,3 +31,12 @@ export const setDynamicColors = () => {
   root.style.setProperty("--color-retro-semi-dark", semiDark);
   root.style.setProperty("--color-retro-dark", dark);
 };
+
+export const initializeThemeChangeListener = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
+  // Add listener for theme change events
+  document.addEventListener('themeChanged', () => {
+    setDynamicColors();
+  });
+};
