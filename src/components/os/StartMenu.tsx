@@ -66,7 +66,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
           }}
           initial={{ opacity: 0.2, y: 20, scale: 0.95, scaleY: 0.4 }}
           animate={{ opacity: 1, y: 0, scale: 1, scaleY: 1 }}
-          exit={{ opacity: 0, y: 5, scale: 0.98, scaleY: 0.2 }}
+          exit={{ opacity: 0, y: 5, scale: 0.97, scaleY: 0.2 }}
           transition={{ 
             y: {
               type: 'spring',
