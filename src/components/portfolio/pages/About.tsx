@@ -21,7 +21,7 @@ const About = () => {
             I&apos;m a Software Engineer with experience in{" "}
             <b>3D Software Development</b> and <b>Full Stack Development</b>.
             I&apos;m a <b>graduate of Concordia University</b>, having earned my 
-            <b> Bachelor's degree in Software Engineering</b>. My passion lies in solving complex problems and creating
+            <b> Bachelor&apos;s degree in Software Engineering</b>. My passion lies in solving complex problems and creating
             innovative solutions that make a difference. I&apos;m always eager
             to learn new technologies and improve my skills.
           </p>
@@ -158,7 +158,7 @@ const About = () => {
             >
               <b>InnovMetric</b>
             </a>{" "}
-            where I honed my skills in 3D software development. I successfully graduated with my Bachelor's degree in Software Engineering and am now pursuing my career in the industry.
+            where I honed my skills in 3D software development. I successfully graduated with my Bachelor&apos;s degree in Software Engineering and am now pursuing my career in the industry.
           </p>
         </div>
         {/**************** End of Concordia years ******************/}
