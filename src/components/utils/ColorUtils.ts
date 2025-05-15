@@ -20,23 +20,42 @@ const adjustColorBrightness = (hex: string, shift: number) => {
 };
 
 export const setDynamicColors = () => {
-  if (!window || !document) return;
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
   const root = document.documentElement;
   const retroBackground = getComputedStyle(root)
     .getPropertyValue("--color-retro-background")
     .trim();
-  const semiDark = adjustColorBrightness(retroBackground, -12);
-  const dark = adjustColorBrightness(retroBackground, -50);
+  
+  console.log('Setting dynamic colors based on background:', retroBackground);
+  
+  try {
+    const semiDark = adjustColorBrightness(retroBackground, -12);
+    const dark = adjustColorBrightness(retroBackground, -50);
 
-  root.style.setProperty("--color-retro-semi-dark", semiDark);
-  root.style.setProperty("--color-retro-dark", dark);
+    root.style.setProperty("--color-retro-semi-dark", semiDark);
+    root.style.setProperty("--color-retro-dark", dark);
+    
+    console.log('Colors updated successfully');
+  } catch (error) {
+    console.error('Error setting dynamic colors:', error);
+  }
 };
 
 export const initializeThemeChangeListener = () => {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
   
+  console.log('Initializing theme change listener');
+  
+  // Remove any existing listeners to prevent duplicates
+  document.removeEventListener('themeChanged', setDynamicColors);
+  
   // Add listener for theme change events
   document.addEventListener('themeChanged', () => {
+    console.log('Theme change event detected');
     setDynamicColors();
   });
+  
+  // Set initial colors
+  setDynamicColors();
 };

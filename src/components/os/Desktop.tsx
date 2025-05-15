@@ -17,6 +17,7 @@ interface DesktopProps {
 }
 
 interface DesktopContextProps {
+  onOpen: (application: ApplicationType) => void;
   addModal: (application: ApplicationType) => void;
   removeModal: () => void;
   addWindow: (application: ApplicationType) => void;
@@ -273,7 +274,7 @@ function Desktop({ children }: DesktopProps) {
 
   return (
     <DesktopContext.Provider
-      value={{ addModal, addWindow, removeWindow, removeModal }}
+      value={{ addModal, addWindow, removeWindow, removeModal, onOpen }}
     >
       <AlertProvider>
         <main className="font-nunito z-[-200] background-retro-gradient min-h-full flex flex-col select-none">

@@ -3,6 +3,7 @@ import { DesktopWindows } from "@/constants/types";
 import Icon from "@/components/common/Icon";
 import { IconName } from "@/assets/icons";
 import StartMenu from "@/components/os/StartMenu";
+import { motion } from "framer-motion";
 
 interface TaskbarProps {
   windows: DesktopWindows;
@@ -26,6 +27,8 @@ function Taskbar(props: TaskbarProps) {
   const taskbarButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>(
     {},
   );
+  const startMenuRef = useRef<HTMLDivElement>(null);
+  const startButtonRef = useRef<HTMLButtonElement>(null);
 
   const [wifiBars, setWifiBars] = React.useState<1 | 2 | 3>(3);
   const wifiBarsStyles = {
@@ -79,6 +82,26 @@ function Taskbar(props: TaskbarProps) {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Don't close if clicking on the start button
+      if (startButtonRef.current && startButtonRef.current.contains(event.target as Node)) {
+        return;
+      }
+      
+      // Don't close if clicking inside the start menu
+      if (startMenuRef.current && startMenuRef.current.contains(event.target as Node)) {
+        return;
+      }
+      
+      // Only handle document clicks, not clicks on specific elements
+      if ((event.target as HTMLElement).tagName === 'BUTTON' ||
+          (event.target as HTMLElement).tagName === 'SPAN' ||
+          (event.target as HTMLElement).tagName === 'IMG' ||
+          (event.target as HTMLElement).tagName === 'DIV' &&
+          ((event.target as HTMLElement).className || '').includes('menu')) {
+        return;
+      }
+      
+      // Close if click is outside
       if (showStartMenu) {
         setShowStartMenu(false);
       }
@@ -91,23 +114,29 @@ function Taskbar(props: TaskbarProps) {
   }, [showStartMenu]);
 
   const toggleStartMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setShowStartMenu(prev => !prev);
   };
 
   return (
     <>
-      <StartMenu isOpen={showStartMenu} onClose={() => setShowStartMenu(false)} />
+      <div ref={startMenuRef}>
+        <StartMenu isOpen={showStartMenu} onClose={() => setShowStartMenu(false)} />
+      </div>
       
       <div className="z-[1000] text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
         <div className="flex flex-row w-full h-full pl-3 gap-1">
           <div className="flex items-center flex-row gap-1">
-            <button
+            <motion.button
+              ref={startButtonRef}
               className={`h-full hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6 ${showStartMenu ? 'bg-retro-medium' : ''}`}
               onClick={toggleStartMenu}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               Start
-            </button>
+            </motion.button>
           </div>
           <div className="flex flex-row min-w-0 flex-grow gap-1 h-full">
             {Object.keys(props.windows).map((key) => {
@@ -149,9 +178,11 @@ function Taskbar(props: TaskbarProps) {
               <span className={"whitespace-nowrap"}>{time}</span>
               <Icon icon={"battery"} className={"pb-1"} size={13} />
             </div>
-            <button
+            <motion.button
               className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0"
               onClick={props.minimizeAll}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             />
           </div>
         </div>

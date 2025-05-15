@@ -118,8 +118,9 @@ const Experiences = () => {
         websiteUrl={"https://www.rossvideo.com"}
         website={"www.rossvideo.com"}
       />
-      <ImageExplorer
-        className={"mt-8 ml-12"}
+      <div className={"pr-8"}>
+        <ImageExplorer
+          className={"mt-8 ml-12"}
         images={[
           {
             name: "Ross Video 1",
@@ -136,7 +137,8 @@ const Experiences = () => {
         ]}
         height={500}
         width={900}
-      />
+        />
+      </div>
     </div>
   );
 };

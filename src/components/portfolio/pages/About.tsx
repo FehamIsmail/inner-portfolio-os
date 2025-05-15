@@ -14,7 +14,7 @@ const About = () => {
   return (
     <div className={"mt-10"}>
       <div className={"flex flex-row gap-10"}>
-        <MediaImage height={450} width={300} src={me.src} alt={"Photo of me"} />
+        <MediaImage height={450} width={300} src={me.src} className="min-w-[200px]" alt={"Photo of me"} />
         <div className={"max-w-[800px]"}>
           <h2 className={""}>I&apos;m Ismail.</h2>
           <p>
@@ -67,7 +67,7 @@ const About = () => {
           src={me_robotics.src}
           type={"image"}
           alt={"Photo of me robotics meeting"}
-          caption={"Photo of myself intensely focused on team strategies."}
+          caption={"Photo of myself intensely focused."}
           count={1}
         />
       </div>
