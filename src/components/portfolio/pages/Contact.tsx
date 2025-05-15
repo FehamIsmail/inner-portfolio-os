@@ -2,7 +2,7 @@
 import React from "react";
 import Button from "@/components/common/Button";
 import ResumeDownload from "@/components/portfolio/ResumeDownload";
-import { useAlert } from "@/components/utils/AlertProvider";
+import { useAlert } from "@/components/alerts/AlertProvider";
 import { sendEmail } from "@/components/utils/EmailUtils";
 import { AxiosError, AxiosResponse } from "axios";
 

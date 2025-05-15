@@ -3,7 +3,7 @@ import React, { forwardRef, useCallback, useEffect } from "react";
 import { Message, useChat } from "ai/react";
 import { motion } from "framer-motion";
 import useResizeObserver from "@react-hook/resize-observer";
-import { useAlert } from "@/components/utils/AlertProvider";
+import { useAlert } from "@/components/alerts/AlertProvider";
 
 const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } =

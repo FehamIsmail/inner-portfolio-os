@@ -18,13 +18,10 @@ const About = () => {
         <div className={"max-w-[800px]"}>
           <h2 className={""}>I&apos;m Ismail.</h2>
           <p>
-            I&apos;m a Software Engineer undergraduate with experience in{" "}
+            I&apos;m a Software Engineer with experience in{" "}
             <b>3D Software Development</b> and <b>Full Stack Development</b>.
-            I&apos;m a fourth-year student at Concordia University,{" "}
-            <b>
-              expecting to graduate in <u>May 2025</u>
-            </b>
-            . My passion lies in solving complex problems and creating
+            I&apos;m a <b>graduate of Concordia University</b>, having earned my 
+            <b> Bachelor's degree in Software Engineering</b>. My passion lies in solving complex problems and creating
             innovative solutions that make a difference. I&apos;m always eager
             to learn new technologies and improve my skills.
           </p>
@@ -133,8 +130,8 @@ const About = () => {
             strong foundation in software development, algorithms, and data
             structures. I&apos;ve also been exposed to various programming
             languages, including C, C++, C#, Python, Lisp, and so on. As a COOP
-            student, I&apos;ve had the opportunity to work on real-world
-            projects and gain valuable experience in my first internship at{" "}
+            student, I had the opportunity to work on real-world
+            projects and gain valuable experience through internships at{" "}
             <a
               href={"https://www.rossvideo.com/"}
               className={"visited:text-purple-950"}
@@ -143,11 +140,25 @@ const About = () => {
             >
               <b>Ross Video</b>
             </a>{" "}
-            as a Full Stack Web Developer - and now at{" "}
-            <a href={"https://www.flexspring.com/"}>
+            as a Full Stack Web Developer, at{" "}
+            <a 
+              href={"https://www.flexspring.com/"}
+              className={"visited:text-purple-950"}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               <b>Flexspring</b>
-            </a>
-            .
+            </a>{" "}
+            and at{" "}
+            <a 
+              href={"https://www.innovmetric.com/"}
+              className={"visited:text-purple-950"}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <b>InnovMetric</b>
+            </a>{" "}
+            where I honed my skills in 3D software development. I successfully graduated with my Bachelor's degree in Software Engineering and am now pursuing my career in the industry.
           </p>
         </div>
         {/**************** End of Concordia years ******************/}
