@@ -4,6 +4,13 @@ import "./globals.css";
 import Desktop from "@/components/os/Desktop";
 import local from "next/font/local";
 import React from "react";
+import dynamic from "next/dynamic";
+
+// Import ThemeInitializer with SSR disabled
+const ThemeInitializer = dynamic(
+  () => import("@/components/theme/ThemeInitializer"),
+  { ssr: false }
+);
 
 const nunito = Nunito({
   weight: ["600", "700", "800", "900", "1000"],
@@ -50,6 +57,7 @@ export default function RootLayout({
       <body
         className={`${nevrada.variable} ${nunito.variable} ${pixolde.variable} overflow-hidden`}
       >
+        <ThemeInitializer />
         <Desktop>{children}</Desktop>
       </body>
     </html>

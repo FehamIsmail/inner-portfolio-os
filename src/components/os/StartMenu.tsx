@@ -4,6 +4,7 @@ import Icon from '@/components/common/Icon';
 import { APPLICATIONS } from '@/constants/data';
 import { useDesktop } from '@/hooks/useDesktop';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DEFAULT_THEME_COLOR } from '@/components/utils/ColorUtils';
 
 interface ThemeOption {
   name: string;
@@ -17,8 +18,8 @@ interface StartMenuProps {
 }
 
 const THEMES: ThemeOption[] = [
-  { name: 'Default', value: '#ba8752', background: 'bg-[#ba8752]' },
-  { name: 'Clear', value: '#6bb5d3', background: 'bg-[#6bb5d3]' },
+  { name: 'Default', value: DEFAULT_THEME_COLOR, background: 'bg-[#ba8752]' },
+  { name: 'Sky', value: '#247b9e', background: 'bg-[#6bb5d3]' },
   { name: 'Night', value: '#2c3e50', background: 'bg-[#2c3e50]' },
   { name: 'Dracula', value: '#282a36', background: 'bg-[#282a36]' },
 ];
@@ -29,20 +30,26 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
   const setTheme = useCallback((backgroundColor: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Setting theme to:', backgroundColor);
+    
+    // Set the color in CSS
     document.documentElement.style.setProperty('--color-retro-background', backgroundColor);
-    const event = new Event('themeChanged');
+    
+    // Create a custom event with the color in the detail
+    const event = new CustomEvent('themeChanged', {
+      detail: { color: backgroundColor }
+    });
+    
+    // Dispatch the event
     document.dispatchEvent(event);
+    
     onClose();
   }, [onClose]);
   
   const handleAppClick = useCallback((appKey: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Attempting to open application:', appKey);
     const app = APPLICATIONS.find(app => app.key === appKey);
     if (app) {
-      console.log('Found application:', app.name);
       onOpen(app);
       onClose();
     }
@@ -57,14 +64,33 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
             e.preventDefault();
             e.stopPropagation();
           }}
-          initial={{ opacity: 0, y: 20, scale: 0.95, scaleY: 0.4 }}
+          initial={{ opacity: 0.2, y: 20, scale: 0.95, scaleY: 0.4 }}
           animate={{ opacity: 1, y: 0, scale: 1, scaleY: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.98, scaleY: 0.4 }}
+          exit={{ opacity: 0, y: 5, scale: 0.98, scaleY: 0.2 }}
           transition={{ 
-            type: "spring", 
-            stiffness: 500, 
-            damping: 30,
-            mass: 1
+            y: {
+              type: 'spring',
+              stiffness: 650, 
+              damping: 30,
+              mass: 0.8
+            },
+            scale: {
+              type: 'spring',
+              stiffness: 650, 
+              damping: 30,
+              mass: 0.8
+            },
+            scaleY: {
+              type: 'spring',
+              stiffness: 650, 
+              damping: 30,
+              mass: 0.8
+            },
+            opacity: { 
+              type: 'tween', 
+              ease: 'linear',
+              duration: 0.15
+            }
           }}
         >
           {/* Header */}
@@ -116,7 +142,10 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
                     className="flex items-center px-2 py-1.5 rounded hover:bg-retro-medium text-left"
                     onClick={(e) => setTheme(theme.value, e)}
                   >
-                    <div className={`w-5 h-5 mr-3 border border-retro-dark rounded ${theme.background}`}></div>
+                    <div 
+                      className="w-5 h-5 mr-3 border border-retro-dark rounded"
+                      style={{ backgroundColor: theme.value }}
+                    ></div>
                     <span className="font-medium">{theme.name}</span>
                   </button>
                 ))}

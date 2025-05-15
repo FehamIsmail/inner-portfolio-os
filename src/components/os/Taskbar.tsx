@@ -128,15 +128,13 @@ function Taskbar(props: TaskbarProps) {
       <div className="z-[1000] text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
         <div className="flex flex-row w-full h-full pl-3 gap-1">
           <div className="flex items-center flex-row gap-1">
-            <motion.button
+            <button
               ref={startButtonRef}
               className={`h-full hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6 ${showStartMenu ? 'bg-retro-medium' : ''}`}
               onClick={toggleStartMenu}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               Start
-            </motion.button>
+            </button>
           </div>
           <div className="flex flex-row min-w-0 flex-grow gap-1 h-full">
             {Object.keys(props.windows).map((key) => {

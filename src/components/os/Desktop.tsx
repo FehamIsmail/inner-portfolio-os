@@ -263,8 +263,6 @@ function Desktop({ children }: DesktopProps) {
   }, [firstRender, onOpen]);
 
   useEffect(() => {
-    setDynamicColors();
-    initializeThemeChangeListener();
     setDefaultWindowSize({
       margin: 0.05,
       width: window.innerWidth - window.innerWidth * 0.05 * 2,
