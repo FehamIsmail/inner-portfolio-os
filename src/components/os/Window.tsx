@@ -552,6 +552,7 @@ function Window(props: WindowProps) {
       >
         <props.application.component
           ref={contentRef}
+          animationState={animationState}
           {...props.application.props}
         >
           {props.application.children}
