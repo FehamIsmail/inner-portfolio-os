@@ -9,11 +9,11 @@ export async function POST(req: Request) {
   const { messages }: { messages: CoreMessage[] } = await req.json();
 
   const result = await streamText({
-    model: openai("gpt-3.5-turbo-0125"),
+    model: openai("gpt-3.5-turbo"),
     maxTokens: 256,
     system: BOT_CONTEXT,
     messages,
   });
 
-  return result.toAIStreamResponse();
+  return result.toDataStreamResponse();
 }
