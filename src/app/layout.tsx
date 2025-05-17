@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css";
 import Desktop from "@/components/os/Desktop";
 import local from "next/font/local";
@@ -61,6 +62,7 @@ export default function RootLayout({
         <ThemeInitializer />
         <Desktop>{children}</Desktop>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
