@@ -111,7 +111,7 @@ function Window(props: WindowProps) {
     currentWindowDimensions.height,
     SPRING_OPTIONS,
   );
-  const motionScale = useSpring(0.6, SPRING_OPTIONS);
+  const motionScale = useSpring(0.6, { damping: 45, stiffness: 600 });
 
   useResizeObserver(containerRef, () => {
     checkOverflow();

@@ -24,7 +24,7 @@ export const getScaleByAnimationState = (
     case WindowAnimationState.RESIZING:
       return 1;
     case WindowAnimationState.CLOSING:
-      return 0;
+      return 0.1;
     default:
       return 1;
   }
