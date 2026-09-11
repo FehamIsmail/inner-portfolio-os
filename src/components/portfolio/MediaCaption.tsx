@@ -27,9 +27,9 @@ const MediaCaption = (props: ImageCaptionProps) => {
   }, [videoRef]);
 
   return (
-    <div>
+    <div className="min-w-0 max-w-full">
       <div
-        className={`w-full h-full flex flex-col items-center rounded-xl ${props.className}`}
+        className={`w-full h-full min-w-0 flex flex-col items-center rounded-xl ${props.className || ""}`}
       >
         {props.type === "image" && (
           <Image
@@ -39,7 +39,7 @@ const MediaCaption = (props: ImageCaptionProps) => {
             height={0}
             sizes="100vw"
             style={{ width: "100%", height: "auto" }} // optional
-            className={`rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
+            className={`w-full max-w-full h-auto rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
           />
         )}
         {props.type === "video" && (
@@ -57,7 +57,7 @@ const MediaCaption = (props: ImageCaptionProps) => {
           </video>
         )}
       </div>
-      <p className="mt-2 text-[21px] text-center overflow-hidden whitespace-normal text-ellipsis line-clamp-1 ">
+      <p className="mt-2 text-center whitespace-normal break-words">
         <b>Figure {props.count}: </b>
         {props.caption}
       </p>

@@ -22,6 +22,7 @@ declare type ApplicationType = {
   >;
   children?: React.ReactNode; // Used in MyPortfolioLayout to handle routing
   resizable?: boolean;
+  hideOnMobile?: boolean;
   props?: any;
   width?: number;
   height?: number;

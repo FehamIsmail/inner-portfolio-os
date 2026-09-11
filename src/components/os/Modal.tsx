@@ -22,8 +22,8 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
       ref={ref}
       className={"w-full h-fit text-retro-dark font-pixolde flex-grow"}
     >
-      <div className={"p-6"}>
-        <div className={"flex flex-row gap-2 items-center"}>
+      <div className={"p-4 sm:p-6"}>
+        <div className={"flex flex-col sm:flex-row gap-2 items-start sm:items-center"}>
           <Icon
             icon={icon}
             size={48}
@@ -32,13 +32,13 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
           />
           <h2 className={"mt-0"}>{title}</h2>
         </div>
-        <div className={"ml-[68px]"}>
+        <div className={"mt-3 sm:mt-0 sm:ml-[68px] break-words"}>
           <p className={"mt-0"}>{message}</p>
         </div>
       </div>
       <div
         className={
-          "p-4 bg-retro-medium flex text-[22px] font-bold flex-row gap-3 items-center"
+          "p-4 bg-retro-medium flex text-lg sm:text-[22px] font-bold flex-wrap gap-3 items-center"
         }
       >
         {onConfirm && confirmText && (

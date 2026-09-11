@@ -11,7 +11,7 @@ const Business = () => {
   return (
     <div>
       <h2>The journey of creating our own brand</h2>
-      <div className={"px-40"}>
+      <div className={"px-0 sm:px-10 lg:px-40"}>
         <MediaCaption
           className={"mt-4"}
           src={mdv_bill.src}
@@ -43,7 +43,7 @@ const Business = () => {
         learned the importance of customer feedback and how to use it to improve
         our products and services.
       </p>
-      <div className={"mt-4 px-10 flex flex-row mx-auto gap-[6%]"}>
+      <div className={"mt-4 px-0 sm:px-5 lg:px-10 flex flex-col md:flex-row mx-auto gap-6 md:gap-[6%]"}>
         <ImageExplorer
           className={"flex-1"}
           height={500}

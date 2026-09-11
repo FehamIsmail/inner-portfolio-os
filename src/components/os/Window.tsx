@@ -54,6 +54,10 @@ interface WindowProps {
   application: ApplicationType;
   taskbarPos: number;
   isModal?: boolean;
+  isMobile: boolean;
+  viewportWidth: number;
+  viewportHeight: number;
+  taskbarHeight: number;
 }
 
 function Window(props: WindowProps) {
@@ -68,7 +72,12 @@ function Window(props: WindowProps) {
     isModal,
     top,
     left,
+    isMobile,
+    viewportWidth,
+    viewportHeight,
+    taskbarHeight,
   } = props;
+  const mobileLocked = isMobile && !isModal;
 
   const dragCoords = useRef({ dragStartX: 0, dragStartY: 0 });
   const isDragging = useRef(false);
@@ -76,17 +85,33 @@ function Window(props: WindowProps) {
 
   const initialDimensions = useMemo(
     () => ({
-      x: left,
-      y: top,
-      width: application.width || MIN_WIDTH,
-      height: application.height || MIN_HEIGHT,
+      x: mobileLocked ? 0 : left,
+      y: mobileLocked ? 0 : top,
+      width: mobileLocked
+        ? viewportWidth
+        : isModal
+          ? Math.min(application.width || MIN_WIDTH, viewportWidth - 24)
+          : application.width || MIN_WIDTH,
+      height: mobileLocked
+        ? viewportHeight - taskbarHeight
+        : application.height || MIN_HEIGHT,
     }),
-    [left, top, application.width, application.height],
+    [
+      application.height,
+      application.width,
+      isModal,
+      left,
+      mobileLocked,
+      taskbarHeight,
+      top,
+      viewportHeight,
+      viewportWidth,
+    ],
   );
 
   const [firstRender, setFirstRender] = React.useState(true);
   const [sizeInitialized, setSizeInitialized] = React.useState(false);
-  const [isMaximized, setIsMaximized] = React.useState(false);
+  const [isMaximized, setIsMaximized] = React.useState(mobileLocked);
   const [isOverflowing, setIsOverflowing] = React.useState(false);
   const [currentWindowDimensions, setCurrentWindowDimensions] =
     React.useState(initialDimensions);
@@ -151,6 +176,7 @@ function Window(props: WindowProps) {
   }, [containerRef, scrollBarBorderRef, animationState]);
 
   const startResize = (e: React.MouseEvent) => {
+    if (mobileLocked) return;
     e.preventDefault();
     setAnimationState(WindowAnimationState.RESIZING);
     window.addEventListener("mousemove", onResize, false);
@@ -203,6 +229,7 @@ function Window(props: WindowProps) {
 
   const startDrag = useCallback(
     (e: React.MouseEvent) => {
+      if (mobileLocked) return;
       e.stopPropagation();
       e.preventDefault();
       onInteract();
@@ -219,7 +246,7 @@ function Window(props: WindowProps) {
       window.addEventListener("mousemove", onDrag, { passive: true });
       window.addEventListener("mouseup", stopDrag);
     },
-    [onInteract, setAnimationState],
+    [mobileLocked, onInteract, setAnimationState],
   );
 
   const onDrag = useCallback(
@@ -277,21 +304,31 @@ function Window(props: WindowProps) {
 
   const maximizeWindow = useCallback(
     (actionOrigin: "DRAG" | "BUTTON") => {
-      if (props.application.resizable === false) return;
+      if (props.application.resizable === false && !mobileLocked) return;
       setIsMaximized(true);
       if (actionOrigin === "BUTTON")
         setPrevWindowDimensions(currentWindowDimensions);
       setCurrentWindowDimensions({
         x: 0,
         y: 0,
-        width: window.innerWidth,
-        height: window.innerHeight - 40,
+        width: viewportWidth || window.innerWidth,
+        height:
+          (viewportHeight || window.innerHeight) -
+          (taskbarHeight || 40),
       });
     },
-    [currentWindowDimensions, props.application.resizable],
+    [
+      currentWindowDimensions,
+      mobileLocked,
+      props.application.resizable,
+      taskbarHeight,
+      viewportHeight,
+      viewportWidth,
+    ],
   );
 
   const maximizeHandler = () => {
+    if (mobileLocked) return;
     if (isMaximized) {
       setCurrentWindowDimensions(prevWindowDimensions);
       setIsMaximized(false);
@@ -403,25 +440,50 @@ function Window(props: WindowProps) {
   }, [animationState, isMaximized, firstRender, motionScale]);
 
   useEffect(() => {
+    if (!mobileLocked || !viewportWidth || !viewportHeight) return;
+    setIsMaximized(true);
+    setSizeInitialized(true);
+    setCurrentWindowDimensions({
+      x: 0,
+      y: 0,
+      width: viewportWidth,
+      height: viewportHeight - taskbarHeight,
+    });
+  }, [
+    mobileLocked,
+    taskbarHeight,
+    viewportHeight,
+    viewportWidth,
+  ]);
+
+  useEffect(() => {
     if (!firstRender || !contentRef.current) return;
     checkOverflow();
     if (animationState === WindowAnimationState.OPENING) {
       setFirstRender(false);
-      const { width, height } = {
-        width: props.application.width || MIN_WIDTH,
-        height: props.application.height || (props.isModal ? 50 : MIN_HEIGHT),
+      const width = mobileLocked
+        ? viewportWidth
+        : props.isModal
+          ? Math.min(
+              props.application.width || MIN_WIDTH,
+              Math.max(viewportWidth - 24, MIN_WIDTH),
+            )
+          : props.application.width || MIN_WIDTH;
+      const height = mobileLocked
+        ? viewportHeight - taskbarHeight
+        : props.application.height || (props.isModal ? 50 : MIN_HEIGHT);
+      const nextDimensions = {
+        x: mobileLocked ? 0 : left,
+        y: mobileLocked ? 0 : top,
+        width,
+        height,
       };
-      setCurrentWindowDimensions({
-        ...currentWindowDimensions,
-        width,
-        height,
-      });
-      setPrevWindowDimensions({
-        ...prevWindowDimensions,
-        width,
-        height,
-      });
-      if (props.application.width && props.application.height)
+      setCurrentWindowDimensions(nextDimensions);
+      setPrevWindowDimensions(nextDimensions);
+      if (
+        mobileLocked ||
+        (props.application.width && props.application.height)
+      )
         setSizeInitialized(true);
     }
   }, [firstRender, contentRef, animationState]);
@@ -432,7 +494,9 @@ function Window(props: WindowProps) {
       setAnimationState(WindowAnimationState.INITIALIZING);
       const { clientWidth, clientHeight } = contentRef.current;
       const margin =
-        titleBarHeight.value + (props.isModal ? 0 : statusBarHeight.value) + 8;
+        (isMobile ? 44 : titleBarHeight.value) +
+        (props.isModal ? 0 : statusBarHeight.value) +
+        8;
       if (!props.application.width) {
         setCurrentWindowDimensions({
           ...currentWindowDimensions,
@@ -468,7 +532,8 @@ function Window(props: WindowProps) {
   return (
     <motion.div
       className={`flex flex-col bg-retro-white absolute divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
-            ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? "border-b-0 shadow-window-maximized" : "shadow-window"}`}
+            ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? "border-b-0 shadow-window-maximized" : "shadow-window"}
+            ${mobileLocked ? "rounded-none" : ""}`}
       animate={{
         opacity: getOpacity(animationState),
       }}
@@ -488,31 +553,45 @@ function Window(props: WindowProps) {
       onMouseDown={onInteract}
     >
       <div
-        className={`titleBar flex flex-row ${titleBarHeight.className} w-full justify-between px-[6px] rounded-t-[4px] ${titleBarColor}`}
+        className={`titleBar flex flex-row ${
+          isMobile
+            ? `min-h-[44px] pl-3 pr-1 ${mobileLocked ? "rounded-none" : "rounded-t-[4px]"}`
+            : `${titleBarHeight.className} px-[6px] rounded-t-[4px]`
+        } w-full justify-between ${titleBarColor}`}
       >
         <div
-          className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-3"
-          onMouseDown={startDrag}
+          className={`left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center ${
+            isMobile ? "gap-2" : "gap-3"
+          }`}
+          onMouseDown={isMobile ? undefined : startDrag}
         >
-          <span className={"select-none"}>{props.application.name}</span>
+          <span className={"select-none truncate"}>
+            {props.application.name}
+          </span>
         </div>
         <div className="flex items-center right-titleBar">
-          <div className="flex gap-2 items-end">
-            {props.application.resizable !== false && (
-              <div
-                className="flex-grow justify-center hover:cursor-pointer pb-[1px]"
+          <div className={`flex items-center ${isMobile ? "gap-0" : "gap-2"}`}>
+            {!props.isModal && props.onMinimize && (
+              <button
+                aria-label={`Minimize ${props.application.name}`}
+                className={`flex items-center justify-center hover:cursor-pointer ${
+                  isMobile ? "h-11 w-11" : "pb-[1px]"
+                }`}
                 onClick={props.onMinimize}
               >
                 <Icon
-                  className={"pt-[14px] pb-[3px] px-[4px]"}
+                  className={isMobile ? "" : "pt-[14px] pb-[3px] px-[4px]"}
                   icon={"minimize"}
                   size={13}
                   colorize={true}
                 />
-              </div>
+              </button>
             )}
-            {props.application.resizable !== false && (
-              <div
+            {!isMobile &&
+              !props.isModal &&
+              props.application.resizable !== false && (
+              <button
+                aria-label={`${isMaximized ? "Restore" : "Maximize"} ${props.application.name}`}
                 className="flex items-center justify-center hover:cursor-pointer"
                 onClick={maximizeHandler}
               >
@@ -522,10 +601,13 @@ function Window(props: WindowProps) {
                   size={13}
                   colorize={true}
                 />
-              </div>
+              </button>
             )}
-            <div
-              className="flex items-center justify-center hover:cursor-pointer"
+            <button
+              aria-label={`Close ${props.application.name}`}
+              className={`flex items-center justify-center hover:cursor-pointer ${
+                isMobile ? "h-11 w-11" : ""
+              }`}
               onClick={props.onClose}
             >
               <Icon
@@ -534,7 +616,7 @@ function Window(props: WindowProps) {
                 size={11}
                 colorize={true}
               />
-            </div>
+            </button>
           </div>
         </div>
       </div>
@@ -570,7 +652,7 @@ function Window(props: WindowProps) {
           )}
       </section>
 
-      {!isMaximized && !props.isModal && (
+      {!isMaximized && !props.isModal && !mobileLocked && (
         <div
           className={`${statusBarHeight.className} select-none flex flex-row-reverse rounded-b-lg ${props.application.resizable !== false ? "" : "bg-retro-medium"}`}
         >

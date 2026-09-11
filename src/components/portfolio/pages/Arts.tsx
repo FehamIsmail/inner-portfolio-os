@@ -64,7 +64,7 @@ const Arts = () => {
 
       <div
         className={
-          "mt-4 w-full h-fit flex flex-row justify-center gap-10 items-center"
+          "mt-4 w-full h-fit flex flex-col sm:flex-row justify-center gap-6 sm:gap-10 items-center"
         }
       >
         <MediaCaption

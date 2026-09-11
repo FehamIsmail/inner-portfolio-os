@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+import "./globals.css";
+import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import "./globals.css";
 import Desktop from "@/components/os/Desktop";
 import local from "next/font/local";
 import React from "react";
@@ -47,6 +47,12 @@ const nevrada = local({
 export const metadata: Metadata = {
   title: "Ismail Feham's Desktop",
   description: "My personal desktop",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

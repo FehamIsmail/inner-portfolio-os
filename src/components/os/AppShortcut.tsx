@@ -8,6 +8,7 @@ export interface AppShortcutProps {
   name: string;
   onOpen: () => void;
   setFocused: () => void;
+  isMobile: boolean;
 }
 
 function AppShortcut(props: AppShortcutProps) {
@@ -24,8 +25,8 @@ function AppShortcut(props: AppShortcutProps) {
   return (
     <div
       className="min-h-[150px] flex flex-col max-w-[120px] items-center justify-center app-shortcut text-retro-dark"
-      onDoubleClick={props.onOpen}
-      onClick={props.setFocused}
+      onDoubleClick={props.isMobile ? undefined : props.onOpen}
+      onClick={props.isMobile ? props.onOpen : props.setFocused}
     >
       <div
         className={`rounded-md ${props.isFocused ? "shortcut-focused" : ""}`}

@@ -10,6 +10,8 @@ interface TaskbarProps {
   toggleMinimize: (key: string) => void;
   minimizeAll: () => void;
   updateTaskbarAppPosX: (key: string, posX: number) => void;
+  isMobile: boolean;
+  taskbarHeight: number;
 }
 
 function Taskbar(props: TaskbarProps) {
@@ -81,7 +83,7 @@ function Taskbar(props: TaskbarProps) {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       // Don't close if clicking on the start button
       if (startButtonRef.current && startButtonRef.current.contains(event.target as Node)) {
         return;
@@ -107,9 +109,9 @@ function Taskbar(props: TaskbarProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("pointerdown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("pointerdown", handleClickOutside);
     };
   }, [showStartMenu]);
 
@@ -122,21 +124,31 @@ function Taskbar(props: TaskbarProps) {
   return (
     <>
       <div ref={startMenuRef}>
-        <StartMenu isOpen={showStartMenu} onClose={() => setShowStartMenu(false)} />
+        <StartMenu
+          isOpen={showStartMenu}
+          isMobile={props.isMobile}
+          taskbarHeight={props.taskbarHeight}
+          onClose={() => setShowStartMenu(false)}
+        />
       </div>
       
-      <div className="z-[1000] text-retro-dark text-md rounded-t-lg rounded-b-lg select-none shadow-taskbar absolute flex bottom-0 w-full h-[40px] px-2 border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white">
-        <div className="flex flex-row w-full h-full pl-3 gap-1">
+      <div
+        style={{ height: props.taskbarHeight }}
+        className="z-[1000] text-retro-dark text-md select-none shadow-taskbar absolute flex bottom-0 w-full border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white pl-0 pr-1.5 rounded-none pb-[env(safe-area-inset-bottom)] lg:px-2 lg:rounded-t-lg lg:rounded-b-lg lg:pb-0 max-lg:min-h-12 lg:min-h-10"
+      >
+        <div className="flex flex-row w-full h-full gap-1 pl-0 lg:pl-3">
           <div className="flex items-center flex-row gap-1">
             <button
               ref={startButtonRef}
-              className={`h-full hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark px-6 ${showStartMenu ? 'bg-retro-medium' : ''}`}
+              className={`h-full min-w-11 hover:cursor-pointer hover:bg-retro-medium border-x-3 border-retro-dark border-l-0 px-3 text-sm lg:border-l-3 lg:px-6 lg:text-md ${
+                showStartMenu ? "bg-retro-medium" : ""
+              }`}
               onClick={toggleStartMenu}
             >
               Start
             </button>
           </div>
-          <div className="flex flex-row min-w-0 flex-grow gap-1 h-full">
+          <div className="flex flex-row min-w-0 flex-grow gap-1 h-full overflow-x-auto overflow-y-hidden">
             {Object.keys(props.windows).map((key) => {
               return (
                 <button
@@ -144,16 +156,14 @@ function Taskbar(props: TaskbarProps) {
                   ref={(el) => {
                     taskbarButtonRefs.current[key] = el;
                   }}
-                  className={`max-w-[220px] min-w-0 flex flex-row gap-2 cursor-default items-center h-full w-full border-x-3 border-retro-dark px-3 bg-retro-white
-                                    ${key == windowOnFocus ? "dotted" : ""}`}
+                  aria-label={props.windows[key].application.name}
+                  className={`min-w-0 flex flex-row cursor-default items-center h-full border-x-3 border-retro-dark bg-retro-white w-14 flex-none justify-center px-3 lg:w-full lg:max-w-[220px] lg:gap-2 lg:flex-row ${
+                    key == windowOnFocus ? "dotted" : ""
+                  }`}
                   onClick={() => props.toggleMinimize(key)}
                 >
                   <Icon icon={props.windows[key].application.icon} size={24} />
-                  <span
-                    className={
-                      "h-fit overflow-hidden whitespace-nowrap text-ellipsis"
-                    }
-                  >
+                  <span className="h-fit overflow-hidden whitespace-nowrap text-ellipsis hidden lg:inline">
                     {props.windows[key].application.name}
                   </span>
                 </button>
@@ -161,8 +171,8 @@ function Taskbar(props: TaskbarProps) {
             })}
           </div>
 
-          <div className="flex gap-3 items-center pr-1">
-            <div className="h-full hover:cursor-pointer hover:bg-retro-medium flex gap-3 items-center bg-retro-white border-x-3 border-retro-dark py-1 px-4 ">
+          <div className="flex items-center gap-1 pr-1 lg:gap-3">
+            <div className="h-full hover:cursor-pointer hover:bg-retro-medium items-center bg-retro-white border-x-3 border-retro-dark py-1 hidden lg:flex gap-3 px-4">
               <div
                 className={`min-w-[18px] h-full + ${wifiBarsStyles[wifiBars].paddingTop}`}
               >
@@ -177,7 +187,8 @@ function Taskbar(props: TaskbarProps) {
               <Icon icon={"battery"} className={"pb-1"} size={13} />
             </div>
             <motion.button
-              className="hover:bg-retro-medium border-3 border-retro-dark p-[5px] rounded-full w-0 h-0"
+              aria-label="Minimize all windows"
+              className="hover:bg-retro-medium border-3 border-retro-dark rounded-full w-8 h-8 p-0 lg:w-4 lg:h-4"
               onClick={props.minimizeAll}
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}

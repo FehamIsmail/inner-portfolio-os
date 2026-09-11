@@ -12,9 +12,9 @@ import MediaImage from "@/components/portfolio/MediaImage";
 
 const About = () => {
     return (
-        <div className={"mt-10"}>
-            <div className={"flex flex-row gap-10"}>
-                <MediaImage height={450} width={300} src={me.src} className="min-w-[200px]" alt={"Photo of me"}/>
+        <div className={"mt-4 sm:mt-10"}>
+            <div className={"flex flex-col items-center md:items-start md:flex-row gap-6 md:gap-10"}>
+                <MediaImage height={450} width={300} src={me.src} className="md:min-w-[200px]" alt={"Photo of me"}/>
                 <div className={"max-w-[800px]"}>
                     <h2 className={""}>I&apos;m Ismail.</h2>
                     <p>
@@ -63,7 +63,7 @@ const About = () => {
                 divisions, including 3D modeling in AutoCAD, mechanics, electrical work,
                 and eventually programming in Java.
             </p>
-            <div className={"px-64 mt-4 w-full h-fit flex flex-col items-center"}>
+            <div className={"px-0 sm:px-8 lg:px-32 mt-4 w-full h-fit flex flex-col items-center"}>
                 <MediaCaption
                     src={me_robotics.src}
                     type={"image"}
@@ -75,7 +75,7 @@ const About = () => {
             {/****************** End of childhood ******************/}
 
             {/**************** College years ***********************/}
-            <div className={"mt-4 flex flex-row items-center gap-6"}>
+            <div className={"mt-4 flex flex-col md:flex-row items-center gap-4 md:gap-6"}>
                 <div className={"flex-[3] mt-0 mb-14"}>
                     <h4>College years</h4>
                     <p className={""}>
@@ -111,7 +111,7 @@ const About = () => {
             {/**************** End of college years ******************/}
 
             {/**************** Concordia years ***********************/}
-            <div className={"mt-4 flex flex-row items-center gap-6"}>
+            <div className={"mt-4 flex flex-col md:flex-row items-center gap-4 md:gap-6"}>
                 <div className={"flex-1"}>
                     <MediaCaption
                         src={concordia.src}
@@ -122,7 +122,7 @@ const About = () => {
                     />
                 </div>
                 <div className={"flex-[3] mt-0  mb-14"}>
-                    <h4 className={"text-right"}>Undergrad years</h4>
+                    <h4 className={"text-left md:text-right"}>Undergrad years</h4>
                     <p className={""}>
                         I applied and transferred to Concordia University in 2021 to pursue
                         a Bachelor&apos;s degree in Software Engineering as a COOP student.

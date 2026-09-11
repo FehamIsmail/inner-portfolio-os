@@ -39,7 +39,7 @@ const ImageExplorer = (props: ImageExplorerProps) => {
 
   return (
     <div
-      className={`flex flex-col rounded-md border-3 border-retro-dark divide-y-3 bg-white divide-retro-dark items-center ${props.className}`}
+      className={`flex min-w-0 max-w-full flex-col rounded-md border-3 border-retro-dark divide-y-3 bg-white divide-retro-dark items-center ${props.className || ""}`}
       style={{
         maxWidth: imageWidth,
         width: "100%",
@@ -66,7 +66,8 @@ const ImageExplorer = (props: ImageExplorerProps) => {
         <button
           onClick={handlePrevious}
           disabled={currentImage === 0}
-          className="px-1 py-1 cursor-pointer text-white rounded-md"
+          aria-label="Previous image"
+          className="min-w-11 min-h-11 px-1 py-1 cursor-pointer text-white rounded-md flex items-center justify-center"
         >
           <Icon
             icon="arrowLeft"
@@ -77,7 +78,8 @@ const ImageExplorer = (props: ImageExplorerProps) => {
         <button
           onClick={handleNext}
           disabled={currentImage === images.length - 1}
-          className="px-1 py-1 cursor-pointer text-white rounded-md"
+          aria-label="Next image"
+          className="min-w-11 min-h-11 px-1 py-1 cursor-pointer text-white rounded-md flex items-center justify-center"
         >
           <Icon
             icon="arrowRight"

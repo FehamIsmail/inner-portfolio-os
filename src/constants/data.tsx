@@ -31,6 +31,7 @@ export const APPLICATIONS: ApplicationType[] = [
     width: 1070,
     height: 400,
     resizable: false,
+    hideOnMobile: true,
     component: ReadMe,
   },
   {

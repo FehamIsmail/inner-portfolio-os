@@ -12,10 +12,10 @@ const Software = () => {
       <ResumeDownload margin={20} />
 
       {/****************** Website ***********************/}
-      <h4 className={"flex flex-row justify-between items-center"}>
+      <h4 className={"flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center"}>
         Personal Website Custom OS
         <a
-          className={"flex text-3xl flex-row items-center gap-2"}
+          className={"flex text-xl sm:text-3xl flex-row items-center gap-2"}
           href={"https://github.com/FehamIsmail/inner-portfolio-os"}
           target="_blank"
           rel="noreferrer noopener"
@@ -77,10 +77,10 @@ const Software = () => {
       {/****************** End of Website ****************/}
 
       {/****************** Console3D *********************/}
-      <h4 className={"flex flex-row justify-between items-center"}>
+      <h4 className={"flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center"}>
         Console3D
         <a
-          className={"flex text-3xl flex-row items-center gap-2"}
+          className={"flex text-xl sm:text-3xl flex-row items-center gap-2"}
           href={"https://github.com/FehamIsmail/Console3DGameEngine"}
           target="_blank"
           rel="noreferrer noopener"
@@ -119,7 +119,7 @@ const Software = () => {
       </p>
       <div
         className={
-          "mt-4 w-full h-fit flex flex-row justify-center gap-[2%] items-center"
+          "mt-4 w-full h-fit flex flex-col sm:flex-row justify-center gap-4 sm:gap-[2%] items-center"
         }
       >
         <MediaCaption
@@ -158,10 +158,10 @@ const Software = () => {
       {/****************** End of Console3D **************/}
 
       {/****************** GunRunner *********************/}
-      <h4 className={"flex flex-row justify-between items-center"}>
+      <h4 className={"flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center"}>
         GunRunner
         <a
-          className={"flex text-3xl flex-row items-center gap-2"}
+          className={"flex text-xl sm:text-3xl flex-row items-center gap-2"}
           href={"https://github.com/FehamIsmail/GunRunner"}
           target="_blank"
           rel="noreferrer noopener"
@@ -199,7 +199,7 @@ const Software = () => {
       </p>
       <div
         className={
-          "mt-4 w-full h-fit flex flex-row justify-between gap-4 items-center"
+          "mt-4 w-full h-fit flex flex-col sm:flex-row justify-between gap-4 items-center"
         }
       >
         <MediaCaption

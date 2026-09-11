@@ -93,7 +93,7 @@ const Contact = () => {
       <p>
         I&apos;m always open to new opportunities and collaborations. Feel free
         to reach out to me through the form below or directly at{" "}
-        <a href="mailto:ismail.feham64@gmail.com">
+        <a className="break-all" href="mailto:ismail.feham64@gmail.com">
           <b>ismail.feham64@gmail.com</b>
         </a>
       </p>
@@ -112,7 +112,7 @@ const Contact = () => {
             onChange={handleChange}
           />
         ))}
-        <div className={"mt-10 w-[200px]"}>
+        <div className={"mt-10 w-full sm:w-[200px]"}>
           <Button label="Submit" disabled={false} onClick={handleSubmit} form />
         </div>
       </form>
@@ -134,7 +134,7 @@ interface FieldInputProps {
 
 const FieldInput = (props: FieldInputProps) => {
   const fieldClasses =
-    "focus:outline-retro-dark focus:outline focus:outline-1 border-2 border-retro-dark rounded-sm px-2 py-1";
+    "w-full min-w-0 focus:outline-retro-dark focus:outline focus:outline-1 border-2 border-retro-dark rounded-sm px-2 py-2";
 
   return (
     <div className="flex flex-col mt-3">
@@ -155,7 +155,7 @@ const FieldInput = (props: FieldInputProps) => {
         />
       ) : (
         <textarea
-          className={fieldClasses + " height-[200px]"}
+          className={fieldClasses + " min-h-[200px]"}
           placeholder={props.placeholder}
           rows={5}
           value={props.value}

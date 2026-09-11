@@ -38,9 +38,9 @@ const Experiences = () => {
         websiteUrl={"https://www.innovmetric.com"}
         website={"www.innovmetric.com"}
       />
-      <div className={"pr-8"}>
+      <div className={"pr-0 lg:pr-8"}>
         <ImageExplorer
-          className={"mt-8 ml-12"}
+          className={"mt-8 mx-auto lg:ml-12"}
           images={[
             {
               name: "InnovMetric 1",
@@ -80,7 +80,7 @@ const Experiences = () => {
       />
       <div className={"w-full"}>
         <ImageExplorer
-          className={"mt-8 ml-auto mr-24"}
+          className={"mt-8 mx-auto lg:ml-auto lg:mr-24"}
           images={[
             {
               name: "Flexspring 1",
@@ -118,9 +118,9 @@ const Experiences = () => {
         websiteUrl={"https://www.rossvideo.com"}
         website={"www.rossvideo.com"}
       />
-      <div className={"pr-8"}>
+      <div className={"pr-0 lg:pr-8"}>
         <ImageExplorer
-          className={"mt-8 ml-12"}
+          className={"mt-8 mx-auto lg:ml-12"}
         images={[
           {
             name: "Ross Video 1",

@@ -32,36 +32,38 @@ body {
             transparent,
             rgb(var(--background-end-rgb))
     ) rgb(var(--background-start-rgb));
+    min-height: 100dvh;
 }
 
 h1 {
     @apply font-nevrada;
-    font-size: 64px;
+    font-size: clamp(2.25rem, 8vw, 4rem);
 }
 
 h2 {
-    @apply text-4xl;
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
 }
 
 h3 {
-    @apply text-3xl;
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
 }
 
 h4 {
-    font-size: 34px;
+    font-size: clamp(1.3rem, 4.5vw, 2.125rem);
     @apply font-[700];
 }
 
 h5 {
-    @apply text-xl;
+    font-size: clamp(1.125rem, 4vw, 1.25rem);
 }
 
 p {
     @apply mt-4;
-    font-size: 24px;
-    @apply text-justify;
+    font-size: clamp(1rem, 3.5vw, 1.5rem);
+    text-align: left;
     @apply font-medium;
     @apply leading-tight;
+    overflow-wrap: anywhere;
 }
 
 h1,
@@ -80,6 +82,32 @@ a {
 
 a:visited {
     @apply text-purple-950;
+}
+
+@media (min-width: 768px) {
+    p {
+        text-align: justify;
+    }
+}
+
+.resume-download {
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+@media (min-width: 640px) {
+    .resume-download {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .resume-download {
+        /* Match PortfolioContent lg:p-[48px] for full-bleed borders */
+        margin-left: -48px;
+        margin-right: -48px;
+    }
 }
 
 @layer utilities {

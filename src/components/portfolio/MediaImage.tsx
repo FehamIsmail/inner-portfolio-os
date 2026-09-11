@@ -14,10 +14,13 @@ interface ImageProps {
 const MediaImage = (props: ImageProps) => {
   return (
     <div
-      className={`flex items-center justify-center rounded-xl ${props.className}`}
+      className={`flex w-full max-w-full items-center justify-center rounded-xl ${props.className || ""}`}
       style={{
-        width: props.width ? `${props.width}px` : "100%",
-        height: props.height ? `${props.height}px` : "auto",
+        maxWidth: props.width ? `${props.width}px` : "100%",
+        aspectRatio:
+          props.width && props.height
+            ? `${props.width} / ${props.height}`
+            : undefined,
       }}
     >
       <Image
@@ -27,7 +30,7 @@ const MediaImage = (props: ImageProps) => {
         height={props.height || 0}
         style={{
           objectFit: props.layout === "contain" ? "contain" : "cover",
-          width: props.width ? "100%" : "100%",
+          width: "100%",
           height: props.height ? "100%" : "auto",
         }}
         className={`rounded-md shadow-figure border-3 border-retro-dark`}

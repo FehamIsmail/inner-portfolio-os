@@ -56,7 +56,7 @@ const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
   return (
     <div
       className={
-        "w-[600px] h-[650px] overflow-hidden font-pixolde text-retro-dark flex flex-col items-center justify-center "
+        "w-full h-full min-w-0 min-h-0 overflow-hidden font-pixolde text-retro-dark flex flex-col items-center justify-center"
       }
       ref={ref}
     >
@@ -94,7 +94,7 @@ const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
       >
         <input
           className={
-            "h-full flex-1 border-r-3 border-retro-dark outline-none text-[24px] px-2 bg-retro-white text-retro-dark"
+            "h-full min-w-0 flex-1 border-r-3 border-retro-dark outline-none text-lg sm:text-[24px] px-2 bg-retro-white text-retro-dark"
           }
           type={"text"}
           name={"prompt"}
@@ -103,7 +103,7 @@ const ChatWithMe = forwardRef<HTMLDivElement, {}>((props, ref) => {
         />
         <button
           className={
-            "h-full pl-[14px] pr-[16px] text-[24px] font-bold ml-auto max-w-[70px] border-0 outline-none"
+            "h-full px-3 sm:pl-[14px] sm:pr-[16px] text-lg sm:text-[24px] font-bold ml-auto max-w-[70px] border-0 outline-none"
           }
           type={"submit"}
         >
@@ -151,7 +151,7 @@ const ChatBubble = (props: ChatBubbleProps) => {
             className={`bg-retro-${role === "user" ? "medium-dark" : "medium"} rounded-lg py-2 px-3`}
           >
             <p
-              className={`mt-1 text-[24px] text-retro-${role === "user" ? "light" : "dark"}`}
+              className={`mt-1 text-lg sm:text-[24px] break-words text-retro-${role === "user" ? "light" : "dark"}`}
             >
               {message.content}{" "}
               {isLoading && role !== "user" && symbols[symbolIndex]}

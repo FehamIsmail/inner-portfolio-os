@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback } from "react";
 import Image from 'next/image';
 import Icon from '@/components/common/Icon';
 import { APPLICATIONS } from '@/constants/data';
@@ -15,6 +15,8 @@ interface ThemeOption {
 interface StartMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  isMobile: boolean;
+  taskbarHeight: number;
 }
 
 const THEMES: ThemeOption[] = [
@@ -24,7 +26,12 @@ const THEMES: ThemeOption[] = [
   { name: 'Dracula', value: '#282a36', background: 'bg-[#282a36]' },
 ];
 
-const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
+const StartMenu: React.FC<StartMenuProps> = ({
+  isOpen,
+  onClose,
+  isMobile,
+  taskbarHeight,
+}) => {
   const { onOpen } = useDesktop();
   
   const setTheme = useCallback((backgroundColor: string, e: React.MouseEvent) => {
@@ -55,11 +62,26 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
     }
   }, [onOpen, onClose]);
 
+  const mobileEdge = 8;
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div 
-          className="absolute left-0 bottom-[44px] z-[1100] border-3 border-retro-dark bg-retro-white rounded-lg w-[360px] text-retro-dark origin-bottom-left"
+          style={
+            isMobile
+              ? {
+                  bottom: taskbarHeight + mobileEdge,
+                  left: mobileEdge,
+                  right: mobileEdge,
+                }
+              : undefined
+          }
+          className={`absolute z-[1100] border-3 border-retro-dark bg-retro-white rounded-lg text-retro-dark origin-bottom-left ${
+            isMobile
+              ? "w-auto max-h-[calc(100dvh-64px)]"
+              : "left-0 bottom-[44px] w-[360px]"
+          }`}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -108,7 +130,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
           </div>
           
           {/* Main Content */}
-          <div className="flex h-[350px]">
+          <div className={`flex ${isMobile ? "h-[min(55dvh,350px)]" : "h-[400px]"}`}>
             {/* Left column - Applications */}
             <div 
               className="w-3/5 p-2 overflow-y-auto border-r-3 border-retro-dark scrollbar-thin scrollbar-thumb-retro-dark scrollbar-track-retro-white"
@@ -116,10 +138,14 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
             >
               <h4 className="text-lg font-bold my-2 pl-2">Applications</h4>
               <div className="flex flex-col gap-1">
-                {APPLICATIONS.map(app => (
+                {APPLICATIONS.filter(
+                  (app) => !(isMobile && app.hideOnMobile),
+                ).map(app => (
                   <button 
                     key={app.key}
-                    className="flex items-center px-2 py-1.5 rounded hover:bg-retro-medium text-left"
+                    className={`flex items-center px-2 rounded hover:bg-retro-medium text-left ${
+                      isMobile ? "min-h-11 py-2" : "py-1.5"
+                    }`}
                     onClick={(e) => handleAppClick(app.key, e)}
                   >
                     <Icon icon={app.icon} size={24} className="mr-3" />
@@ -139,7 +165,9 @@ const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
                 {THEMES.map(theme => (
                   <button 
                     key={theme.name}
-                    className="flex items-center px-2 py-1.5 rounded hover:bg-retro-medium text-left"
+                    className={`flex items-center px-2 rounded hover:bg-retro-medium text-left ${
+                      isMobile ? "min-h-11 py-2" : "py-1.5"
+                    }`}
                     onClick={(e) => setTheme(theme.value, e)}
                   >
                     <div 

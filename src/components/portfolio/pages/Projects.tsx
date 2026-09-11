@@ -27,7 +27,7 @@ const Projects = () => {
   return (
     <div className={""}>
       <h2>& Passions</h2>
-      <div className="mt-16 flex flex-row gap-6 justify-center">
+      <div className="mt-8 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
         {projects.map((project, index) => (
           <ProjectCard
             key={index}
@@ -52,12 +52,12 @@ const ProjectCard = (props: ProjectCardProps) => {
   return (
     <Link
       href={props.href}
-      className="flex flex-col items-center justify-center p-[6px]
+      className="w-full max-w-[350px] flex flex-col items-center justify-center p-[6px]
         hover: hover:bg-retro-medium hover:outline hover:outline-retro-dark hover:outline-[3px] rounded-md"
     >
-      <div className="py-16 px-10 rounded-lg border-3 border-retro-dark bg-retro-white flex-1">
+      <div className="w-full py-8 sm:py-16 px-5 sm:px-10 rounded-lg border-3 border-retro-dark bg-retro-white flex-1 flex items-center justify-center">
         <Image
-          className="rounded-md "
+          className="rounded-md w-full h-auto max-w-[250px]"
           width={250}
           height={250}
           src={props.src}

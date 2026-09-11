@@ -10,6 +10,11 @@ import { WINDOW_ANIMATION_DURATION } from "@/components/utils/AnimationUtils";
 import { setDynamicColors, initializeThemeChangeListener } from "@/components/utils/ColorUtils";
 import AlertProvider, { ALERT_WIDTH } from "@/components/alerts/AlertProvider";
 import Wallpaper from "@/components/os/Wallpaper";
+import {
+  DESKTOP_TASKBAR_HEIGHT,
+  MOBILE_TASKBAR_HEIGHT,
+  useViewport,
+} from "@/hooks/useIsMobile";
 
 
 interface DesktopProps {
@@ -29,6 +34,15 @@ export const DesktopContext = React.createContext<DesktopContextProps>(
 );
 
 function Desktop({ children }: DesktopProps) {
+  const {
+    width: viewportWidth,
+    height: viewportHeight,
+    isMobile,
+    safeAreaBottom,
+  } = useViewport();
+  const taskbarHeight = isMobile
+    ? MOBILE_TASKBAR_HEIGHT + safeAreaBottom
+    : DESKTOP_TASKBAR_HEIGHT;
   const [windows, setWindows] = React.useState<DesktopWindows>(
     {} as DesktopWindows,
   );
@@ -185,12 +199,13 @@ function Desktop({ children }: DesktopProps) {
 
   const onOpen = useCallback(
     (application: ApplicationType) => {
+      if (isMobile && application.hideOnMobile) return;
       addWindow(application);
       performPostAnimationAction(() => {
         setWindowAnimationState(application.key, WindowAnimationState.VISIBLE);
       });
     },
-    [addWindow, performPostAnimationAction, setWindowAnimationState],
+    [addWindow, isMobile, performPostAnimationAction, setWindowAnimationState],
   );
 
   const updateTaskbarAppPosX = useCallback((key: string, posX: number) => {
@@ -238,44 +253,68 @@ function Desktop({ children }: DesktopProps) {
     APPLICATIONS.find(
       (application) => application.key === "myPortfolio",
     )!.icon = getPortfolioIcon();
-    const newShortcuts = APPLICATIONS.map((application) => {
+    const newShortcuts = APPLICATIONS.filter(
+      (application) => !(isMobile && application.hideOnMobile),
+    ).map((application) => {
       return {
         icon: application.icon,
         name: application.name,
         isFocused: false,
+        isMobile,
         setFocused: () => setShortcutOnFocus(application.name),
         onOpen: () => onOpen(application),
       };
     });
     setShortcuts(newShortcuts);
-  }, [getPortfolioIcon, onOpen]);
+  }, [getPortfolioIcon, isMobile, onOpen]);
 
   useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      const myPortfolio = APPLICATIONS.find(
-        (application) => application.key === "myPortfolio",
-      );
-      if (myPortfolio) {
-        onOpen(myPortfolio);
-      }
-    }
-  }, [firstRender, onOpen]);
-
-  useEffect(() => {
+    if (!viewportWidth || !viewportHeight) return;
     setDefaultWindowSize({
-      margin: 0.05,
-      width: window.innerWidth - window.innerWidth * 0.05 * 2,
-      height: window.innerHeight - window.innerHeight * 0.05 * 2 - 40,
+      margin: isMobile ? 0 : 0.05,
+      width: isMobile
+        ? viewportWidth
+        : viewportWidth - viewportWidth * 0.05 * 2,
+      height: isMobile
+        ? viewportHeight - taskbarHeight
+        : viewportHeight - viewportHeight * 0.05 * 2 - taskbarHeight,
     });
-  }, []);
+  }, [isMobile, taskbarHeight, viewportHeight, viewportWidth]);
+
+  useEffect(() => {
+    if (!firstRender) return;
+    if (!defaultWindowSize.width || !defaultWindowSize.height) return;
+    setFirstRender(false);
+    const myPortfolio = APPLICATIONS.find(
+      (application) => application.key === "myPortfolio",
+    );
+    if (myPortfolio) {
+      onOpen(myPortfolio);
+    }
+  }, [
+    defaultWindowSize.height,
+    defaultWindowSize.width,
+    firstRender,
+    onOpen,
+  ]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    setWindows((currentWindows) =>
+      Object.fromEntries(
+        Object.entries(currentWindows).filter(
+          ([, desktopWindow]) => !desktopWindow.application.hideOnMobile,
+        ),
+      ) as DesktopWindows,
+    );
+  }, [isMobile]);
 
   return (
     <DesktopContext.Provider
       value={{ addModal, addWindow, removeWindow, removeModal, onOpen }}
     >
       <AlertProvider>
-        <main className="font-nunito z-[-200] background-retro-gradient min-h-full flex flex-col select-none">
+        <main className="font-nunito z-[-200] background-retro-gradient h-dvh min-h-0 flex flex-col select-none overflow-hidden">
           <Wallpaper />
           {Object.keys(windows).map((key) => {
             const desktopWindow = windows[key];
@@ -295,15 +334,23 @@ function Desktop({ children }: DesktopProps) {
                   key={`window-${key}`}
                   left={
                     isModal
-                      ? window.innerWidth / 2 - ALERT_WIDTH / 2
-                      : ((desktopWindow.zIndex * 50) % 200) +
-                        defaultWindowSize.margin * window.innerWidth
+                      ? Math.max(
+                          12,
+                          viewportWidth / 2 -
+                            Math.min(ALERT_WIDTH, viewportWidth - 24) / 2,
+                        )
+                      : isMobile
+                        ? 0
+                        : ((desktopWindow.zIndex * 50) % 200) +
+                          defaultWindowSize.margin * viewportWidth
                   }
                   top={
                     isModal
-                      ? 0.17 * window.innerHeight
-                      : ((desktopWindow.zIndex * 50) % 200) +
-                        defaultWindowSize.margin * window.innerHeight
+                      ? Math.max(12, 0.12 * viewportHeight)
+                      : isMobile
+                        ? 0
+                        : ((desktopWindow.zIndex * 50) % 200) +
+                          defaultWindowSize.margin * viewportHeight
                   }
                   application={desktopWindow.application}
                   taskbarPos={taskbarAppPosX[key]}
@@ -319,6 +366,10 @@ function Desktop({ children }: DesktopProps) {
                     setWindowAnimationState(key, state)
                   }
                   isModal={isModal}
+                  isMobile={isMobile}
+                  viewportWidth={viewportWidth}
+                  viewportHeight={viewportHeight}
+                  taskbarHeight={taskbarHeight}
                 />
               </div>
             );
@@ -326,7 +377,11 @@ function Desktop({ children }: DesktopProps) {
           <div className={"h-screen w-screen"}>
             <div
               className={
-                "text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0 max-h-[calc(100vh-40px)]"
+                `text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0 ${
+                  isMobile
+                    ? "max-h-[calc(100dvh-48px)]"
+                    : "max-h-[calc(100dvh-40px)]"
+                }`
               }
             >
               {shortcuts?.map((shortcut) => {
@@ -338,6 +393,7 @@ function Desktop({ children }: DesktopProps) {
                     isFocused={shortcut.isFocused}
                     setFocused={shortcut.setFocused}
                     onOpen={shortcut.onOpen}
+                    isMobile={isMobile}
                   />
                 );
               })}
@@ -349,6 +405,8 @@ function Desktop({ children }: DesktopProps) {
             windows={windows}
             minimizeAll={minimizeAll}
             updateTaskbarAppPosX={updateTaskbarAppPosX}
+            isMobile={isMobile}
+            taskbarHeight={taskbarHeight}
           />
         </main>
       </AlertProvider>
