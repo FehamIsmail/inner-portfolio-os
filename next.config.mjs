@@ -1,14 +1,19 @@
 const nextConfig = {
-  webpack: (config, options) => {
-    config.module.rules.push({
-      test: /\.svg$/i,
-      issuer: /\.[jt]sx?$/,
-      use: [{ loader: "@svgr/webpack", options: { icon: true } }],
-    });
-    return config;
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: [{ loader: "@svgr/webpack", options: { icon: true } }],
+        as: "*.js",
+      },
+    },
   },
   images: {
-    domains: ["localhost"],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+    ],
   },
 };
 
