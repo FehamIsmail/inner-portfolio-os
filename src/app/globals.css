@@ -15,6 +15,15 @@
             --color-retro-dark,
             #42220e
     ); /* Default values in case JS fails */
+    --wallpaper-paper: #fbf3e6;
+    --wallpaper-line-1: #e85a3c;
+    --wallpaper-line-2: #e8923a;
+    --wallpaper-line-3: #e8c84a;
+    --wallpaper-line-4: #4daa6e;
+    --wallpaper-line-5: #3b7fd4;
+    --wallpaper-line-6: #5b4ec9;
+    --wallpaper-line-7: #8b4ab8;
+    --wallpaper-muted: #b8a58e;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -8,7 +8,9 @@ import business_card from "@/assets/images/projects/business_card.gif";
 import Image from "next/image";
 import { usePortfolioWindow } from "@/components/portfolio/PortfolioWindowContext";
 
-const projects: ProjectCardProps[] = [
+type Project = Omit<ProjectCardProps, "paddingClass">;
+
+const projects: Project[] = [
   {
     name: "Arts",
     href: "/projects/arts",

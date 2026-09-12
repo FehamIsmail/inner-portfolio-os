@@ -16,16 +16,27 @@ interface ImageCaptionProps {
 }
 
 const MediaCaption = (props: ImageCaptionProps) => {
-  const videoRef = React.createRef<HTMLVideoElement>();
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const media = videoRef.current;
-    if (media) {
-      media.onloadeddata = () => {
-        media.play();
-      };
+    if (!media) return;
+
+    const playInline = () => {
+      media.playsInline = true;
+      void media.play().catch(() => {
+        // Autoplay can still be blocked; leave the video muted/ready.
+      });
+    };
+
+    if (media.readyState >= 2) {
+      playInline();
+      return;
     }
-  }, [videoRef]);
+
+    media.addEventListener("loadeddata", playInline);
+    return () => media.removeEventListener("loadeddata", playInline);
+  }, [props.src]);
 
   return (
     <div className="w-full min-w-0 max-w-full">
@@ -51,7 +62,9 @@ const MediaCaption = (props: ImageCaptionProps) => {
             className={`w-full max-w-full h-auto rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
             loop
             muted
-            preload={"auto"}
+            playsInline
+            preload="metadata"
+            disablePictureInPicture
             style={{ imageRendering: "crisp-edges" }}
           >
             <source src={props.src} type="video/mp4" />

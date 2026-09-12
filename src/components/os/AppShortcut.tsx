@@ -24,7 +24,11 @@ function AppShortcut(props: AppShortcutProps) {
 
   return (
     <div
-      className="min-h-[150px] flex flex-col max-w-[120px] items-center justify-center app-shortcut text-retro-dark"
+      className={`flex flex-col items-center justify-center app-shortcut text-retro-dark ${
+        props.isMobile
+          ? "min-h-[96px] max-w-[76px]"
+          : "min-h-[150px] max-w-[120px]"
+      }`}
       onDoubleClick={props.isMobile ? undefined : props.onOpen}
       onClick={props.isMobile ? props.onOpen : props.setFocused}
     >
@@ -32,12 +36,14 @@ function AppShortcut(props: AppShortcutProps) {
         className={`rounded-md ${props.isFocused ? "shortcut-focused" : ""}`}
       >
         <div className={`p-2 -mb-2`} ref={iconRef}>
-          <Icon icon={props.icon} size={70} />
+          <Icon icon={props.icon} size={props.isMobile ? 40 : 70} />
         </div>
         <div className="p-2" ref={nameRef}>
           <span
-            className="px-[7px] py-[2px] max-w-full text-center select-none overflow-hidden whitespace-normal
-                     text-ellipsis bg-retro-white text-retro-dark font-bold rounded-md border-2 border-retro-dark line-clamp-2"
+            className={`px-[7px] py-[2px] max-w-full text-center select-none overflow-hidden whitespace-normal
+                     text-ellipsis bg-retro-white text-retro-dark font-bold rounded-md border-2 border-retro-dark line-clamp-2 ${
+                       props.isMobile ? "text-xs" : ""
+                     }`}
           >
             {props.name}
           </span>

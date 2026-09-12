@@ -45,10 +45,10 @@ const ResumeDownload = ({ margin }: ResumeDownloadProps) => {
         }`}
       >
         <div className={"flex flex-row items-center gap-3 text-left min-w-0"}>
-          <div className={"h-12 w-12 sm:h-20 sm:w-16 flex items-center justify-center shrink-0"}>
+          <div className={"h-12 w-12 sm:h-20 sm:w-16 flex items-center justify-center shrink-0 overflow-visible"}>
             <Image
               src={mailbox.src}
-              className={"mb-0 sm:mb-2 w-auto"}
+              className={"mb-0 sm:mb-2 w-auto max-w-none scale-[1.75] sm:scale-100 origin-center"}
               style={{ imageRendering: "pixelated" }}
               width={100}
               height={100}
