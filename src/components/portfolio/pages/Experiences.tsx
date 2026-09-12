@@ -3,6 +3,10 @@ import ResumeDownload from "@/components/portfolio/ResumeDownload";
 import WorkExperience from "@/components/portfolio/WorkExperience";
 import ImageExplorer from "@/components/common/ImageExplorer";
 
+import coin1 from "../../../../public/images/coinbase/coin1.png";
+import coin2 from "../../../../public/images/coinbase/coin2.png";
+import coin3 from "../../../../public/images/coinbase/coin3.png";
+
 import innov1 from "../../../../public/images/innovmetric/innov1.png";
 import innov2 from "../../../../public/images/innovmetric/innov2.png";
 import innov3 from "../../../../public/images/innovmetric/innov3.png";
@@ -20,9 +24,50 @@ const Experiences = () => {
     <div className={"pt-4"}>
       <ResumeDownload margin={20} />
       <WorkExperience
+        company={"Coinbase"}
+        title={"Software Engineer"}
+        location={"Remote (Canada)"}
+        startDate={"September 2025"}
+        endDate={"May 2026"}
+        description={
+          "Built and shipped consumer product for Coinbase Web and Mobile on the Home & App team, focusing on Home and Search — two of the platform's highest-traffic surfaces." +
+          " Technologies: React, React Native, TypeScript, GraphQL, Snowflake, Datadog, Sentry, Claude Code, Cursor, n8n"
+        }
+        bullets={[
+          "Shipped high-impact features for Coinbase Web and the Coinbase Mobile app across Home and Search.",
+          "Owned end-to-end experiments on consumer surfaces — designing, implementing, analyzing, and resolving A/B tests that increased DEX trades by 10% and contributed to 2% growth in overall consumer revenue.",
+          "Implemented Snowflake-based analytics instrumentation for revenue and CTR metrics, enabling reliable experiment evaluation and data-driven product decisions.",
+          "Led a performance initiative improving Core Web Vitals, reducing Home page navigation blocking time (NTBT) by 24% for millions of weekly active users.",
+          "Supported production systems through on-call rotations using Datadog and Sentry, investigating regressions and monitoring HTTP requests, latency, and error rates.",
+        ]}
+        websiteUrl={"https://www.coinbase.com"}
+        website={"www.coinbase.com"}
+      />
+      <div className={"pr-0 lg:pr-8"}>
+        <ImageExplorer
+          className={"mt-8 mx-auto lg:ml-12"}
+          images={[
+            {
+              name: "Coinbase Web — Trade",
+              image: coin1,
+            },
+            {
+              name: "Coinbase Mobile — Home & Trade",
+              image: coin2,
+            },
+            {
+              name: "Coinbase Web — Advanced Trade",
+              image: coin3,
+            },
+          ]}
+          height={500}
+          width={900}
+        />
+      </div>
+      <WorkExperience
         company={"InnovMetric"}
-        title={"C++ 3D Software Developer"}
-        location={"Quebec City, QC (Remote)"}
+        title={"Backend Developer Intern"}
+        location={"Quebec City, QC"}
         startDate={"September 2024"}
         endDate={"December 2024"}
         description={
@@ -30,17 +75,17 @@ const Experiences = () => {
           " Technologies: C++, Visual Studio, Python, MVVM, BOOST, MSCL"
         }
         bullets={[
-          "Refactored and redesigned performance tests, reducing execution time by 95%, boosting test suite efficiency.",
-          "Contributed to the team's R&D project on the 3D inspection platform, ensuring the accuracy of GD&T calculations and resolving alignment challenges - working specifically with the codebase's Object-Relational Mappers.",
-          "Enhanced user experience through UI improvements, including dropdown menus and status bar indicators for GD&T standard selection, and delivered a well-received demo to stakeholders.",
-          "Developed a command for modifying data alignment groups in PolyWorks|Inspector, implementing dialogs with MVVM architecture and rigorous unit and integration tests using BOOST and MSCL.",
+          "Profiled and optimized C++ performance tests, identifying algorithmic bottlenecks and reducing execution time by 95%.",
+          "Contributed within a large C++ codebase, navigating and modifying interconnected modules in a 3D inspection platform.",
+          "Improved end-user experience with dropdown menus and status indicators for geometrical standard selection, and delivered a well-received technical demo to stakeholders.",
+          "Designed and implemented a command module for editing inspection configurations, with robust unit and integration testing using the BOOST testing framework.",
         ]}
         websiteUrl={"https://www.innovmetric.com"}
         website={"www.innovmetric.com"}
       />
-      <div className={"pr-0 lg:pr-8"}>
+      <div className={"w-full"}>
         <ImageExplorer
-          className={"mt-8 mx-auto lg:ml-12"}
+          className={"mt-8 mx-auto lg:ml-auto lg:mr-24"}
           images={[
             {
               name: "InnovMetric 1",
@@ -61,8 +106,8 @@ const Experiences = () => {
       </div>
       <WorkExperience
         company={"Flexspring"}
-        title={"Full Stack Developer"}
-        location={"Quebec City, QC, Canada (Remote)"}
+        title={"Software Developer Intern"}
+        location={"Quebec City, QC"}
         startDate={"May 2024"}
         endDate={"August 2024"}
         description={
@@ -70,17 +115,17 @@ const Experiences = () => {
           " Technologies: React TS, React Query, Java Spring Boot, AWS Cognito, Redis, PostgreSQL, Docker, Jenkins, Sentry"
         }
         bullets={[
+          "Modernized the UI by replacing Redux with TanStack Query, simplifying state management and cutting up to 30% LOC in key components.",
           "Developed and implemented new frontend features with React TS, React Query, and Metronics.",
-          "Built backend services using Java Spring Boot with AWS Cognito for authentication, and managed data with Redis, Aurora, and PostgreSQL.",
-          "Utilized Docker, Jenkins, Sentry, and SonarQube in a formal CD/CI process for reliable software delivery.",
-          "Modernized the UI by replacing Redux with TanStack Query, improving performance and reducing boilerplate.",
+          "Built backend services in Linux using Java Spring Boot, with AWS Cognito for authentication and Redis, Aurora, and PostgreSQL for data.",
+          "Utilized Docker, Jenkins, Sentry, and SonarQube in a formal CI/CD process for reliable software delivery.",
         ]}
         websiteUrl={"https://flexspring.com"}
         website={"www.flexspring.com"}
       />
-      <div className={"w-full"}>
+      <div className={"pr-0 lg:pr-8"}>
         <ImageExplorer
-          className={"mt-8 mx-auto lg:ml-auto lg:mr-24"}
+          className={"mt-8 mx-auto lg:ml-12"}
           images={[
             {
               name: "Flexspring 1",
@@ -101,42 +146,42 @@ const Experiences = () => {
       </div>
       <WorkExperience
         company={"Ross Video"}
-        title={"Full Stack Developer"}
-        location={"Ottawa, ON, Canada (Remote)"}
+        title={"Software Developer Intern"}
+        location={"Ottawa, ON"}
         startDate={"August 2022"}
         endDate={"December 2022"}
         description={
           "Ross Video is a global leader in live video production technology, providing solutions for broadcast, sports, live events, and more." +
-          " Technologies: React TS, Redux, Node.js, AJAX, Java Struts II, WebRTC"
+          " Technologies: React, Redux, Node.js, AJAX, Java Struts II, WebRTC"
         }
         bullets={[
-          "Presented bi-monthly updates to stakeholders, incorporating feedback to build trust and ensure project alignment.",
-          "Designed and developed UI features using React TS, Redux, and AJAX for enhanced frontend functionality.",
+          "Minimized latency by over 70% by migrating a WebSocket-based system to a WebRTC peer-to-peer service, using Node.js as a lightweight signaling server.",
+          "Presented monthly updates to stakeholders, incorporating feedback to build trust and ensure project alignment.",
+          "Designed and developed UI features using React and Redux for state management.",
           "Maintained backend services with Java Struts II, implementing AJAX Events for server-view synchronization.",
-          "Significantly reduced latency by engineering a WebRTC-based real-time, peer-to-peer communication service while leveraging NodeJS as a signaling server.",
         ]}
         websiteUrl={"https://www.rossvideo.com"}
         website={"www.rossvideo.com"}
       />
-      <div className={"pr-0 lg:pr-8"}>
+      <div className={"w-full"}>
         <ImageExplorer
-          className={"mt-8 mx-auto lg:ml-12"}
-        images={[
-          {
-            name: "Ross Video 1",
-            image: ross1,
-          },
-          {
-            name: "Ross Video 2",
-            image: ross2,
-          },
-          {
-            name: "Ross Video 3",
-            image: ross3,
-          },
-        ]}
-        height={500}
-        width={900}
+          className={"mt-8 mx-auto lg:ml-auto lg:mr-24"}
+          images={[
+            {
+              name: "Ross Video 1",
+              image: ross1,
+            },
+            {
+              name: "Ross Video 2",
+              image: ross2,
+            },
+            {
+              name: "Ross Video 3",
+              image: ross3,
+            },
+          ]}
+          height={500}
+          width={900}
         />
       </div>
     </div>

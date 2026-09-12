@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import mdv_bill from "@/assets/images/projects/business/500_BILL_MDV filtered.png";
 import mdv_back from "@/assets/images/projects/business/mdv_back.png";
@@ -6,12 +8,21 @@ import cap_black from "@/assets/images/projects/business/cap_black.png";
 import cap_white from "@/assets/images/projects/business/cap_white.png";
 import MediaCaption from "@/components/portfolio/MediaCaption";
 import ImageExplorer from "@/components/common/ImageExplorer";
+import { usePortfolioWindow } from "@/components/portfolio/PortfolioWindowContext";
 
 const Business = () => {
+  const { bp } = usePortfolioWindow();
+
+  // Inset the bill from content width, not viewport — `lg:px-40` was eating
+  // most of a narrow desktop window and shrinking the figure to a stub.
+  const billPad = bp.lg ? "px-40" : bp.sm ? "px-10" : "px-0";
+  const galleryPad = bp.lg ? "px-10" : bp.sm ? "px-5" : "px-0";
+  const galleryRow = bp.md;
+
   return (
     <div>
       <h2>The journey of creating our own brand</h2>
-      <div className={"px-0 sm:px-10 lg:px-40"}>
+      <div className={`w-full min-w-0 ${billPad}`}>
         <MediaCaption
           className={"mt-4"}
           src={mdv_bill.src}
@@ -43,9 +54,13 @@ const Business = () => {
         learned the importance of customer feedback and how to use it to improve
         our products and services.
       </p>
-      <div className={"mt-4 px-0 sm:px-5 lg:px-10 flex flex-col md:flex-row mx-auto gap-6 md:gap-[6%]"}>
+      <div
+        className={`mt-4 w-full min-w-0 mx-auto gap-6 ${galleryPad} flex ${
+          galleryRow ? "flex-row gap-[6%]" : "flex-col"
+        }`}
+      >
         <ImageExplorer
-          className={"flex-1"}
+          className={"flex-1 min-w-0"}
           height={500}
           images={[
             { name: "mdv_front.png", src: mdv_front.src },
@@ -53,7 +68,7 @@ const Business = () => {
           ]}
         />
         <ImageExplorer
-          className={"flex-1"}
+          className={"flex-1 min-w-0"}
           height={500}
           images={[
             { name: "cap_black.png", src: cap_black.src },

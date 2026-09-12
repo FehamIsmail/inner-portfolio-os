@@ -91,23 +91,9 @@ a:visited {
 }
 
 .resume-download {
+    /* Bleed overridden inline from portfolio content breakpoints */
     margin-left: -1rem;
     margin-right: -1rem;
-}
-
-@media (min-width: 640px) {
-    .resume-download {
-        margin-left: -1.5rem;
-        margin-right: -1.5rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    .resume-download {
-        /* Match PortfolioContent lg:p-[48px] for full-bleed borders */
-        margin-left: -48px;
-        margin-right: -48px;
-    }
 }
 
 @layer utilities {

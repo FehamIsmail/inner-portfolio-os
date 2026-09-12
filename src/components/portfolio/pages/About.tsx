@@ -18,9 +18,19 @@ const About = () => {
                 <div className={"max-w-[800px]"}>
                     <h2 className={""}>I&apos;m Ismail.</h2>
                     <p>
-                        I&apos;m a Software Engineer with experience in{" "}
-                        <b>3D Software Development</b> and <b>Full Stack Development</b>.
-                        I&apos;m a <b>graduate of Concordia University</b>, having earned my
+                        I&apos;m a Software Engineer with experience building{" "}
+                        <b>high-traffic consumer products</b>,{" "}
+                        <b>Full Stack</b>, and <b>3D software</b>.
+                        Most recently I was a Software Engineer at{" "}
+                        <a
+                            href={"https://www.coinbase.com/"}
+                            className={"visited:text-purple-950"}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            <b>Coinbase</b>
+                        </a>
+                        , and I&apos;m a <b>graduate of Concordia University</b> with a
                         <b> Bachelor&apos;s degree in Software Engineering</b>. My passion lies in solving complex
                         problems and creating
                         innovative solutions that make a difference. I&apos;m always eager
@@ -140,8 +150,8 @@ const About = () => {
                             rel="noreferrer noopener"
                         >
                             <b>Ross Video</b>
-                        </a>{" "}
-                        as a Full Stack Web Developer, at{" "}
+                        </a>
+                        ,{" "}
                         <a
                             href={"https://www.flexspring.com/"}
                             className={"visited:text-purple-950"}
@@ -149,8 +159,8 @@ const About = () => {
                             rel="noreferrer noopener"
                         >
                             <b>Flexspring</b>
-                        </a>{" "}
-                        and at{" "}
+                        </a>
+                        , and{" "}
                         <a
                             href={"https://www.innovmetric.com/"}
                             className={"visited:text-purple-950"}
@@ -158,9 +168,17 @@ const About = () => {
                             rel="noreferrer noopener"
                         >
                             <b>InnovMetric</b>
+                        </a>
+                        . After graduating with my Bachelor&apos;s in Software Engineering, I joined{" "}
+                        <a
+                            href={"https://www.coinbase.com/"}
+                            className={"visited:text-purple-950"}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            <b>Coinbase</b>
                         </a>{" "}
-                        where I honed my skills in 3D software development. I successfully graduated with my
-                        Bachelor&apos;s degree in Software Engineering and am now pursuing my career in the industry.
+                        as a Software Engineer on the Home &amp; App team.
                     </p>
                 </div>
                 {/**************** End of Concordia years ******************/}

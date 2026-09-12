@@ -37,7 +37,7 @@ const Home = () => {
               Software Engineer
             </h2>
             <h4 className={"mt-0 text-lg lg:text-[24px] font-pixolde font-bold"}>
-              Concordia University
+              Previously at Coinbase
             </h4>
           </div>
           <nav className={"grid grid-cols-2 lg:flex lg:flex-wrap lg:justify-center gap-2.5 lg:gap-2 text-2xl lg:text-[34px] font-pixolde pb-6 lg:pb-[60px] text-center"}>

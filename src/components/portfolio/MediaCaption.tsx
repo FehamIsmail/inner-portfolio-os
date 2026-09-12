@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect } from "react";
 import Image from "next/image";
 
@@ -27,9 +28,9 @@ const MediaCaption = (props: ImageCaptionProps) => {
   }, [videoRef]);
 
   return (
-    <div className="min-w-0 max-w-full">
+    <div className="w-full min-w-0 max-w-full">
       <div
-        className={`w-full h-full min-w-0 flex flex-col items-center rounded-xl ${props.className || ""}`}
+        className={`w-full min-w-0 flex flex-col items-center rounded-xl ${props.className || ""}`}
       >
         {props.type === "image" && (
           <Image
@@ -38,7 +39,7 @@ const MediaCaption = (props: ImageCaptionProps) => {
             width={0}
             height={0}
             sizes="100vw"
-            style={{ width: "100%", height: "auto" }} // optional
+            style={{ width: "100%", height: "auto" }}
             className={`w-full max-w-full h-auto rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
           />
         )}
@@ -47,7 +48,7 @@ const MediaCaption = (props: ImageCaptionProps) => {
             ref={videoRef}
             width={props.width}
             height={props.height}
-            className={`rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
+            className={`w-full max-w-full h-auto rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
             loop
             muted
             preload={"auto"}
@@ -57,7 +58,7 @@ const MediaCaption = (props: ImageCaptionProps) => {
           </video>
         )}
       </div>
-      <p className="mt-2 text-center whitespace-normal break-words">
+      <p className="mt-2 text-center whitespace-normal break-words leading-snug">
         <b>Figure {props.count}: </b>
         {props.caption}
       </p>
