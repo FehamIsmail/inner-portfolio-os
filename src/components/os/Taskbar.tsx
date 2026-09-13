@@ -3,7 +3,6 @@ import { DesktopWindows } from "@/constants/types";
 import Icon from "@/components/common/Icon";
 import { IconName } from "@/assets/icons";
 import StartMenu from "@/components/os/StartMenu";
-import { motion } from "framer-motion";
 
 interface TaskbarProps {
   windows: DesktopWindows;
@@ -11,7 +10,6 @@ interface TaskbarProps {
   minimizeAll: () => void;
   updateTaskbarAppPosX: (key: string, posX: number) => void;
   isMobile: boolean;
-  taskbarHeight: number;
 }
 
 function Taskbar(props: TaskbarProps) {
@@ -40,6 +38,7 @@ function Taskbar(props: TaskbarProps) {
   };
 
   useEffect(() => {
+    if (props.isMobile) return;
     const timer = setInterval(() => {
       const random = Math.random();
       if (random < 0.08) setWifiBars(1);
@@ -47,7 +46,7 @@ function Taskbar(props: TaskbarProps) {
       else setWifiBars(3);
     }, 1200);
     return () => clearInterval(timer);
-  }, []);
+  }, [props.isMobile]);
 
   useEffect(() => {
     if (props.windows && Object.values(props.windows).length > 0) {
@@ -127,14 +126,12 @@ function Taskbar(props: TaskbarProps) {
         <StartMenu
           isOpen={showStartMenu}
           isMobile={props.isMobile}
-          taskbarHeight={props.taskbarHeight}
           onClose={() => setShowStartMenu(false)}
         />
       </div>
       
       <div
-        style={{ height: props.taskbarHeight }}
-        className="z-[1000] text-retro-dark text-md select-none shadow-taskbar absolute flex bottom-0 w-full border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white pl-0 pr-1.5 rounded-none pb-[env(safe-area-inset-bottom)] lg:px-2 lg:rounded-t-lg lg:rounded-b-lg lg:pb-0 max-lg:min-h-12 lg:min-h-10"
+        className="z-[1000] h-[var(--os-taskbar-total)] text-retro-dark text-md select-none shadow-taskbar absolute flex bottom-0 w-full border-retro-dark border-t-3 border-x-3 font-extrabold justify-between items-center bg-retro-white pl-0 pr-1.5 rounded-none pb-[env(safe-area-inset-bottom)] lg:px-2 lg:rounded-t-lg lg:rounded-b-lg lg:pb-0 max-lg:min-h-12 lg:min-h-10"
       >
         <div className="flex flex-row w-full h-full gap-1 pl-0 lg:pl-3">
           <div className="flex items-center flex-row gap-1">
@@ -186,12 +183,10 @@ function Taskbar(props: TaskbarProps) {
               <span className={"whitespace-nowrap"}>{time}</span>
               <Icon icon={"battery"} className={"pb-1"} size={13} />
             </div>
-            <motion.button
+            <button
               aria-label="Minimize all windows"
-              className="hover:bg-retro-medium border-3 border-retro-dark rounded-full w-8 h-8 p-0 lg:w-4 lg:h-4"
+              className="hover:bg-retro-medium border-3 border-retro-dark rounded-full w-8 h-8 p-0 lg:w-4 lg:h-4 active:scale-90"
               onClick={props.minimizeAll}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             />
           </div>
         </div>

@@ -83,6 +83,7 @@ const ProjectCard = (props: ProjectCardProps) => {
         className={`w-full rounded-lg border-3 border-retro-dark bg-retro-white flex-1 flex items-center justify-center ${props.paddingClass}`}
       >
         <Image
+          sizes="(max-width: 1024px) 45vw, 250px"
           className="rounded-md w-full h-auto max-w-[250px]"
           width={250}
           height={250}

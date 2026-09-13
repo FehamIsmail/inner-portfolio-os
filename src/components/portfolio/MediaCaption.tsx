@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 interface ImageCaptionProps {
-  src: string;
+  src: string | StaticImageData;
   alt: string;
   className?: string;
   type: "image" | "video";
@@ -15,28 +15,49 @@ interface ImageCaptionProps {
   count: number;
 }
 
+const MEDIA_SIZES = "(max-width: 1024px) 92vw, 720px";
+
+let activeVideo: HTMLVideoElement | null = null;
+
 const MediaCaption = (props: ImageCaptionProps) => {
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    if (props.type !== "video") return;
     const media = videoRef.current;
     if (!media) return;
 
-    const playInline = () => {
-      media.playsInline = true;
-      void media.play().catch(() => {
-        // Autoplay can still be blocked; leave the video muted/ready.
-      });
-    };
+    media.playsInline = true;
 
-    if (media.readyState >= 2) {
-      playInline();
+    if (typeof IntersectionObserver === "undefined") {
       return;
     }
 
-    media.addEventListener("loadeddata", playInline);
-    return () => media.removeEventListener("loadeddata", playInline);
-  }, [props.src]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+          if (activeVideo && activeVideo !== media) activeVideo.pause();
+          activeVideo = media;
+          void media.play().catch(() => {});
+        } else if (activeVideo === media) {
+          media.pause();
+          activeVideo = null;
+        } else {
+          media.pause();
+        }
+      },
+      { threshold: [0, 0.4, 1] },
+    );
+
+    observer.observe(media);
+    return () => {
+      observer.disconnect();
+      if (activeVideo === media) activeVideo = null;
+      media.pause();
+    };
+  }, [props.src, props.type]);
 
   return (
     <div className="w-full min-w-0 max-w-full">
@@ -47,9 +68,10 @@ const MediaCaption = (props: ImageCaptionProps) => {
           <Image
             src={props.src}
             alt={props.alt}
-            width={0}
-            height={0}
-            sizes="100vw"
+            width={props.width || 1200}
+            height={props.height || 800}
+            sizes={MEDIA_SIZES}
+            quality={70}
             style={{ width: "100%", height: "auto" }}
             className={`w-full max-w-full h-auto rounded-md shadow-figure border-3 border-retro-dark ${props.layout === "contain" ? "object-contain" : "object-cover"}`}
           />
@@ -63,11 +85,14 @@ const MediaCaption = (props: ImageCaptionProps) => {
             loop
             muted
             playsInline
-            preload="metadata"
+            preload="none"
             disablePictureInPicture
             style={{ imageRendering: "crisp-edges" }}
           >
-            <source src={props.src} type="video/mp4" />
+            <source
+              src={typeof props.src === "string" ? props.src : props.src.src}
+              type="video/mp4"
+            />
           </video>
         )}
       </div>

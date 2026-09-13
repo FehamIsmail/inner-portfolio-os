@@ -5,7 +5,7 @@ import mailbox from "@/assets/images/mailbox.gif";
 import download from "@/assets/images/down.png";
 import Image from "next/image";
 import { usePortfolioWindow } from "@/components/portfolio/PortfolioWindowContext";
-import { useViewport } from "@/hooks/useIsMobile";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface ResumeDownloadProps {
   margin: number;
@@ -20,7 +20,7 @@ const desktopTitlePx = (contentWidth: number) => {
 
 const ResumeDownload = ({ margin }: ResumeDownloadProps) => {
   const { contentWidth, bp } = usePortfolioWindow();
-  const { isMobile } = useViewport();
+  const isMobile = useIsMobile();
   // Bleed must match PortfolioContent's content-width padding, not viewport media queries.
   const bleedPx = bp.lg ? 48 : bp.sm ? 24 : 16;
   const titleStyle =

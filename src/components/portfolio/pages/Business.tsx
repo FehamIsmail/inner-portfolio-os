@@ -25,7 +25,7 @@ const Business = () => {
       <div className={`w-full min-w-0 ${billPad}`}>
         <MediaCaption
           className={"mt-4"}
-          src={mdv_bill.src}
+          src={mdv_bill}
           alt={"MDV Billboard"}
           type={"image"}
           caption={"MDV 500 BILL"}
@@ -63,16 +63,16 @@ const Business = () => {
           className={"flex-1 min-w-0"}
           height={500}
           images={[
-            { name: "mdv_front.png", src: mdv_front.src },
-            { name: "mdv_back.png", src: mdv_back.src },
+            { name: "mdv_front.png", image: mdv_front },
+            { name: "mdv_back.png", image: mdv_back },
           ]}
         />
         <ImageExplorer
           className={"flex-1 min-w-0"}
           height={500}
           images={[
-            { name: "cap_black.png", src: cap_black.src },
-            { name: "cap_white.png", src: cap_white.src },
+            { name: "cap_black.png", image: cap_black },
+            { name: "cap_white.png", image: cap_white },
           ]}
         />
       </div>

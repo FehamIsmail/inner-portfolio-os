@@ -1,4 +1,5 @@
 const nextConfig = {
+  allowedDevOrigins: ["192.168.2.10"],
   turbopack: {
     rules: {
       "*.svg": {
@@ -8,6 +9,7 @@ const nextConfig = {
     },
   },
   images: {
+    qualities: [70, 75],
     remotePatterns: [
       {
         protocol: "http",

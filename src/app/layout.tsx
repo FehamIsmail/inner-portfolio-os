@@ -9,7 +9,7 @@ import React from "react";
 import ThemeInitializer from "@/components/theme/ThemeInitializer";
 
 const nunito = Nunito({
-  weight: ["600", "700", "800", "900", "1000"],
+  weight: ["700", "800"],
   subsets: ["latin"],
   style: "normal",
   variable: "--font-nunito",

@@ -1,7 +1,6 @@
 "use client";
 import React, { forwardRef, useCallback, useEffect } from "react";
 import { Message, useChat } from "ai/react";
-import { motion } from "framer-motion";
 import useResizeObserver from "@react-hook/resize-observer";
 import { useAlert } from "@/components/alerts/AlertProvider";
 
@@ -125,17 +124,19 @@ const ChatBubble = (props: ChatBubbleProps) => {
 
   const symbols = ["|", "/", "-", "\\"];
   const [symbolIndex, setSymbolIndex] = React.useState(0);
+  const showSpinner = isLoading && role !== "user";
 
   useEffect(() => {
+    if (!showSpinner) return;
     const intervalId = setInterval(() => {
       setSymbolIndex((prevIndex) => (prevIndex + 1) % symbols.length);
-    }, 200); // Change symbol every 200ms
+    }, 200);
 
     return () => clearInterval(intervalId);
-  }, [symbols.length]);
+  }, [showSpinner, symbols.length]);
 
   return (
-    <motion.div animate={{ scale: 1 }} initial={{ scale: 0 }}>
+    <div>
       <div
         className={`w-full flex flex-row ${role === "user" ? "justify-end" : "justify-start"} p-2`}
       >
@@ -154,12 +155,12 @@ const ChatBubble = (props: ChatBubbleProps) => {
               className={`mt-1 text-lg sm:text-[24px] break-words text-retro-${role === "user" ? "light" : "dark"}`}
             >
               {message.content}{" "}
-              {isLoading && role !== "user" && symbols[symbolIndex]}
+              {showSpinner && symbols[symbolIndex]}
             </p>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

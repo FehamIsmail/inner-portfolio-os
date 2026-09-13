@@ -5,9 +5,7 @@ export const WINDOW_ANIMATION_DURATION = 200;
 export const getScaleByAnimationState = (
   animationState: WindowAnimationState,
   isMaximized: boolean,
-  firstLoad: boolean,
 ) => {
-  if (firstLoad) return 0;
   const scale = 1.03;
   switch (animationState) {
     case WindowAnimationState.OPENING:
@@ -32,6 +30,8 @@ export const getScaleByAnimationState = (
 
 export const getOpacity = (animationState: WindowAnimationState) => {
   switch (animationState) {
+    case WindowAnimationState.OPENING:
+      return 1;
     case WindowAnimationState.MINIMIZING:
       return 0;
     case WindowAnimationState.MINIMIZED:

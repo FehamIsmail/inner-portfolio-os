@@ -30,10 +30,6 @@ const ImageExplorer = (props: ImageExplorerProps) => {
     return image.image || image.src || "";
   };
 
-  const isStaticImage = (src: ImageSource): src is StaticImageData => {
-    return typeof src === "object" && src !== null && "src" in src;
-  };
-
   const imageWidth = width || 500;
   const imageHeight = height || 300;
 
@@ -55,11 +51,11 @@ const ImageExplorer = (props: ImageExplorerProps) => {
           alt={`Image ${currentImage}`}
           width={imageWidth}
           height={imageHeight}
+          sizes="(max-width: 1024px) 92vw, 900px"
           style={{
             width: "100%",
             height: "auto",
           }}
-          priority={currentImage === 0}
         />
       </div>
       <div className="flex gap-6 w-full py-1 flex-row bg-retro-medium justify-center">

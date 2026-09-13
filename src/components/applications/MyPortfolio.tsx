@@ -10,7 +10,7 @@ import {
   PortfolioWindowProvider,
   SIDEBAR_DOCK_MIN_WIDTH,
 } from "@/components/portfolio/PortfolioWindowContext";
-import { useViewport } from "@/hooks/useIsMobile";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface MyPortfolioProps {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ const MyPortfolio = forwardRef<HTMLDivElement, MyPortfolioProps>(
   (props, ref) => {
     const pathname = usePathname();
     const isHome = pathname === "/";
-    const { isMobile } = useViewport();
+    const isMobile = useIsMobile();
     const [windowWidth, setWindowWidth] = useState(0);
     const [contentWidth, setContentWidth] = useState(0);
 
@@ -50,11 +50,13 @@ const MyPortfolio = forwardRef<HTMLDivElement, MyPortfolioProps>(
     }, []);
 
     useResizeObserver(rootRef, (entry) => {
-      setWindowWidth(entry.contentRect.width);
+      const next = Math.round(entry.contentRect.width);
+      setWindowWidth((prev) => (Math.abs(prev - next) < 8 ? prev : next));
     });
 
     useResizeObserver(contentRef, (entry) => {
-      setContentWidth(entry.contentRect.width);
+      const next = Math.round(entry.contentRect.width);
+      setContentWidth((prev) => (Math.abs(prev - next) < 8 ? prev : next));
     });
 
     const isWide = windowWidth >= PORTFOLIO_WIDE_BREAKPOINT;
@@ -68,22 +70,33 @@ const MyPortfolio = forwardRef<HTMLDivElement, MyPortfolioProps>(
       [contentWidth],
     );
 
+    const portfolioValue = useMemo(
+      () => ({
+        width: windowWidth,
+        contentWidth,
+        isWide,
+        showDesktopFrame,
+        useMobileNav,
+        dockSidebar,
+        bp,
+      }),
+      [
+        windowWidth,
+        contentWidth,
+        isWide,
+        showDesktopFrame,
+        useMobileNav,
+        dockSidebar,
+        bp,
+      ],
+    );
+
     return (
-      <PortfolioWindowProvider
-        value={{
-          width: windowWidth,
-          contentWidth,
-          isWide,
-          showDesktopFrame,
-          useMobileNav,
-          dockSidebar,
-          bp,
-        }}
-      >
+      <PortfolioWindowProvider value={portfolioValue}>
         <div
-          className={
-            "flex flex-1 min-w-0 min-h-0 relative text-retro-dark font-bold bg-retro-white bg-opacity-30"
-          }
+          className={`flex flex-1 min-w-0 min-h-0 relative text-retro-dark h-full font-bold ${
+            isMobile ? "bg-retro-white" : "bg-retro-white bg-opacity-30"
+          }`}
           ref={attachRef}
         >
           <div

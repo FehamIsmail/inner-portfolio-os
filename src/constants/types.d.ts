@@ -17,9 +17,7 @@ declare type ApplicationType = {
   name: string;
   icon: IconName;
   titleBarColor: "red" | "green" | "blue" | "yellow";
-  component: React.ForwardRefExoticComponent<
-    T & React.RefAttributes<HTMLDivElement>
-  >;
+  component: React.ComponentType<any>;
   children?: React.ReactNode; // Used in MyPortfolioLayout to handle routing
   resizable?: boolean;
   hideOnMobile?: boolean;

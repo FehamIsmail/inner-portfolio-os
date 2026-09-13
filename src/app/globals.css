@@ -24,6 +24,98 @@
     --wallpaper-line-6: #5b4ec9;
     --wallpaper-line-7: #8b4ab8;
     --wallpaper-muted: #b8a58e;
+    --os-taskbar-height: 40px;
+    --os-taskbar-total: 40px;
+}
+
+@media (max-width: 1023px) {
+    :root {
+        --os-taskbar-height: 48px;
+        --os-taskbar-total: calc(48px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+.os-wallpaper {
+    position: fixed;
+    inset: 0;
+    z-index: -1000;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(
+        152deg,
+        color-mix(in srgb, var(--color-retro-background) 72%, black 28%) 0%,
+        color-mix(in srgb, var(--color-retro-background) 88%, black 12%) 42%,
+        color-mix(in srgb, var(--color-retro-background) 55%, black 45%) 100%
+    );
+}
+
+.os-wallpaper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at 50% 48%,
+        transparent 28%,
+        color-mix(in srgb, var(--color-retro-dark) 50%, transparent) 100%
+    );
+    opacity: 0.48;
+}
+
+.os-mobile-window {
+    animation: os-window-in 220ms ease-out both;
+    transform-origin: center top;
+}
+
+@keyframes os-window-in {
+    from {
+        opacity: 0.12;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.os-start-menu {
+    transform-origin: bottom left;
+    animation: os-start-in 320ms cubic-bezier(0.22, 1.15, 0.36, 1) both;
+}
+
+.os-start-menu.is-exiting {
+    animation: os-start-out 150ms ease-in both;
+    pointer-events: none;
+}
+
+@keyframes os-start-in {
+    from {
+        opacity: 0.2;
+        transform: translateY(20px) scale(0.95, 0.4);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1, 1);
+    }
+}
+
+@keyframes os-start-out {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1, 1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(5px) scale(0.97, 0.2);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .os-mobile-window,
+    .os-start-menu,
+    .os-start-menu.is-exiting {
+        animation: none;
+    }
 }
 
 @media (prefers-color-scheme: dark) {

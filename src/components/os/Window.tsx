@@ -1,5 +1,11 @@
 "use client";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from "react";
 import Icon from "@/components/common/Icon";
 import { ApplicationType } from "@/constants/types";
 import { motion, useSpring } from "framer-motion";
@@ -14,8 +20,6 @@ import { usePathname } from "next/navigation";
 const SPRING_OPTIONS = { damping: 54, stiffness: 3000 };
 const MIN_WIDTH = 420;
 const MIN_HEIGHT = 180;
-const TITLE_BAR_HEIGHT = { value: 24, className: "max-h-[24px]" };
-const STATUS_BAR_HEIGHT = { value: 20, className: "min-h-[20px]" };
 
 const scrollBarClassNames =
   "scrollbar scrollbar-thumb-retro-dark scrollbar-track-transparent scrollbar-corner-retro-dark scrollbar-track-rounded-none";
@@ -60,7 +64,7 @@ interface WindowProps {
   taskbarHeight: number;
 }
 
-function Window(props: WindowProps) {
+function DesktopWindow(props: WindowProps) {
   const {
     animationState,
     setAnimationState,
@@ -136,7 +140,15 @@ function Window(props: WindowProps) {
     currentWindowDimensions.height,
     SPRING_OPTIONS,
   );
-  const motionScale = useSpring(0.6, { damping: 45, stiffness: 600 });
+  const isOpening = animationState === WindowAnimationState.OPENING;
+  const motionScale = useSpring(isOpening ? 0.6 : 1, {
+    damping: 45,
+    stiffness: 600,
+  });
+  const motionOpacity = useSpring(isOpening ? 0.1 : 1, {
+    damping: 36,
+    stiffness: 420,
+  });
 
   useResizeObserver(containerRef, () => {
     checkOverflow();
@@ -434,10 +446,12 @@ function Window(props: WindowProps) {
       default:
         break;
     }
-    motionScale.set(
-      getScaleByAnimationState(animationState, isMaximized, firstRender),
-    );
-  }, [animationState, isMaximized, firstRender, motionScale]);
+  }, [animationState, isMaximized]);
+
+  useLayoutEffect(() => {
+    motionScale.set(getScaleByAnimationState(animationState, isMaximized));
+    motionOpacity.set(getOpacity(animationState));
+  }, [animationState, isMaximized, motionOpacity, motionScale]);
 
   useEffect(() => {
     if (!mobileLocked || !viewportWidth || !viewportHeight) return;
@@ -457,36 +471,42 @@ function Window(props: WindowProps) {
   ]);
 
   useEffect(() => {
-    if (!firstRender || !contentRef.current) return;
-    checkOverflow();
-    if (animationState === WindowAnimationState.OPENING) {
-      setFirstRender(false);
-      const width = mobileLocked
-        ? viewportWidth
-        : props.isModal
-          ? Math.min(
-              props.application.width || MIN_WIDTH,
-              Math.max(viewportWidth - 24, MIN_WIDTH),
-            )
-          : props.application.width || MIN_WIDTH;
-      const height = mobileLocked
-        ? viewportHeight - taskbarHeight
-        : props.application.height || (props.isModal ? 50 : MIN_HEIGHT);
-      const nextDimensions = {
-        x: mobileLocked ? 0 : left,
-        y: mobileLocked ? 0 : top,
-        width,
-        height,
-      };
-      setCurrentWindowDimensions(nextDimensions);
-      setPrevWindowDimensions(nextDimensions);
-      if (
-        mobileLocked ||
-        (props.application.width && props.application.height)
-      )
-        setSizeInitialized(true);
+    if (!firstRender) return;
+    if (
+      animationState !== WindowAnimationState.OPENING &&
+      animationState !== WindowAnimationState.VISIBLE
+    ) {
+      return;
     }
-  }, [firstRender, contentRef, animationState]);
+
+    const width = mobileLocked
+      ? viewportWidth
+      : props.isModal
+        ? Math.min(
+            props.application.width || MIN_WIDTH,
+            Math.max(viewportWidth - 24, MIN_WIDTH),
+          )
+        : props.application.width || MIN_WIDTH;
+    const height = mobileLocked
+      ? viewportHeight - taskbarHeight
+      : props.application.height || (props.isModal ? 50 : MIN_HEIGHT);
+    const nextDimensions = {
+      x: mobileLocked ? 0 : left,
+      y: mobileLocked ? 0 : top,
+      width,
+      height,
+    };
+    setFirstRender(false);
+    setCurrentWindowDimensions(nextDimensions);
+    setPrevWindowDimensions(nextDimensions);
+    if (
+      mobileLocked ||
+      (props.application.width && props.application.height)
+    ) {
+      setSizeInitialized(true);
+    }
+    checkOverflow();
+  }, [animationState, firstRender]);
 
   useEffect(() => {
     if (!contentRef.current) return;
@@ -534,23 +554,17 @@ function Window(props: WindowProps) {
       className={`flex flex-col bg-retro-white absolute divide-y-3 divide-retro-dark border-3 rounded-lg border-retro-dark 
             ${isMaximized && !(animationState === WindowAnimationState.MINIMIZING) ? "border-b-0 shadow-window-maximized" : "shadow-window"}
             ${mobileLocked ? "rounded-none" : ""}`}
-      animate={{
-        opacity: getOpacity(animationState),
-      }}
       style={{
         x: motionX,
         y: motionY,
         width: motionWidth,
         height: motionHeight,
         scale: motionScale,
+        opacity: motionOpacity,
         willChange: isDragging.current ? "transform" : "auto",
       }}
-      initial={{
-        scale: 0.6,
-        opacity: 0.1,
-      }}
       ref={windowRef}
-      onMouseDown={onInteract}
+      onMouseDown={isMobile ? undefined : onInteract}
     >
       <div
         className={`titleBar flex flex-row ${
@@ -632,13 +646,17 @@ function Window(props: WindowProps) {
         }`}
         ref={containerRef}
       >
-        <props.application.component
+        <div
           ref={contentRef}
-          animationState={animationState}
-          {...props.application.props}
+          className="flex-1 min-h-0 min-w-0 w-full h-full"
         >
-          {props.application.children}
-        </props.application.component>
+          <props.application.component
+            animationState={animationState}
+            {...props.application.props}
+          >
+            {props.application.children}
+          </props.application.component>
+        </div>
         {isOverflowing &&
           animationState !== WindowAnimationState.INITIALIZING &&
           animationState !== WindowAnimationState.OPENING &&
@@ -673,6 +691,80 @@ function Window(props: WindowProps) {
       )}
     </motion.div>
   );
+}
+
+function MobileWindow(props: WindowProps) {
+  const { application, onClose, onMinimize, animationState, isModal } = props;
+  const AppComponent = application.component;
+  const titleBarColor = titleBarColors[application.titleBarColor];
+  const hidden =
+    animationState === WindowAnimationState.MINIMIZED ||
+    animationState === WindowAnimationState.MINIMIZING ||
+    animationState === WindowAnimationState.CLOSING;
+
+  return (
+    <div
+      className={`flex flex-col bg-retro-white fixed divide-y-3 divide-retro-dark border-3 border-retro-dark ${
+        isModal
+          ? "rounded-lg left-3 right-3 top-3 border-b-3 shadow-window"
+          : "left-0 right-0 top-0 rounded-none border-b-0 shadow-window-maximized"
+      } ${hidden ? "hidden" : "os-mobile-window"}`}
+      style={
+        isModal
+          ? {
+              maxHeight: "calc(100dvh - var(--os-taskbar-total) - 24px)",
+            }
+          : { bottom: "var(--os-taskbar-total)" }
+      }
+    >
+      <div
+        className={`titleBar flex flex-row min-h-[44px] pl-3 pr-1 w-full justify-between ${titleBarColor} ${
+          isModal ? "rounded-t-[4px]" : "rounded-none"
+        }`}
+      >
+        <div className="left-titleBar text-md text-retro-dark font-bold flex w-full flex-row items-center gap-2">
+          <span className="select-none truncate">{application.name}</span>
+        </div>
+        <div className="flex items-center right-titleBar">
+          <div className="flex items-center gap-0">
+            {!isModal && onMinimize && (
+              <button
+                aria-label={`Minimize ${application.name}`}
+                className="flex items-center justify-center h-11 w-11"
+                onClick={onMinimize}
+              >
+                <Icon icon="minimize" size={13} colorize={true} />
+              </button>
+            )}
+            <button
+              aria-label={`Close ${application.name}`}
+              className="flex items-center justify-center h-11 w-11"
+              onClick={onClose}
+            >
+              <Icon className="p-[4px]" icon="close" size={11} colorize={true} />
+            </button>
+          </div>
+        </div>
+      </div>
+      <section
+        className={`flex-1 min-h-0 flex flex-row overflow-y-auto overflow-x-clip ${scrollBarClassNames}`}
+      >
+        <div className="flex-1 min-h-0 min-w-0 w-full h-full">
+          <AppComponent
+            animationState={animationState}
+            {...application.props}
+          >
+            {application.children}
+          </AppComponent>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function Window(props: WindowProps) {
+  if (props.isMobile) return <MobileWindow {...props} />;
+  return <DesktopWindow {...props} />;
 }
 
 export default Window;

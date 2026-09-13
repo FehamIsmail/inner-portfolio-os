@@ -1,13 +1,18 @@
 "use client";
-import React, { useCallback, useEffect } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import Taskbar from "@/components/os/Taskbar";
 import Window from "@/components/os/Window";
 import { APPLICATIONS } from "@/constants/data";
-import AppShortcut, { AppShortcutProps } from "@/components/os/AppShortcut";
+import AppShortcut from "@/components/os/AppShortcut";
 import { ApplicationType, DesktopWindows } from "@/constants/types";
 import { WindowAnimationState } from "@/constants/enums";
 import { WINDOW_ANIMATION_DURATION } from "@/components/utils/AnimationUtils";
-import { setDynamicColors, initializeThemeChangeListener } from "@/components/utils/ColorUtils";
 import AlertProvider, { ALERT_WIDTH } from "@/components/alerts/AlertProvider";
 import Wallpaper from "@/components/os/Wallpaper";
 import {
@@ -15,7 +20,6 @@ import {
   MOBILE_TASKBAR_HEIGHT,
   useViewport,
 } from "@/hooks/useIsMobile";
-
 
 interface DesktopProps {
   children?: React.ReactNode;
@@ -33,31 +37,41 @@ export const DesktopContext = React.createContext<DesktopContextProps>(
   {} as DesktopContextProps,
 );
 
+const highestZ = (windows: DesktopWindows) => {
+  const values = Object.values(windows);
+  if (values.length === 0) return 199;
+  return Math.max(...values.map((window) => window.zIndex));
+};
+
+const lowestZ = (windows: DesktopWindows) => {
+  const values = Object.values(windows);
+  if (values.length === 0) return 0;
+  return Math.min(...values.map((window) => window.zIndex));
+};
+
+const hasModal = (windows: DesktopWindows) => "modal" in windows;
+
 function Desktop({ children }: DesktopProps) {
   const {
     width: viewportWidth,
     height: viewportHeight,
     isMobile,
-    safeAreaBottom,
   } = useViewport();
   const taskbarHeight = isMobile
-    ? MOBILE_TASKBAR_HEIGHT + safeAreaBottom
+    ? MOBILE_TASKBAR_HEIGHT
     : DESKTOP_TASKBAR_HEIGHT;
-  const [windows, setWindows] = React.useState<DesktopWindows>(
-    {} as DesktopWindows,
-  );
-  const [shortcuts, setShortcuts] = React.useState<AppShortcutProps[]>([]);
-  const [taskbarAppPosX, setTaskbarAppPosX] = React.useState<{
+  const [windows, setWindows] = useState<DesktopWindows>({} as DesktopWindows);
+  const [focusedShortcut, setFocusedShortcut] = useState<string | null>(null);
+  const [taskbarAppPosX, setTaskbarAppPosX] = useState<{
     [key: string]: number;
   }>({});
-  const [firstRender, setFirstRender] = React.useState(true);
-  const [defaultWindowSize, setDefaultWindowSize] = React.useState(
-    {} as {
-      margin: number;
-      width: number;
-      height: number;
-    },
-  );
+  const [firstRender, setFirstRender] = useState(true);
+  const [shellReady, setShellReady] = useState(false);
+  const [defaultWindowSize, setDefaultWindowSize] = useState({
+    margin: 0.05,
+    width: 0,
+    height: 0,
+  });
 
   const updateWindowProperties = useCallback(
     (key: string, properties: Partial<DesktopWindows[string]>) => {
@@ -69,7 +83,7 @@ function Desktop({ children }: DesktopProps) {
         },
       }));
     },
-    [setWindows],
+    [],
   );
 
   const setWindowAnimationState = useCallback(
@@ -85,35 +99,31 @@ function Desktop({ children }: DesktopProps) {
     }, WINDOW_ANIMATION_DURATION);
   }, []);
 
-  const getHighestZIndex = useCallback(() => {
-    if (Object.keys(windows).length === 0) return 199;
-    return Math.max(...Object.values(windows).map((window) => window.zIndex));
-  }, [windows]);
-
-  const getLowestZIndex = useCallback(() => {
-    if (Object.keys(windows).length === 0) return 0;
-    return Math.min(...Object.values(windows).map((window) => window.zIndex));
-  }, [windows]);
-
-  const addWindow = useCallback(
-    (application: ApplicationType) => {
-      updateWindowProperties(application.key, {
-        zIndex: getHighestZIndex() + 1,
+  const addWindow = useCallback((application: ApplicationType) => {
+    setWindows((prev) => ({
+      ...prev,
+      [application.key]: {
+        ...prev[application.key],
+        zIndex: highestZ(prev) + 1,
         minimized: false,
+        maximized: false,
         animationState: WindowAnimationState.OPENING,
         application,
-      });
-    },
-    [getHighestZIndex, updateWindowProperties],
-  );
+      },
+    }));
+  }, []);
 
   const removeWindow = useCallback(
     (key: string) => {
-      setWindows((prevState) => {
-        const newWindows = { ...prevState };
-        setWindowAnimationState(key, WindowAnimationState.CLOSING);
-        return newWindows;
-      });
+      if (isMobile) {
+        setWindows((prev) => {
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+        return;
+      }
+      setWindowAnimationState(key, WindowAnimationState.CLOSING);
       performPostAnimationAction(() => {
         setWindows((prevState) => {
           const newWindows = { ...prevState };
@@ -122,11 +132,18 @@ function Desktop({ children }: DesktopProps) {
         });
       });
     },
-    [performPostAnimationAction, setWindowAnimationState],
+    [isMobile, performPostAnimationAction, setWindowAnimationState],
   );
 
   const minimizeWindow = useCallback(
     (key: string) => {
+      if (isMobile) {
+        updateWindowProperties(key, {
+          minimized: true,
+          animationState: WindowAnimationState.MINIMIZED,
+        });
+        return;
+      }
       setWindowAnimationState(key, WindowAnimationState.MINIMIZING);
       performPostAnimationAction(() => {
         updateWindowProperties(key, { minimized: true });
@@ -134,6 +151,7 @@ function Desktop({ children }: DesktopProps) {
       });
     },
     [
+      isMobile,
       performPostAnimationAction,
       setWindowAnimationState,
       updateWindowProperties,
@@ -141,71 +159,183 @@ function Desktop({ children }: DesktopProps) {
   );
 
   const minimizeAll = useCallback(() => {
-    if (checkIfModalIsOpen()) return;
-    Object.keys(windows).forEach((key) => {
-      minimizeWindow(key);
+    setWindows((prev) => {
+      if (hasModal(prev)) return prev;
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        next[key] = {
+          ...next[key],
+          minimized: true,
+          animationState: WindowAnimationState.MINIMIZED,
+        };
+      });
+      return next;
     });
-  }, [minimizeWindow, windows]);
+  }, []);
 
   const toggleMinimize = useCallback(
     (key: string) => {
-      if (checkIfModalIsOpen()) return;
-      const highestZIndex = getHighestZIndex();
-      const isFocused = windows[key].zIndex === highestZIndex;
-      const newAnimationState = windows[key].minimized
-        ? WindowAnimationState.RESTORING
-        : isFocused
-          ? WindowAnimationState.MINIMIZING
-          : WindowAnimationState.VISIBLE;
+      if (isMobile) {
+        setWindows((prev) => {
+          if (hasModal(prev) || !prev[key]) return prev;
+          const focusedZ = highestZ(prev);
+          const isFocused = prev[key].zIndex === focusedZ;
+          const restoring = prev[key].minimized;
+          return {
+            ...prev,
+            [key]: {
+              ...prev[key],
+              minimized: restoring ? false : isFocused ? true : prev[key].minimized,
+              zIndex: restoring || !isFocused ? focusedZ + 1 : lowestZ(prev) - 1,
+              animationState: restoring
+                ? WindowAnimationState.VISIBLE
+                : isFocused
+                  ? WindowAnimationState.MINIMIZED
+                  : WindowAnimationState.VISIBLE,
+            },
+          };
+        });
+        return;
+      }
 
-      updateWindowProperties(key, {
-        animationState: newAnimationState,
-        zIndex: isFocused ? getLowestZIndex() - 1 : highestZIndex + 1,
-        minimized:
-          newAnimationState === WindowAnimationState.RESTORING
-            ? false
-            : windows[key].minimized,
+      setWindows((prev) => {
+        if (hasModal(prev) || !prev[key]) return prev;
+        const focusedZ = highestZ(prev);
+        const isFocused = prev[key].zIndex === focusedZ;
+        const newAnimationState = prev[key].minimized
+          ? WindowAnimationState.RESTORING
+          : isFocused
+            ? WindowAnimationState.MINIMIZING
+            : WindowAnimationState.VISIBLE;
+        return {
+          ...prev,
+          [key]: {
+            ...prev[key],
+            animationState: newAnimationState,
+            zIndex: isFocused ? lowestZ(prev) - 1 : focusedZ + 1,
+            minimized:
+              newAnimationState === WindowAnimationState.RESTORING
+                ? false
+                : prev[key].minimized,
+          },
+        };
       });
 
       performPostAnimationAction(() => {
-        const shouldToggle = windows[key].minimized || isFocused;
-        const newMinimized = shouldToggle
-          ? !windows[key].minimized
-          : windows[key].minimized;
-        const finalState = newMinimized
-          ? WindowAnimationState.MINIMIZED
-          : WindowAnimationState.VISIBLE;
-        updateWindowProperties(key, { minimized: newMinimized });
-        setWindowAnimationState(key, finalState);
+        setWindows((prev) => {
+          if (!prev[key]) return prev;
+          const anim = prev[key].animationState;
+          if (anim === WindowAnimationState.MINIMIZING) {
+            return {
+              ...prev,
+              [key]: {
+                ...prev[key],
+                minimized: true,
+                animationState: WindowAnimationState.MINIMIZED,
+              },
+            };
+          }
+          if (anim === WindowAnimationState.RESTORING) {
+            return {
+              ...prev,
+              [key]: {
+                ...prev[key],
+                minimized: false,
+                animationState: WindowAnimationState.VISIBLE,
+              },
+            };
+          }
+          return prev;
+        });
       });
     },
-    [
-      getHighestZIndex,
-      getLowestZIndex,
-      performPostAnimationAction,
-      setWindowAnimationState,
-      updateWindowProperties,
-      windows,
-    ],
+    [isMobile, performPostAnimationAction],
   );
 
-  const onInteract = useCallback(
-    (key: string) => {
-      if (checkIfModalIsOpen()) return;
-      updateWindowProperties(key, { zIndex: getHighestZIndex() + 1 });
-    },
-    [getHighestZIndex, updateWindowProperties, windows],
-  );
+  const onInteract = useCallback((key: string) => {
+    setWindows((prev) => {
+      if (hasModal(prev) || !prev[key]) return prev;
+      const focusedZ = highestZ(prev);
+      if (prev[key].zIndex === focusedZ) return prev;
+      return {
+        ...prev,
+        [key]: { ...prev[key], zIndex: focusedZ + 1 },
+      };
+    });
+  }, []);
 
   const onOpen = useCallback(
     (application: ApplicationType) => {
       if (isMobile && application.hideOnMobile) return;
-      addWindow(application);
+
+      setWindows((prev) => {
+        const existing = prev[application.key];
+        if (existing && !existing.minimized) {
+          const focusedZ = highestZ(prev);
+          if (
+            existing.zIndex === focusedZ &&
+            existing.animationState === WindowAnimationState.VISIBLE
+          ) {
+            return prev;
+          }
+          return {
+            ...prev,
+            [application.key]: {
+              ...existing,
+              zIndex: focusedZ + 1,
+              animationState: WindowAnimationState.VISIBLE,
+            },
+          };
+        }
+
+        if (existing?.minimized) {
+          return {
+            ...prev,
+            [application.key]: {
+              ...existing,
+              minimized: false,
+              zIndex: highestZ(prev) + 1,
+              animationState: isMobile
+                ? WindowAnimationState.VISIBLE
+                : WindowAnimationState.RESTORING,
+            },
+          };
+        }
+
+        return {
+          ...prev,
+          [application.key]: {
+            zIndex: highestZ(prev) + 1,
+            minimized: false,
+            maximized: isMobile,
+            animationState: WindowAnimationState.OPENING,
+            application,
+          },
+        };
+      });
+
       performPostAnimationAction(() => {
-        setWindowAnimationState(application.key, WindowAnimationState.VISIBLE);
+        setWindows((prev) => {
+          const win = prev[application.key];
+          if (!win) return prev;
+          if (
+            win.animationState !== WindowAnimationState.OPENING &&
+            win.animationState !== WindowAnimationState.RESTORING
+          ) {
+            return prev;
+          }
+          return {
+            ...prev,
+            [application.key]: {
+              ...win,
+              minimized: false,
+              animationState: WindowAnimationState.VISIBLE,
+            },
+          };
+        });
       });
     },
-    [addWindow, isMobile, performPostAnimationAction, setWindowAnimationState],
+    [isMobile, performPostAnimationAction],
   );
 
   const updateTaskbarAppPosX = useCallback((key: string, posX: number) => {
@@ -214,29 +344,6 @@ function Desktop({ children }: DesktopProps) {
       [key]: posX,
     }));
   }, []);
-
-  const getPortfolioIcon = useCallback(() => {
-    if (!Object.keys(windows).includes("myPortfolio"))
-      return "myPortfolioClosed";
-    return windows["myPortfolio"].minimized
-      ? "myPortfolioClosed"
-      : "myPortfolioOpened";
-  }, [windows]);
-
-  const setShortcutOnFocus = useCallback((name: string) => {
-    setShortcuts((prevShortcuts) => {
-      return prevShortcuts.map((shortcut) => {
-        return {
-          ...shortcut,
-          isFocused: shortcut.name === name,
-        };
-      });
-    });
-  }, []);
-
-  const checkIfModalIsOpen = useCallback(() => {
-    return Object.keys(windows).includes("modal");
-  }, [windows]);
 
   const addModal = useCallback(
     (application: ApplicationType) => {
@@ -249,26 +356,34 @@ function Desktop({ children }: DesktopProps) {
     removeWindow("modal");
   }, [removeWindow]);
 
-  useEffect(() => {
-    APPLICATIONS.find(
-      (application) => application.key === "myPortfolio",
-    )!.icon = getPortfolioIcon();
-    const newShortcuts = APPLICATIONS.filter(
-      (application) => !(isMobile && application.hideOnMobile),
-    ).map((application) => {
-      return {
-        icon: application.icon,
-        name: application.name,
-        isFocused: false,
-        isMobile,
-        setFocused: () => setShortcutOnFocus(application.name),
-        onOpen: () => onOpen(application),
-      };
-    });
-    setShortcuts(newShortcuts);
-  }, [getPortfolioIcon, isMobile, onOpen]);
+  const desktopContextValue = useMemo(
+    () => ({ addModal, addWindow, removeWindow, removeModal, onOpen }),
+    [addModal, addWindow, removeWindow, removeModal, onOpen],
+  );
+
+  const portfolioIcon =
+    windows.myPortfolio && !windows.myPortfolio.minimized
+      ? "myPortfolioOpened"
+      : "myPortfolioClosed";
+
+  const visibleShortcuts = useMemo(
+    () =>
+      APPLICATIONS.filter(
+        (application) => !(isMobile && application.hideOnMobile),
+      ),
+    [isMobile],
+  );
+
+  const hasVisibleWindow = Object.values(windows).some(
+    (desktopWindow) => !desktopWindow.minimized,
+  );
+
+  useLayoutEffect(() => {
+    if (viewportWidth > 0) setShellReady(true);
+  }, [viewportWidth]);
 
   useEffect(() => {
+    if (!shellReady) return;
     if (!viewportWidth || !viewportHeight) return;
     setDefaultWindowSize({
       margin: isMobile ? 0 : 0.05,
@@ -279,27 +394,30 @@ function Desktop({ children }: DesktopProps) {
         ? viewportHeight - taskbarHeight
         : viewportHeight - viewportHeight * 0.05 * 2 - taskbarHeight,
     });
-  }, [isMobile, taskbarHeight, viewportHeight, viewportWidth]);
+  }, [isMobile, shellReady, taskbarHeight, viewportHeight, viewportWidth]);
 
   useEffect(() => {
-    if (!firstRender) return;
-    if (!defaultWindowSize.width || !defaultWindowSize.height) return;
-    setFirstRender(false);
+    if (!shellReady || !firstRender) return;
     const myPortfolio = APPLICATIONS.find(
       (application) => application.key === "myPortfolio",
     );
-    if (myPortfolio) {
-      onOpen(myPortfolio);
+    if (!myPortfolio) return;
+    if (!isMobile && (!defaultWindowSize.width || !defaultWindowSize.height)) {
+      return;
     }
+    setFirstRender(false);
+    onOpen(myPortfolio);
   }, [
     defaultWindowSize.height,
     defaultWindowSize.width,
     firstRender,
+    isMobile,
     onOpen,
+    shellReady,
   ]);
 
   useEffect(() => {
-    if (!isMobile) return;
+    if (!shellReady || !isMobile) return;
     setWindows((currentWindows) =>
       Object.fromEntries(
         Object.entries(currentWindows).filter(
@@ -307,23 +425,30 @@ function Desktop({ children }: DesktopProps) {
         ),
       ) as DesktopWindows,
     );
-  }, [isMobile]);
+  }, [isMobile, shellReady]);
 
   return (
-    <DesktopContext.Provider
-      value={{ addModal, addWindow, removeWindow, removeModal, onOpen }}
-    >
+    <DesktopContext.Provider value={desktopContextValue}>
       <AlertProvider>
-        <main className="font-nunito z-[-200] background-retro-gradient h-dvh min-h-0 flex flex-col select-none overflow-hidden">
+        <main className="font-nunito z-[-200] h-dvh min-h-0 flex flex-col select-none overflow-hidden">
           <Wallpaper />
-          {Object.keys(windows).map((key) => {
+          {shellReady &&
+            Object.keys(windows).map((key) => {
             const desktopWindow = windows[key];
             const isModal = key === "modal";
-            if (key === "myPortfolio") {
-              desktopWindow.application.children = children;
-              desktopWindow.application.width = defaultWindowSize.width;
-              desktopWindow.application.height = defaultWindowSize.height;
-            }
+            const application =
+              key === "myPortfolio"
+                ? {
+                    ...desktopWindow.application,
+                    children,
+                    width: isMobile
+                      ? viewportWidth
+                      : defaultWindowSize.width,
+                    height: isMobile
+                      ? viewportHeight
+                      : defaultWindowSize.height,
+                  }
+                : desktopWindow.application;
             return (
               <div
                 className={`relative ${desktopWindow.minimized ? "hidden" : ""}`}
@@ -352,7 +477,7 @@ function Desktop({ children }: DesktopProps) {
                         : ((desktopWindow.zIndex * 50) % 200) +
                           defaultWindowSize.margin * viewportHeight
                   }
-                  application={desktopWindow.application}
+                  application={application}
                   taskbarPos={taskbarAppPosX[key]}
                   onInteract={() => onInteract(key)}
                   onMinimize={() => minimizeWindow(key)}
@@ -374,31 +499,33 @@ function Desktop({ children }: DesktopProps) {
               </div>
             );
           })}
-          <div className={"h-screen w-screen"}>
-            <div
-              className={
-                `text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0 ${
+          {(!isMobile || !hasVisibleWindow) && (
+            <div className="h-dvh w-full">
+              <div
+                className={`text-sm flex flex-col w-fit whitespace-nowrap px-3 py-1 flex-wrap gap-0 ${
                   isMobile
-                    ? "max-h-[calc(100dvh-48px)]"
+                    ? "max-h-[calc(100dvh-var(--os-taskbar-total))]"
                     : "max-h-[calc(100dvh-40px)]"
-                }`
-              }
-            >
-              {shortcuts?.map((shortcut) => {
-                return (
+                }`}
+              >
+                {visibleShortcuts.map((shortcut) => (
                   <AppShortcut
                     key={shortcut.name}
-                    icon={shortcut.icon}
+                    icon={
+                      shortcut.key === "myPortfolio"
+                        ? portfolioIcon
+                        : shortcut.icon
+                    }
                     name={shortcut.name}
-                    isFocused={shortcut.isFocused}
-                    setFocused={shortcut.setFocused}
-                    onOpen={shortcut.onOpen}
+                    isFocused={focusedShortcut === shortcut.name}
+                    setFocused={() => setFocusedShortcut(shortcut.name)}
+                    onOpen={() => onOpen(shortcut)}
                     isMobile={isMobile}
                   />
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <Taskbar
             toggleMinimize={toggleMinimize}
@@ -406,7 +533,6 @@ function Desktop({ children }: DesktopProps) {
             minimizeAll={minimizeAll}
             updateTaskbarAppPosX={updateTaskbarAppPosX}
             isMobile={isMobile}
-            taskbarHeight={taskbarHeight}
           />
         </main>
       </AlertProvider>

@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 interface ImageProps {
-  src: string;
+  src: string | StaticImageData;
   alt: string;
   className?: string;
   width?: number;
@@ -26,8 +26,9 @@ const MediaImage = (props: ImageProps) => {
       <Image
         src={props.src}
         alt={props.alt}
-        width={props.width || 0}
-        height={props.height || 0}
+        width={props.width || 600}
+        height={props.height || 800}
+        sizes="(max-width: 768px) 92vw, 300px"
         style={{
           objectFit: props.layout === "contain" ? "contain" : "cover",
           width: "100%",

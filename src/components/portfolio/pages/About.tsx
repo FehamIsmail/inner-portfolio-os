@@ -14,7 +14,7 @@ const About = () => {
     return (
         <div className={"mt-4 sm:mt-10"}>
             <div className={"flex flex-col items-center md:items-start md:flex-row gap-6 md:gap-10"}>
-                <MediaImage height={450} width={300} src={me.src} className="md:min-w-[200px]" alt={"Photo of me"}/>
+                <MediaImage height={450} width={300} src={me} className="md:min-w-[200px]" alt={"Photo of me"}/>
                 <div className={"max-w-[800px]"}>
                     <h2 className={""}>I&apos;m Ismail.</h2>
                     <p>
@@ -75,7 +75,7 @@ const About = () => {
             </p>
             <div className={"px-0 sm:px-8 lg:px-32 mt-4 w-full h-fit flex flex-col items-center"}>
                 <MediaCaption
-                    src={me_robotics.src}
+                    src={me_robotics}
                     type={"image"}
                     alt={"Photo of me robotics meeting"}
                     caption={"Photo of myself intensely focused."}
@@ -110,7 +110,7 @@ const About = () => {
                 </div>
                 <div className={"flex-1"}>
                     <MediaCaption
-                        src={vanier_college.src}
+                        src={vanier_college}
                         alt={"Photo Vanier College"}
                         type={"image"}
                         caption={"Vanier College"}
@@ -124,7 +124,7 @@ const About = () => {
             <div className={"mt-4 flex flex-col md:flex-row items-center gap-4 md:gap-6"}>
                 <div className={"flex-1"}>
                     <MediaCaption
-                        src={concordia.src}
+                        src={concordia}
                         alt={"Photo Concordia University"}
                         type={"image"}
                         caption={"Concordia University"}

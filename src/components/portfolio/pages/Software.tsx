@@ -22,7 +22,7 @@ const Software = () => {
         >
           <Image
             className={"mb-[2px]"}
-            src={github.src}
+            src={github}
             width={24}
             height={24}
             alt={"Github's Logo"}
@@ -58,7 +58,7 @@ const Software = () => {
       </p>
       <MediaCaption
         className={"mt-4"}
-        src={portfolio.src}
+        src={portfolio}
         alt={"Portfolio's Home Page"}
         type={"image"}
         caption={"Home Page of the Portfolio"}
@@ -87,7 +87,7 @@ const Software = () => {
         >
           <Image
             className={"mb-[2px]"}
-            src={github.src}
+            src={github}
             width={24}
             height={24}
             alt={"Github's Logo"}
@@ -168,7 +168,7 @@ const Software = () => {
         >
           <Image
             className={"mb-[2px]"}
-            src={github.src}
+            src={github}
             width={24}
             height={24}
             alt={"Github's Logo"}

@@ -33,8 +33,8 @@ const Arts = () => {
           height={500}
           width={700}
           images={[
-            { name: "horse skull drawing", src: horse_skull_drawing.src },
-            { name: "horse skull reference", src: horse_skull_reference.src },
+            { name: "horse skull drawing", image: horse_skull_drawing },
+            { name: "horse skull reference", image: horse_skull_reference },
           ]}
         />
       </div>

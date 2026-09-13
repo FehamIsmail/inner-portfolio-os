@@ -1,8 +1,23 @@
+"use client";
+
 import { ApplicationType } from "@/constants/types";
 import MyPortfolio from "@/components/applications/MyPortfolio";
-import ChatWithMe from "@/components/applications/ChatWithMe";
-import GamePlayer from "@/components/os/GamePlayer";
-import ReadMe from "@/components/applications/ReadMe";
+import dynamic from "next/dynamic";
+
+const AppLoading = () => <div className="w-full h-full min-h-[160px] bg-retro-white" />;
+
+const ChatWithMe = dynamic(
+  () => import("@/components/applications/ChatWithMe"),
+  { ssr: false, loading: AppLoading },
+);
+const GamePlayer = dynamic(() => import("@/components/os/GamePlayer"), {
+  ssr: false,
+  loading: AppLoading,
+});
+const ReadMe = dynamic(() => import("@/components/applications/ReadMe"), {
+  ssr: false,
+  loading: AppLoading,
+});
 
 export const APPLICATIONS: ApplicationType[] = [
   {
@@ -18,6 +33,7 @@ export const APPLICATIONS: ApplicationType[] = [
     key: "chatWithMe",
     name: "Chat with me",
     width: 500,
+    height: 520,
     icon: "robot",
     titleBarColor: "blue",
     resizable: false,
@@ -41,6 +57,7 @@ export const APPLICATIONS: ApplicationType[] = [
     titleBarColor: "red",
     width: 800,
     height: 600,
+    hideOnMobile: true,
     component: GamePlayer,
     props: {
       gameSrc: `https://emupedia.net/emupedia-game-doom1/`,
@@ -53,6 +70,7 @@ export const APPLICATIONS: ApplicationType[] = [
     titleBarColor: "blue",
     width: 800,
     height: 600,
+    hideOnMobile: true,
     component: GamePlayer,
     props: {
       gameSrc: `https://emupedia.net/emupedia-game-prince/`,
@@ -65,6 +83,7 @@ export const APPLICATIONS: ApplicationType[] = [
     titleBarColor: "green",
     width: 800,
     height: 600,
+    hideOnMobile: true,
     component: GamePlayer,
     props: {
       gameSrc: `https://emupedia.net/emupedia-game-minecraft-classic/`,
@@ -77,6 +96,7 @@ export const APPLICATIONS: ApplicationType[] = [
     titleBarColor: "blue",
     width: 800,
     height: 600,
+    hideOnMobile: true,
     component: GamePlayer,
     props: {
       gameSrc: `https://emupedia.net/emupedia-game-space-cadet-pinball/`,

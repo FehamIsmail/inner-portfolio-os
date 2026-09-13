@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 /**
  * Newton-prism wallpaper
@@ -74,7 +75,11 @@ const MOTES = [
   { t: 0.9, r: 1.5, delay: "-0.8s" },
 ];
 
-const Wallpaper = () => {
+const StaticWallpaper = () => (
+  <div className="os-wallpaper" aria-hidden="true" />
+);
+
+const AnimatedWallpaper = () => {
   const apex: Pt = { x: 600, y: 268 };
   const baseL: Pt = { x: 468, y: 498 };
   const baseR: Pt = { x: 732, y: 498 };
@@ -97,7 +102,7 @@ const Wallpaper = () => {
   ]);
 
   return (
-    <div className="newton-wallpaper fixed inset-0 z-[-1000] overflow-hidden">
+    <div className="os-wallpaper newton-wallpaper">
       <svg
         className="absolute inset-0 h-full w-full"
         viewBox="0 0 1200 800"
@@ -688,4 +693,16 @@ const Wallpaper = () => {
   );
 };
 
-export default Wallpaper;
+const Wallpaper = () => {
+  const isMobile = useIsMobile();
+  const [allowFx, setAllowFx] = useState(false);
+
+  useEffect(() => {
+    setAllowFx(!isMobile);
+  }, [isMobile]);
+
+  if (!allowFx) return <StaticWallpaper />;
+  return <AnimatedWallpaper />;
+};
+
+export default React.memo(Wallpaper);
