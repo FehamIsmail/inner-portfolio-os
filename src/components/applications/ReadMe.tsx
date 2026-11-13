@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useState } from "react";
 import Image from "next/image";
 
 const texts = [
-  "Software Engineer · previously at Coinbase",
+  "Software engineer @ Concordia University",
   "Passionate about Web Development & 3D Graphics",
   "Avid learner of new technologies",
   "Always open to new opportunities!",
